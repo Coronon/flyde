@@ -75,57 +75,43 @@ abstract class Session<T> {
 
 /// Extends base session to add support for installing middleware
 class MiddlewareSession<T> extends Session<T> {
-  /// List of installed middleware. (After processing)
+  /// List of installed middleware.
   ///
   /// Each middleware recieves the calling [Session] instance, message,
   /// [MiddlewareAction] and a proxy to the next [MiddlewareFunc].
-  List<NextMiddlewareFunc> _middleware = <NextMiddlewareFunc>[];
+  List<MiddlewareFunc> middleware = <MiddlewareFunc>[];
 
-  /// Install a list of [MiddlewareFunc].
-  ///
-  /// This has to be called before the first message is send/received
-  void installMiddleware(List<MiddlewareFunc> middleware) {
-    // Add final dispatcher
-    _middleware.add(
-      (dynamic message, MiddlewareAction action) {
-        if (action == MiddlewareAction.RECEIVE) {
-          super._onData(message);
-        } else {
-          super.send(message);
-        }
-      },
-    );
+  /// Internal index to handle running middleware
+  late int _middlewareIndex;
 
-    // Chain middleware together
-    for (MiddlewareFunc func in middleware.reversed) {
-      _middleware.add(
-        (dynamic message, MiddlewareAction action) =>
-            func(_ref!, message, action, _middleware.last),
-      );
-    }
+  /// Internal cache to handle running middleware
+  late MiddlewareAction _middlewareAction;
 
-    // Install middleware
-    _middleware = _middleware.reversed.toList();
+  /// Run all installed middleware on given message and action
+  dynamic runMiddleware(dynamic message, MiddlewareAction action) {
+    _middlewareIndex = 0;
+    _middlewareAction = action;
+    return _nextMiddleware(message);
   }
 
-  /// Run all installed middleware on given message and action.
-  /// Finally call super implementation.
-  void runMiddleware(dynamic message, MiddlewareAction action) async {
-    await ready;
+  /// Internal implementation of recursively running middleware
+  dynamic _nextMiddleware(dynamic message) {
+    if (_middlewareIndex == middleware.length) return message;
+    _middlewareIndex += 1;
 
-    _middleware[0](message, action);
+    return middleware[_middlewareIndex - 1](_ref, message, _middlewareAction, _nextMiddleware);
   }
 
   //* Overrides to include middleware
 
   @override
   void send(dynamic message) async {
-    runMiddleware(message, MiddlewareAction.SEND);
+    super.send(runMiddleware(message, MiddlewareAction.SEND));
   }
 
   @override
   void _onData(dynamic message) async {
-    runMiddleware(message, MiddlewareAction.RECEIVE);
+    super._onData(runMiddleware(message, MiddlewareAction.RECEIVE));
   }
 }
 
