@@ -109,12 +109,18 @@ class MiddlewareSession<T> extends Session<T> {
 
   @override
   void send(dynamic message) async {
-    super.send(runMiddleware(message, MiddlewareAction.SEND));
+    message = runMiddleware(message, MiddlewareAction.SEND);
+    if (message == null) return;
+
+    super.send(message);
   }
 
   @override
   void _onData(dynamic message) async {
-    super._onData(runMiddleware(message, MiddlewareAction.RECEIVE));
+    message = runMiddleware(message, MiddlewareAction.RECEIVE);
+    if (message == null) return;
+
+    super._onData(message);
   }
 }
 
