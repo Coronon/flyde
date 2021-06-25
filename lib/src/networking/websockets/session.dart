@@ -8,6 +8,9 @@ abstract class Session<T> {
   /// Awaitable to ensure ready for use
   late Future<void> ready;
 
+  /// Individial storage attached to each session for ephemeral data
+  Map<dynamic, dynamic> storage = <dynamic, dynamic>{};
+
   /// WebSocket connection used to transfer data from client <-> server
   late WebSocket _socket;
 
@@ -99,7 +102,7 @@ class MiddlewareSession<T> extends Session<T> {
     if (_middlewareIndex == middleware.length) return message;
     _middlewareIndex += 1;
 
-    return middleware[_middlewareIndex - 1](_ref, message, _middlewareAction, _nextMiddleware);
+    return middleware[_middlewareIndex - 1](_ref!, message, _middlewareAction, _nextMiddleware);
   }
 
   //* Overrides to include middleware
