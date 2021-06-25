@@ -16,13 +16,16 @@ class ProtocolDelegate {
     // Get className
     String type = message.runtimeType.toString();
     String data = jsonEncode(message);
+
     return '{"type":"$type","data":$data}';
   }
 
   static dynamic deSerialize(String message) {
     Map<String, dynamic> data = jsonDecode(message);
+    if (!data.containsKey('type')) throw ProtocolError("Message does not contain 'type' property");
     String type = data['type'];
 
+    if (!elements.containsKey(type)) throw ProtocolError("'$type' unknown protocol element");
     return elements[type]!(data['data']);
   }
 }
