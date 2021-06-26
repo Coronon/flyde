@@ -14,5 +14,5 @@ linter:
 analyzer:
   errors:
     omit_local_variable_types: ignore
-#   exclude:
-#     - path/to/excluded/files/**
+  exclude:
+    - '**/*.g.dart'
