@@ -42,13 +42,14 @@ abstract class Session<T> {
   }
 
   /// Teardown the connection and remove references to enable garbage collection
-  Future<void> close() async {
-    _ref = null;
-    await _subscription.cancel();
+  ///
+  /// Control whether any [customTeardown] function is called with the [runCustom]
+  /// flag which defaults to true.
+  Future<void> close({bool runCustom = true}) async {
     await _socket.close();
 
     // Run custom teardown
-    if (customTeardown != null) await customTeardown!();
+    if (runCustom && customTeardown != null) await customTeardown!();
   }
 
   /// Listen on the WebSocket.
@@ -78,7 +79,7 @@ abstract class Session<T> {
       onDone!(_ref!);
     }
 
-    await close();
+    _ref = null;
   }
 }
 
