@@ -30,6 +30,9 @@ abstract class Session<T> {
   /// Handler for stream closure
   void Function(T)? onDone;
 
+  /// Custom handler executed after low level teardown
+  Future<void> Function()? customTeardown;
+
   /// Send data over the WebSocket
   void send(dynamic message) async {
     // Wait for the connection to be established to avoid errors
@@ -39,10 +42,13 @@ abstract class Session<T> {
   }
 
   /// Teardown the connection and remove references to enable garbage collection
-  Future<void> teardown() async {
+  Future<void> close() async {
     _ref = null;
     await _subscription.cancel();
     await _socket.close();
+
+    // Run custom teardown
+    if (customTeardown != null) await customTeardown!();
   }
 
   /// Listen on the WebSocket.
@@ -63,7 +69,7 @@ abstract class Session<T> {
       onError!(_ref!, error);
     }
 
-    await teardown();
+    await close();
   }
 
   /// Internal delegation handler for stream closure
@@ -72,7 +78,7 @@ abstract class Session<T> {
       onDone!(_ref!);
     }
 
-    await teardown();
+    await close();
   }
 }
 
