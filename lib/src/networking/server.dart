@@ -92,14 +92,15 @@ class WebServer {
   }
 
   /// Close the WebServer and teardown all connections
-  void close() async {
+  Future<void> close() async {
     await ready;
 
-    await _subscription!.cancel();
     await _server!.close();
 
     for (ServerSession sess in _wsSessions) {
-      await sess.close();
+      await sess.close(runCustom: false);
     }
+
+    _wsSessions.clear();
   }
 }
