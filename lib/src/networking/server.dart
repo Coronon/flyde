@@ -35,10 +35,6 @@ class WebServer {
   /// HttpServer instance used to establish initial connection
   HttpServer? _server;
 
-  /// Handle to the [StreamSubscription] used
-  /// to listen to incoming requests.
-  StreamSubscription<HttpRequest>? _subscription;
-
   /// List of all connected WebSockets
   final List<ServerSession> _wsSessions = <ServerSession>[];
 
