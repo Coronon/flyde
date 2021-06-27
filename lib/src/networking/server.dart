@@ -38,9 +38,13 @@ class WebServer {
   /// List of all connected WebSockets
   final List<ServerSession> _wsSessions = <ServerSession>[];
 
+  /// Create a WebServer that can handle HTTP and WebSocket connections
+  ///
+  /// For a secure connection specify a [securityContext] the server should use.
   WebServer(
     InternetAddress bindAddress,
     int bindPort, {
+    SecurityContext? securityContext,
     this.wsMiddleware = const <MiddlewareFunc>[],
     this.wsOnMessage,
     this.wsOnError,
@@ -48,14 +52,19 @@ class WebServer {
     this.httpOnRequest,
     this.redirectWebsocket = false,
   }) {
-    ready = _init(bindAddress, bindPort);
+    ready = _init(bindAddress, bindPort, securityContext);
   }
 
   /// Internal initialisation
-  Future<void> _init(InternetAddress bindAddress, int bindPort) async {
-    _server = await HttpServer.bind(bindAddress, bindPort, shared: true);
+  Future<void> _init(
+      InternetAddress bindAddress, int bindPort, SecurityContext? securityContext) async {
+    if (securityContext == null) {
+      _server = await HttpServer.bind(bindAddress, bindPort, shared: true);
+    } else {
+      _server = await HttpServer.bindSecure(bindAddress, bindPort, securityContext, shared: true);
+    }
     _server!.autoCompress = true;
-    _subscription = _server!.listen(_onRequest);
+    _server!.listen(_onRequest);
   }
 
   /// Internal request handler
