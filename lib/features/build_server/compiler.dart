@@ -1,4 +1,5 @@
-import 'package:flyde/core/fs/configs/CompilerConfig.dart';
+import 'package:flyde/core/fs/configs/compiler_config.dart';
+import 'package:flyde/features/build_server/cache_file.dart';
 
 class Compiler {
   /// Settings for compilation.
@@ -23,7 +24,7 @@ class Compiler {
 
   /// Adds a file to internal cache.
   /// Required for each source file.
-  void addFile(dynamic file) async {}
+  void addFile(CacheFile file) async {}
 
   /// Compiles
   void compile() async {}
