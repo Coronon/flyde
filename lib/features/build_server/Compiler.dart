@@ -1,7 +1,9 @@
+import 'package:flyde/core/fs/configs/CompilerConfig.dart';
+
 class Compiler {
   /// Settings for compilation.
   /// NOTE: Type must be changed to explicit
-  dynamic _config;
+  CompilerConfig _config;
 
   /// Map of all project files.
   /// Key: Unique file ID.
