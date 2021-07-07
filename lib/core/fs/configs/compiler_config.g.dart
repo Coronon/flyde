@@ -8,8 +8,8 @@ part of 'compiler_config.dart';
 
 CompilerConfig _$CompilerConfigFromJson(Map<String, dynamic> json) {
   return CompilerConfig(
-    compiler: _$enumDecode(_$CompilerIDEnumMap, json['compiler']),
-    cores: json['cores'] as int,
+    compiler: _$enumDecode(_$InstalledCompilerEnumMap, json['compiler']),
+    threads: json['threads'] as int,
     sourceDirectories: (json['sourceDirectories'] as List<dynamic>)
         .map((e) => e as String)
         .toList(),
@@ -23,8 +23,8 @@ CompilerConfig _$CompilerConfigFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$CompilerConfigToJson(CompilerConfig instance) =>
     <String, dynamic>{
-      'compiler': _$CompilerIDEnumMap[instance.compiler],
-      'cores': instance.cores,
+      'compiler': _$InstalledCompilerEnumMap[instance.compiler],
+      'threads': instance.threads,
       'sourceDirectories': instance.sourceDirectories,
       'compilerFlags': instance.compilerFlags,
       'linkerFlags': instance.linkerFlags,
@@ -56,6 +56,6 @@ K _$enumDecode<K, V>(
   ).key;
 }
 
-const _$CompilerIDEnumMap = {
-  CompilerID.gpp: 'g++',
+const _$InstalledCompilerEnumMap = {
+  InstalledCompiler.gpp: 'g++',
 };

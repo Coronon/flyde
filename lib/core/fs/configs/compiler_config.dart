@@ -1,27 +1,23 @@
+import 'package:flyde/core/fs/compiler/installed_compiler.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'compiler_config.g.dart';
 
-enum CompilerID {
-  @JsonValue('g++')
-  gpp
-}
-
 @JsonSerializable()
 class CompilerConfig {
-  late final CompilerID compiler;
+  final InstalledCompiler compiler;
 
-  late final int cores;
+  final int threads;
 
-  late final List<String> sourceDirectories;
+  final List<String> sourceDirectories;
 
-  late final List<String> compilerFlags;
+  final List<String> compilerFlags;
 
-  late final List<String> linkerFlags;
+  final List<String> linkerFlags;
 
   CompilerConfig(
       {required this.compiler,
-      required this.cores,
+      required this.threads,
       required this.sourceDirectories,
       required this.compilerFlags,
       required this.linkerFlags}) {
@@ -35,8 +31,8 @@ class CompilerConfig {
   void _validate() {
     const invalidOptions = ['-c'];
 
-    if (cores <= 0) {
-      final message = 'The number od used cores has to be greater than zero. Given: $cores';
+    if (threads <= 0) {
+      final message = 'The number od used threads has to be greater than zero. Given: $threads';
       throw Exception(message);
     }
 
