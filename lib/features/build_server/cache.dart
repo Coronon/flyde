@@ -36,6 +36,10 @@ class Cache {
     return box.get(id) as CacheFile;
   }
 
+  List<CacheFile> all(FileType type) {
+    return _getBox(type).values.toList();
+  }
+
   Box<CacheFile> _getBox(FileType type) {
     switch (type) {
       case FileType.object:
