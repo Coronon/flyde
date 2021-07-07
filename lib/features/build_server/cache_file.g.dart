@@ -19,19 +19,28 @@ class CacheFileAdapter extends TypeAdapter<CacheFile> {
     return CacheFile(
       fields[0] as String,
       fields[1] as String,
-      fields[2] as Uint8List,
+      fields[2] as String,
+      fields[3] as String,
+      (fields[4] as List).cast<String>(),
+      fields[5] as Uint8List,
     );
   }
 
   @override
   void write(BinaryWriter writer, CacheFile obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.hash)
       ..writeByte(2)
+      ..write(obj.name)
+      ..writeByte(3)
+      ..write(obj.extension)
+      ..writeByte(4)
+      ..write(obj.path)
+      ..writeByte(5)
       ..write(obj.data);
   }
 
