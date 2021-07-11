@@ -1,7 +1,7 @@
 /// Different actions middleware can handle
 enum MiddlewareAction {
-  RECEIVE,
-  SEND,
+  recieve,
+  send,
 }
 
 /// A Middleware function for use in MiddlewareSession

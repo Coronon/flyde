@@ -6,28 +6,28 @@ part of 'authentication.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-AUTH_REQUEST _$AUTH_REQUESTFromJson(Map<String, dynamic> json) {
-  return AUTH_REQUEST(
+AuthRequest _$AuthRequestFromJson(Map<String, dynamic> json) {
+  return AuthRequest(
     username: json['username'] as String,
     password: json['password'] as String,
   );
 }
 
-Map<String, dynamic> _$AUTH_REQUESTToJson(AUTH_REQUEST instance) =>
+Map<String, dynamic> _$AuthRequestToJson(AuthRequest instance) =>
     <String, dynamic>{
       'username': instance.username,
       'password': instance.password,
     };
 
-AUTH_RESPONSE _$AUTH_RESPONSEFromJson(Map<String, dynamic> json) {
-  return AUTH_RESPONSE(
-    status: _$enumDecode(_$AUTH_RESPONSE_STATUSEnumMap, json['status']),
+AuthResponse _$AuthResponseFromJson(Map<String, dynamic> json) {
+  return AuthResponse(
+    status: _$enumDecode(_$AuthResponseStatusEnumMap, json['status']),
   );
 }
 
-Map<String, dynamic> _$AUTH_RESPONSEToJson(AUTH_RESPONSE instance) =>
+Map<String, dynamic> _$AuthResponseToJson(AuthResponse instance) =>
     <String, dynamic>{
-      'status': _$AUTH_RESPONSE_STATUSEnumMap[instance.status],
+      'status': _$AuthResponseStatusEnumMap[instance.status],
     };
 
 K _$enumDecode<K, V>(
@@ -56,8 +56,8 @@ K _$enumDecode<K, V>(
   ).key;
 }
 
-const _$AUTH_RESPONSE_STATUSEnumMap = {
-  AUTH_RESPONSE_STATUS.AUTH_REQUIRED: 'AUTH_REQUIRED',
-  AUTH_RESPONSE_STATUS.SUCCESS: 'SUCCESS',
-  AUTH_RESPONSE_STATUS.FAILURE: 'FAILURE',
+const _$AuthResponseStatusEnumMap = {
+  AuthResponseStatus.authRequired: 'authRequired',
+  AuthResponseStatus.success: 'success',
+  AuthResponseStatus.failure: 'failure',
 };

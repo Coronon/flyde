@@ -8,8 +8,8 @@ class ProtocolDelegate {
   /// A dictionary of all protocol elements and their coresponding deserializers
   static Map<String, Deserialize> elements = <String, Deserialize>{
     //* Authentication
-    'AUTH_REQUEST': (Map<String, dynamic> json) => AUTH_REQUEST.fromJson(json),
-    'AUTH_RESPONSE': (Map<String, dynamic> json) => AUTH_RESPONSE.fromJson(json),
+    'AuthRequest': (Map<String, dynamic> json) => AuthRequest.fromJson(json),
+    'AuthResponse': (Map<String, dynamic> json) => AuthResponse.fromJson(json),
   };
 
   static String serialize(dynamic message) {

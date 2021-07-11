@@ -3,28 +3,28 @@ import 'package:json_annotation/json_annotation.dart';
 part 'authentication.g.dart';
 
 @JsonSerializable()
-class AUTH_REQUEST {
+class AuthRequest {
   String username;
   String password;
 
-  AUTH_REQUEST({required this.username, required this.password});
+  AuthRequest({required this.username, required this.password});
 
-  factory AUTH_REQUEST.fromJson(Map<String, dynamic> json) => _$AUTH_REQUESTFromJson(json);
-  Map<String, dynamic> toJson() => _$AUTH_REQUESTToJson(this);
+  factory AuthRequest.fromJson(Map<String, dynamic> json) => _$AuthRequestFromJson(json);
+  Map<String, dynamic> toJson() => _$AuthRequestToJson(this);
 }
 
-enum AUTH_RESPONSE_STATUS {
-  AUTH_REQUIRED,
-  SUCCESS,
-  FAILURE,
+enum AuthResponseStatus {
+  authRequired,
+  success,
+  failure,
 }
 
 @JsonSerializable()
-class AUTH_RESPONSE {
-  AUTH_RESPONSE_STATUS status;
+class AuthResponse {
+  AuthResponseStatus status;
 
-  AUTH_RESPONSE({required this.status});
+  AuthResponse({required this.status});
 
-  factory AUTH_RESPONSE.fromJson(Map<String, dynamic> json) => _$AUTH_RESPONSEFromJson(json);
-  Map<String, dynamic> toJson() => _$AUTH_RESPONSEToJson(this);
+  factory AuthResponse.fromJson(Map<String, dynamic> json) => _$AuthResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$AuthResponseToJson(this);
 }
