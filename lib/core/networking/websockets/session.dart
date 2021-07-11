@@ -20,7 +20,7 @@ abstract class Session<T> {
   T? _ref;
 
   /// Handler for received messages
-  dynamic Function(T, dynamic)? onMessage;
+  Future<dynamic> Function(T, dynamic)? onMessage;
 
   /// Handler for encountered errors
   void Function(T, Object)? onError;
@@ -36,7 +36,7 @@ abstract class Session<T> {
     // Wait for the connection to be established to avoid errors
     await ready;
 
-    _socket.add(message);
+    if (_socket.readyState == WebSocket.open) _socket.add(message);
   }
 
   /// Teardown the connection and remove references to enable garbage collection
@@ -57,8 +57,8 @@ abstract class Session<T> {
   /// Internal delegation handler for received messages
   void _onData(dynamic message) async {
     if (onMessage != null) {
-      dynamic response = onMessage!(_ref!, message);
-      if (response != null) _socket.add(response);
+      dynamic response = await onMessage!(_ref!, message);
+      if (response != null) send(response);
     }
   }
 
@@ -72,7 +72,7 @@ abstract class Session<T> {
   }
 
   /// Internal delegation handler for stream closure
-  void _onDone() async {
+  void _onDone() {
     if (onDone != null) {
       onDone!(_ref!);
     }
@@ -96,33 +96,39 @@ class MiddlewareSession<T> extends Session<T> {
   late MiddlewareAction _middlewareAction;
 
   /// Run all installed middleware on given message and action
-  dynamic runMiddleware(dynamic message, MiddlewareAction action) {
+  Future<dynamic> runMiddleware(dynamic message, MiddlewareAction action) async {
     _middlewareIndex = 0;
     _middlewareAction = action;
-    return _nextMiddleware(message);
+    return await _nextMiddleware(message);
   }
 
   /// Internal implementation of recursively running middleware
-  dynamic _nextMiddleware(dynamic message) {
+  Future<dynamic> _nextMiddleware(dynamic message) async {
     if (_middlewareIndex == middleware.length) return message;
     _middlewareIndex += 1;
 
-    return middleware[_middlewareIndex - 1](_ref!, message, _middlewareAction, _nextMiddleware);
+    return await middleware[_middlewareIndex - 1](
+      _ref!,
+      message,
+      _middlewareAction,
+      _nextMiddleware,
+    );
   }
 
   //* Overrides to include middleware
 
   @override
   void send(dynamic message) async {
-    message = runMiddleware(message, MiddlewareAction.send);
+    message = await runMiddleware(message, MiddlewareAction.send);
     if (message == null) return;
 
+    print("SUPER SEND");
     super.send(message);
   }
 
   @override
   void _onData(dynamic message) async {
-    message = runMiddleware(message, MiddlewareAction.recieve);
+    message = await runMiddleware(message, MiddlewareAction.recieve);
     if (message == null) return;
 
     super._onData(message);

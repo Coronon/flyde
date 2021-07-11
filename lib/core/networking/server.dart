@@ -15,7 +15,7 @@ class WebServer {
   List<MiddlewareFunc> wsMiddleware;
 
   /// Handler for received WebSocket messages
-  dynamic Function(ServerSession, dynamic)? wsOnMessage;
+  Future<dynamic> Function(ServerSession, dynamic)? wsOnMessage;
 
   /// Handler for encountered WebSocket errors
   void Function(ServerSession, Object)? wsOnError;
