@@ -14,8 +14,6 @@ abstract class Session<T> {
   /// WebSocket connection used to transfer data from client <-> server
   late WebSocket _socket;
 
-  late StreamSubscription<dynamic> _subscription;
-
   /// A reference to the instantiated subclass.
   /// This is used to allow passing of non base [Session] objects
   /// such as [ServerSession] or [ClientSession].
@@ -54,7 +52,7 @@ abstract class Session<T> {
 
   /// Listen on the WebSocket.
   /// This should be called AFTER the WebSocket has been created by the subclass.
-  void _listen() => _subscription = _socket.listen(_onData, onError: _onError, onDone: _onDone);
+  void _listen() => _socket.listen(_onData, onError: _onError, onDone: _onDone);
 
   /// Internal delegation handler for received messages
   void _onData(dynamic message) async {
