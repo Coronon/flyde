@@ -14,7 +14,7 @@ class AuthRequest {
 }
 
 enum AuthResponseStatus {
-  authRequired,
+  required,
   success,
   failure,
 }
