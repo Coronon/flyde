@@ -122,7 +122,6 @@ class MiddlewareSession<T> extends Session<T> {
     message = await runMiddleware(message, MiddlewareAction.send);
     if (message == null) return;
 
-    print("SUPER SEND");
     super.send(message);
   }
 
