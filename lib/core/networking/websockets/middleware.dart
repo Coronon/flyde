@@ -49,7 +49,9 @@ Future<dynamic> protocolMiddleware(
 /// Make an AuthenticationMiddleware with the given [isAuthenticated] handler.
 ///
 /// [isAuthenticated] is called with an AuthRequest and should return if the user authenticated.
-MiddlewareFunc makeAuthenticationMiddleware(Future<bool> Function(AuthRequest) isAuthenticated) {
+MiddlewareFunc makeAuthenticationMiddleware(
+  Future<bool> Function(AuthRequest) isAuthenticated,
+) {
   /// A middleware that authenticates a user
   Future<dynamic> authenticate(
     dynamic session,
@@ -66,8 +68,12 @@ MiddlewareFunc makeAuthenticationMiddleware(Future<bool> Function(AuthRequest) i
       session.storage['authenticated'] = authenticated;
 
       return AuthResponse(
-          status: authenticated ? AuthResponseStatus.success : AuthResponseStatus.failure);
-    } else if (session.storage.containsKey('authenticated') && session.storage['authenticated']) {
+        status: authenticated
+            ? AuthResponseStatus.success
+            : AuthResponseStatus.failure,
+      );
+    } else if (session.storage.containsKey('authenticated') &&
+        session.storage['authenticated']) {
       // User is already authenticated -> message is passed to the next middleware
       return await next(message);
     } else {
