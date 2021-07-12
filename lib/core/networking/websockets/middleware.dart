@@ -30,7 +30,16 @@ Future<dynamic> protocolMiddleware(
 ) async {
   if (action == MiddlewareAction.recieve) {
     // Instantly deSerialize the message so other middleware can work with it
-    return await next(ProtocolDelegate.deSerialize(message));
+    dynamic msg;
+    // We catch all errors here as we can't trust the incoming data
+    try {
+      msg = ProtocolDelegate.deSerialize(message);
+    } catch (e) {
+      session.raise(e);
+      return null;
+    }
+
+    return await next(msg);
   } else {
     // Let other middleware work with the message, finally serialize it
     return ProtocolDelegate.serialize(await next(message));

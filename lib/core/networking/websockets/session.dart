@@ -50,6 +50,12 @@ abstract class Session<T> {
     if (runCustom && customTeardown != null) await customTeardown!();
   }
 
+  /// Proxy to call the internal [_onError] method.
+  ///
+  /// This will cause the connection to be closed.
+  /// [error] will be passed to the [onError] handler.
+  void raise(Object error) => _onError(error);
+
   /// Listen on the WebSocket.
   /// This should be called AFTER the WebSocket has been created by the subclass.
   void _listen() => _socket.listen(_onData, onError: _onError, onDone: _onDone);

@@ -64,6 +64,25 @@ void main() {
 
       calledNext.expect(equals(true));
     });
+    test('ProtocolMiddleware catches exceptions', () async {
+      MockSession session = MockSession();
+      VHook<bool> calledNext = VHook<bool>(false);
+
+      dynamic serialized = await protocolMiddleware(
+        session,
+        "ANYTHING",
+        MiddlewareAction.recieve,
+        (dynamic msg) async {
+          calledNext.set(true);
+          return msg;
+        },
+      );
+
+      //* Verify that the middleware caugth the exception
+      expect(serialized, equals(null));
+
+      calledNext.expect(equals(false));
+    });
 
     test('AuthenticationMiddleware dont run on send', () async {
       MockSession session = MockSession();
@@ -238,4 +257,6 @@ void main() {
 
 class MockSession {
   Map<dynamic, dynamic> storage = <dynamic, dynamic>{};
+  
+  void raise(Object e) {}
 }
