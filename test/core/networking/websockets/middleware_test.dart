@@ -257,6 +257,6 @@ void main() {
 
 class MockSession {
   Map<dynamic, dynamic> storage = <dynamic, dynamic>{};
-  
+
   void raise(Object e) {}
 }
