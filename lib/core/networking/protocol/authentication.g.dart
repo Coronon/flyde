@@ -57,7 +57,7 @@ K _$enumDecode<K, V>(
 }
 
 const _$AuthResponseStatusEnumMap = {
-  AuthResponseStatus.authRequired: 'authRequired',
+  AuthResponseStatus.required: 'required',
   AuthResponseStatus.success: 'success',
   AuthResponseStatus.failure: 'failure',
 };
