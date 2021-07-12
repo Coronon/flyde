@@ -22,20 +22,24 @@ class ProtocolDelegate {
 
   static dynamic deSerialize(String message) {
     Map<String, dynamic> data = jsonDecode(message);
-    if (!data.containsKey('type')) throw ProtocolError("Message does not contain 'type' property");
+    if (!data.containsKey('type')) {
+      throw ProtocolException("Message does not contain 'type' property");
+    }
     String type = data['type'];
 
-    if (!elements.containsKey(type)) throw ProtocolError("'$type' unknown protocol element");
+    if (!elements.containsKey(type)) {
+      throw ProtocolException("'$type' unknown protocol element");
+    }
     return elements[type]!(data['data']);
   }
 }
 
-class ProtocolError extends Error {
-  String cause;
-  ProtocolError(this.cause);
+class ProtocolException implements Exception {
+  String message;
+  ProtocolException(this.message);
 
   @override
   String toString() {
-    return cause;
+    return message;
   }
 }
