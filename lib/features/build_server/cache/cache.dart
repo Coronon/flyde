@@ -80,9 +80,9 @@ class Cache {
     }
 
     await _fetchDirectory(projectId, create: true);
+    _lock.projects.add(projectId);
     final project = await get(projectId);
     await project.init();
-    _lock.projects.add(projectId);
     await _save();
 
     return project;
