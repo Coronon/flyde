@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flyde/core/fs/compiler/installed_compiler.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -27,6 +31,19 @@ class CompilerConfig {
   factory CompilerConfig.fromJson(Map<String, dynamic> json) => _$CompilerConfigFromJson(json);
 
   Map<String, dynamic> toJson() => _$CompilerConfigToJson(this);
+
+  String get hash {
+    final output = AccumulatorSink<Digest>();
+    final input = sha256.startChunkedConversion(output);
+
+    input.add(utf8.encode(compiler.toString()));
+    input.add(compilerFlags.expand((flag) => utf8.encode(flag)).toList());
+    input.add(utf8.encode('-- linker --'));
+    input.add(linkerFlags.expand((flag) => utf8.encode(flag)).toList());
+    input.close();
+
+    return output.events.single.toString();
+  }
 
   void _validate() {
     const invalidOptions = ['-c'];
