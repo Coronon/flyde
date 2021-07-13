@@ -63,7 +63,7 @@ class Cache {
       throw Exception('No project with id $projectId exists.');
     }
 
-    final dir = await _fetchDirectory(projectId, create: false);
+    final dir = _getProjectDirectory(projectId);
 
     await dir.delete(recursive: true);
     _lock.projects.remove(projectId);
@@ -79,7 +79,6 @@ class Cache {
           'Project with id "$projectId" already exists. Consider choosing a different id.');
     }
 
-    await _fetchDirectory(projectId, create: true);
     _lock.projects.add(projectId);
     await _save();
     return await get(projectId);
@@ -93,7 +92,7 @@ class Cache {
       throw Exception('No project with id $projectId exists.');
     }
 
-    final project = ProjectCache(projectId, await _fetchDirectory(projectId, create: false));
+    final project = ProjectCache(projectId, _workingDirectory);
     await project.init();
     return project;
   }
@@ -115,14 +114,8 @@ class Cache {
     }
   }
 
-  Future<Directory> _fetchDirectory(String projectId, {bool create = true}) async {
-    final dir = Directory(join(_workingDirectory.path, projectId));
-
-    if (create) {
-      await dir.create(recursive: true);
-    }
-
-    return dir;
+  Directory _getProjectDirectory(String projectId) {
+    return Directory(join(_workingDirectory.path, projectId));
   }
 
   Future<void> _save() async {
