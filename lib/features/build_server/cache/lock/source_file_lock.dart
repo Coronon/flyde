@@ -10,7 +10,7 @@ class SourceFileLock {
   final String id;
 
   /// The hash value of the file's content.
-  final String hash;
+  String hash;
 
   /// The path to the in cache stored file copy.
   final String path;
@@ -27,11 +27,11 @@ class SourceFileLock {
       return false;
     }
 
-    return id == other.id && hash == other.hash && path == other.path;
+    return id == other.id && path == other.path;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ hash.hashCode ^ path.hashCode;
+    return id.hashCode ^ path.hashCode;
   }
 }

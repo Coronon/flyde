@@ -109,7 +109,12 @@ class ProjectCache {
     await diskFile.create(recursive: true);
     await diskFile.writeAsBytes(await file.data, flush: true);
 
-    _lock.files.add(SourceFileLock(id: file.id, hash: await file.hash, path: path));
+    if (_lock.files.where((f) => f.id == file.id).isNotEmpty) {
+      final lockFile = _lock.files.singleWhere((f) => f.id == file.id);
+      lockFile.hash = await file.hash;
+    } else {
+      _lock.files.add(SourceFileLock(id: file.id, hash: await file.hash, path: path));
+    }
   }
 
   /// A list of all stored header files.
