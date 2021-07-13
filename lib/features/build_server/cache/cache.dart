@@ -81,11 +81,8 @@ class Cache {
 
     await _fetchDirectory(projectId, create: true);
     _lock.projects.add(projectId);
-    final project = await get(projectId);
-    await project.init();
     await _save();
-
-    return project;
+    return await get(projectId);
   }
 
   /// Loads and initializes the project cache with the given id [projectId].
@@ -96,7 +93,9 @@ class Cache {
       throw Exception('No project with id $projectId exists.');
     }
 
-    return ProjectCache(projectId, await _fetchDirectory(projectId, create: false));
+    final project = ProjectCache(projectId, await _fetchDirectory(projectId, create: false));
+    await project.init();
+    return project;
   }
 
   /// Returns whether a cache with the [projectId] exists.
