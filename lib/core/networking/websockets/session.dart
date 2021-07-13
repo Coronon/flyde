@@ -158,3 +158,21 @@ class ServerSession extends MiddlewareSession<ServerSession> {
     _listen();
   }
 }
+
+class ClientSession extends MiddlewareSession<ClientSession> {
+  ClientSession(String url) {
+    // This reference is used to allow the superclass [Session] to pass
+    // on a reference to this subclass
+    _ref = this;
+
+    ready = _init(url);
+  }
+
+  /// Internal initializer
+  Future<void> _init(String url) async {
+    // Establish WebSocket connection to uri
+    _socket = await WebSocket.connect(url);
+    // Listen on the socket
+    _listen();
+  }
+}
