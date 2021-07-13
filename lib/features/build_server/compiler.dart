@@ -5,6 +5,7 @@ import 'package:flyde/core/fs/compiler/installed_compiler.dart';
 import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:flyde/features/build_server/cache/implementation_object_ref.dart';
 import 'package:flyde/features/build_server/cache/project_cache.dart';
+import 'package:path/path.dart';
 
 class Compiler {
   final CompilerConfig _config;
@@ -46,7 +47,7 @@ class Compiler {
     }
 
     // TODO: Change include command construction algorythm when supporting more compilers
-    final includes = _cache.headerFiles.map((file) => '-I${file.path}');
+    final includes = _cache.headerFiles.map((file) => '-I${dirname(file.path)}').toSet();
     final compilerPath = await _config.compiler.path();
     final sourcePath = ref.source.path;
     final objectPath = ref.object.path;
@@ -99,4 +100,9 @@ class _ProcessInvocation {
   final Future<void> Function()? completionHandler;
 
   _ProcessInvocation(this.executable, this.args, this.completionHandler);
+
+  @override
+  String toString() {
+    return '$executable ${args.join(' ')}';
+  }
 }
