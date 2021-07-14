@@ -29,7 +29,7 @@ abstract class Session<T> {
   void Function(T)? onDone;
 
   /// Send data over the WebSocket
-  void send(dynamic message) async {
+  Future<void> send(dynamic message) async {
     // Wait for the connection to be established to avoid errors
     await ready;
 
@@ -79,6 +79,8 @@ abstract class Session<T> {
 
     storage.clear();
     _ref = null;
+    onMessage = null;
+    onError = null;
   }
 }
 
@@ -122,11 +124,11 @@ class MiddlewareSession<T> extends Session<T> {
   //* Overrides to include middleware
 
   @override
-  void send(dynamic message) async {
+  Future<void> send(dynamic message) async {
     message = await runMiddleware(message, MiddlewareAction.send);
     if (message == null) return;
 
-    super.send(message);
+    await super.send(message);
   }
 
   @override
