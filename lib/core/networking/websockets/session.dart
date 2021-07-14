@@ -44,6 +44,9 @@ abstract class Session<T> {
   /// Control whether any [customTeardown] function is called with the [runCustom]
   /// flag which defaults to true.
   Future<void> close({bool runCustom = true}) async {
+    // Wait for the connection to be established to avoid errors
+    await ready;
+
     await _socket.close();
 
     // Run custom teardown
