@@ -28,9 +28,6 @@ abstract class Session<T> {
   /// Handler for stream closure
   void Function(T)? onDone;
 
-  /// Custom handler executed after low level teardown
-  Future<void> Function()? customTeardown;
-
   /// Send data over the WebSocket
   void send(dynamic message) async {
     // Wait for the connection to be established to avoid errors
@@ -40,17 +37,11 @@ abstract class Session<T> {
   }
 
   /// Teardown the connection and remove references to enable garbage collection
-  ///
-  /// Control whether any [customTeardown] function is called with the [runCustom]
-  /// flag which defaults to true.
-  Future<void> close({bool runCustom = true}) async {
+  Future<void> close() async {
     // Wait for the connection to be established to avoid errors
     await ready;
 
     await _socket.close();
-
-    // Run custom teardown
-    if (runCustom && customTeardown != null) await customTeardown!();
   }
 
   /// Proxy to call the internal [_onError] method.
@@ -86,6 +77,7 @@ abstract class Session<T> {
       onDone!(_ref!);
     }
 
+    storage.clear();
     _ref = null;
   }
 }
@@ -105,7 +97,10 @@ class MiddlewareSession<T> extends Session<T> {
   late MiddlewareAction _middlewareAction;
 
   /// Run all installed middleware on given message and action
-  Future<dynamic> runMiddleware(dynamic message, MiddlewareAction action) async {
+  Future<dynamic> runMiddleware(
+    dynamic message,
+    MiddlewareAction action,
+  ) async {
     _middlewareIndex = 0;
     _middlewareAction = action;
     return await _nextMiddleware(message);

@@ -32,6 +32,10 @@ class WebServer {
   /// to the HTTP handler if no [wsOnMessage] was specified.
   bool redirectWebsocket;
 
+  /// Handler for stream WebSocket closure that wraps [wsOnDone]
+  /// but also removes the session from the server.
+  late void Function(ServerSession) wsOnDoneTeardown;
+
   /// HttpServer instance used to establish initial connection
   HttpServer? _server;
 
@@ -52,6 +56,13 @@ class WebServer {
     this.httpOnRequest,
     this.redirectWebsocket = false,
   }) {
+    // Construct wrapper for wsOnDone
+    wsOnDoneTeardown = (ServerSession sess) {
+      _wsSessions.remove(sess);
+
+      if (wsOnDone != null) wsOnDone!(sess);
+    };
+
     ready = _init(bindAddress, bindPort, securityContext);
   }
 
@@ -79,11 +90,7 @@ class WebServer {
       newSess.middleware = wsMiddleware;
       newSess.onMessage = wsOnMessage;
       newSess.onError = wsOnError;
-      newSess.onDone = wsOnDone;
-
-      newSess.customTeardown = () async {
-        _wsSessions.remove(newSess);
-      };
+      newSess.onDone = wsOnDoneTeardown;
 
       _wsSessions.add(newSess);
     } else if (httpOnRequest != null && (!isWebsocketRequest || redirectWebsocket)) {
@@ -103,7 +110,9 @@ class WebServer {
     await _server!.close();
 
     for (ServerSession sess in _wsSessions) {
-      await sess.close(runCustom: false);
+      // Remove wrapped done handler, as we will clear the sessions afterwards
+      sess.onDone = wsOnDone;
+      await sess.close();
     }
 
     _wsSessions.clear();
