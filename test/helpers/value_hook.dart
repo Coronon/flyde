@@ -80,10 +80,10 @@ class VHook<T> {
   /// conditionValue.expect(equals(true));
   /// ```
   Future<bool> awaitValue(
-    Duration? timeout, [
+    Duration? timeout, {
     Duration pollInterval = Duration.zero,
     bool raiseOnTimeout = false,
-  ]) async {
+  }) async {
     // Handle optional timeout
     DateTime? expireTime;
     if (timeout != null) {
