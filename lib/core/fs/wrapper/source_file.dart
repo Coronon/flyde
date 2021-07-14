@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
+import 'package:path/path.dart' as p;
 
 /// Representation of source files.
 ///
@@ -22,10 +23,10 @@ class SourceFile {
   final int entry;
 
   /// The path relative to the entry point.
-  final List<String> path;
+  late final List<String> path;
 
   /// The name of the file.
-  final String name;
+  late final String name;
 
   /// The file's extension used to determine if it's a header or source file.
   /// The `String` should not start with a `.`.
@@ -33,7 +34,7 @@ class SourceFile {
   /// Bad: `.cpp`
   ///
   /// Good: `cpp`
-  final String extension;
+  late final String extension;
 
   SourceFile(this.entry, this.path, this.name, this.extension, {Uint8List? data, File? file}) {
     if (data != null) {
@@ -43,6 +44,24 @@ class SourceFile {
     } else {
       throw Exception('Either file or data has to be provided');
     }
+  }
+
+  SourceFile.fromFile(this.entry, File file, {Directory? entryDirectory}) {
+    final String relPath;
+
+    if (entryDirectory != null) {
+      relPath = p.relative(file.path, from: entryDirectory.path);
+    } else if (p.isRelative(file.path)) {
+      relPath = file.path;
+    } else {
+      throw Exception(
+          '[file] must not have an absolute path, but be relative to the entry directory.');
+    }
+
+    name = p.basenameWithoutExtension(relPath);
+    path = p.split(p.dirname(relPath)).where((p) => p != '.' && p != './' && p != '/').toList();
+    extension = p.extension(relPath).substring(1);
+    _file = file;
   }
 
   /// The content of the file as raw byte data.
