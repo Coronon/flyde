@@ -35,7 +35,13 @@ class ProjectCache {
   /// Initiates the cache and loads persisted state if available.
   Future<void> init() async {
     if (await _lockFile.exists()) {
-      _lock = ProjectCacheLock.fromJson(jsonDecode(await _lockFile.readAsString()));
+      final content = await _lockFile.readAsString();
+
+      if (content.isEmpty) {
+        _lock = ProjectCacheLock(configs: {}, files: {});
+      } else {
+        _lock = ProjectCacheLock.fromJson(jsonDecode(content));
+      }
     } else {
       await _lockFile.create(recursive: true);
       _lock = ProjectCacheLock(configs: {}, files: {});
