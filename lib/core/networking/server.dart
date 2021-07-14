@@ -68,11 +68,23 @@ class WebServer {
 
   /// Internal initialisation
   Future<void> _init(
-      InternetAddress bindAddress, int bindPort, SecurityContext? securityContext) async {
+    InternetAddress bindAddress,
+    int bindPort,
+    SecurityContext? securityContext,
+  ) async {
     if (securityContext == null) {
-      _server = await HttpServer.bind(bindAddress, bindPort, shared: true);
+      _server = await HttpServer.bind(
+        bindAddress,
+        bindPort,
+        shared: true,
+      );
     } else {
-      _server = await HttpServer.bindSecure(bindAddress, bindPort, securityContext, shared: true);
+      _server = await HttpServer.bindSecure(
+        bindAddress,
+        bindPort,
+        securityContext,
+        shared: true,
+      );
     }
     _server!.autoCompress = true;
     _server!.listen(_onRequest);
@@ -93,7 +105,8 @@ class WebServer {
       newSess.onDone = wsOnDoneTeardown;
 
       _wsSessions.add(newSess);
-    } else if (httpOnRequest != null && (!isWebsocketRequest || redirectWebsocket)) {
+    } else if (httpOnRequest != null &&
+        (!isWebsocketRequest || redirectWebsocket)) {
       // Handle normal requests (or redirected WebSocket connections)
       httpOnRequest!(req);
     } else {
@@ -101,6 +114,29 @@ class WebServer {
       req.response.statusCode = 404;
       req.response.close();
     }
+  }
+
+  /// The address the server is bound to
+  InternetAddress? get address {
+    if (_server == null) {
+      return null;
+    }
+
+    return _server!.address;
+  }
+
+  /// The port the server is listening on
+  int? get port {
+    if (_server == null) {
+      return null;
+    }
+
+    return _server!.port;
+  }
+
+  /// Wether there are no active WebSocket connections
+  bool get isEmpty {
+    return _wsSessions.isEmpty;
   }
 
   /// Close the WebServer and teardown all connections
