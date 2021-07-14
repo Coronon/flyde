@@ -68,12 +68,9 @@ MiddlewareFunc makeAuthenticationMiddleware(
       session.storage['authenticated'] = authenticated;
 
       return AuthResponse(
-        status: authenticated
-            ? AuthResponseStatus.success
-            : AuthResponseStatus.failure,
+        status: authenticated ? AuthResponseStatus.success : AuthResponseStatus.failure,
       );
-    } else if (session.storage.containsKey('authenticated') &&
-        session.storage['authenticated']) {
+    } else if (session.storage.containsKey('authenticated') && session.storage['authenticated']) {
       // User is already authenticated -> message is passed to the next middleware
       return await next(message);
     } else {
