@@ -114,12 +114,12 @@ class Cache {
   }
 
   void _validateId(String projectId) {
-    final regex = RegExp('[a-zA-Z0-9\-]+');
+    final regex = RegExp(r'[a-zA-Z0-9\-]+');
     final match = regex.stringMatch(projectId);
 
     if (match != projectId) {
       throw Exception(
-          '"$projectId" is not a valid project id. The id has to match "[a-zA-Z0-9\-]+"');
+          '"$projectId" is not a valid project id. The id has to match' r' "[a-zA-Z0-9\-]+"');
     }
   }
 
