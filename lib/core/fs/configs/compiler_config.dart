@@ -19,12 +19,13 @@ class CompilerConfig {
 
   final List<String> linkerFlags;
 
-  CompilerConfig(
-      {required this.compiler,
-      required this.threads,
-      required this.sourceDirectories,
-      required this.compilerFlags,
-      required this.linkerFlags}) {
+  CompilerConfig({
+    required this.compiler,
+    required this.threads,
+    required this.sourceDirectories,
+    required this.compilerFlags,
+    required this.linkerFlags,
+  }) {
     _validate();
   }
 
