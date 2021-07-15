@@ -184,6 +184,7 @@ class ProjectCache {
   }
 
   /// A list of all stored object files.
+  ///
   /// Only those are returned which represent the latest
   /// version of the associated source file.
   Future<List<File>> get objectFiles async {
