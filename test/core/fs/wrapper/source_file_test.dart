@@ -44,10 +44,16 @@ void main() {
   });
 
   test('Has different ids and hashes for different files', () async {
-    final file1 = SourceFile.fromFile(0, File('./example/src/main.cpp'),
-        entryDirectory: Directory('./example'));
-    final file2 = SourceFile.fromFile(0, File('./example/src/model/Calculator.cpp'),
-        entryDirectory: Directory('./example'));
+    final file1 = SourceFile.fromFile(
+      0,
+      File('./example/src/main.cpp'),
+      entryDirectory: Directory('./example'),
+    );
+    final file2 = SourceFile.fromFile(
+      0,
+      File('./example/src/model/Calculator.cpp'),
+      entryDirectory: Directory('./example'),
+    );
 
     expect(file1.id, isNot(equals(file2.id)));
     expect(await file1.hash, isNot(equals(await file2.hash)));
