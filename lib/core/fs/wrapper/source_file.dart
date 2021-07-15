@@ -15,9 +15,12 @@ class SourceFile {
 
   File? _file;
 
-  String? _hash;
+  /// The hash of the file depending on `data`.
+  late Future<String> hash = _hash;
 
-  String? _id;
+  /// The id of the file. Unique for each file regardless of the content
+  /// but reproducable.
+  late String id = _id;
 
   /// The index of the entry point of the project.
   final int entry;
@@ -70,24 +73,9 @@ class SourceFile {
   /// the file and return it's content.
   Future<Uint8List> get data async => _data ?? await _file!.readAsBytes();
 
-  /// The hash of the file depending on `data`.
-  Future<String> get hash async {
-    if (_hash != null) {
-      return _hash!;
-    }
+  Future<String> get _hash async => sha256.convert((await data).toList()).toString();
 
-    final hash = sha256.convert((await data).toList()).toString();
-    _hash = hash;
-    return hash;
-  }
-
-  /// The id of the file. Unique for each file regardless of the content
-  /// but reproducable.
-  String get id {
-    if (_id != null) {
-      return _id!;
-    }
-
+  String get _id {
     final output = AccumulatorSink<Digest>();
     final input = sha256.startChunkedConversion(output);
 
@@ -101,8 +89,6 @@ class SourceFile {
 
     input.close();
 
-    final id = output.events.single.toString();
-    _id = id;
-    return id;
+    return output.events.single.toString();
   }
 }
