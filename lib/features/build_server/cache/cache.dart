@@ -36,7 +36,13 @@ class Cache {
     await workingDir.create(recursive: true);
 
     if (await lockFile.exists()) {
-      lock = CacheLock.fromJson(json.decode(await lockFile.readAsString()));
+      final content = await lockFile.readAsString();
+
+      if (content.isEmpty) {
+        lock = CacheLock(projects: {});
+      } else {
+        lock = CacheLock.fromJson(jsonDecode(content));
+      }
     } else {
       lock = CacheLock(projects: {});
     }
