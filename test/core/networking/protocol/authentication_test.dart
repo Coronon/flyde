@@ -10,9 +10,9 @@ void main() {
     });
 
     test('Can serialize', () {
-      AuthRequest request = AuthRequest(username: "testUser", password: "testPassword");
+      final AuthRequest request = AuthRequest(username: "testUser", password: "testPassword");
 
-      String serialized = ProtocolDelegate.serialize(request);
+      final String serialized = ProtocolDelegate.serialize(request);
 
       expect(
         serialized,
@@ -23,10 +23,10 @@ void main() {
     });
 
     test('Can deserialize', () {
-      String request =
+      final String request =
           '{"type":"AuthRequest","data":{"username":"testUser","password":"testPassword"}}';
 
-      dynamic deserialized = ProtocolDelegate.deSerialize(request);
+      final dynamic deserialized = ProtocolDelegate.deSerialize(request);
 
       expect(deserialized, equals(isA<AuthRequest>()));
       deserialized as AuthRequest;
@@ -41,13 +41,13 @@ void main() {
     });
 
     test('Can serialize', () {
-      AuthResponse response1 = AuthResponse(status: AuthResponseStatus.required);
-      AuthResponse response2 = AuthResponse(status: AuthResponseStatus.success);
-      AuthResponse response3 = AuthResponse(status: AuthResponseStatus.failure);
+      final AuthResponse response1 = AuthResponse(status: AuthResponseStatus.required);
+      final AuthResponse response2 = AuthResponse(status: AuthResponseStatus.success);
+      final AuthResponse response3 = AuthResponse(status: AuthResponseStatus.failure);
 
-      String serialized1 = ProtocolDelegate.serialize(response1);
-      String serialized2 = ProtocolDelegate.serialize(response2);
-      String serialized3 = ProtocolDelegate.serialize(response3);
+      final String serialized1 = ProtocolDelegate.serialize(response1);
+      final String serialized2 = ProtocolDelegate.serialize(response2);
+      final String serialized3 = ProtocolDelegate.serialize(response3);
 
       expect(
         serialized1,
@@ -70,13 +70,13 @@ void main() {
     });
 
     test('Can deserialize', () {
-      String response1 = '{"type":"AuthResponse","data":{"status":"required"}}';
-      String response2 = '{"type":"AuthResponse","data":{"status":"success"}}';
-      String response3 = '{"type":"AuthResponse","data":{"status":"failure"}}';
+      final String response1 = '{"type":"AuthResponse","data":{"status":"required"}}';
+      final String response2 = '{"type":"AuthResponse","data":{"status":"success"}}';
+      final String response3 = '{"type":"AuthResponse","data":{"status":"failure"}}';
 
-      dynamic deserialized1 = ProtocolDelegate.deSerialize(response1);
-      dynamic deserialized2 = ProtocolDelegate.deSerialize(response2);
-      dynamic deserialized3 = ProtocolDelegate.deSerialize(response3);
+      final dynamic deserialized1 = ProtocolDelegate.deSerialize(response1);
+      final dynamic deserialized2 = ProtocolDelegate.deSerialize(response2);
+      final dynamic deserialized3 = ProtocolDelegate.deSerialize(response3);
 
       expect(deserialized1, equals(isA<AuthResponse>()));
       deserialized1 as AuthResponse;

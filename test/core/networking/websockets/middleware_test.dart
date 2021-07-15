@@ -7,12 +7,12 @@ import '../../../helpers/value_hook.dart';
 
 void main() {
   test('ProtocolMiddleware deserializes messages and passes them onwards', () async {
-    AuthRequest request = AuthRequest(username: "testUsername", password: "testPassword");
-    String message =
+    final AuthRequest request = AuthRequest(username: "testUsername", password: "testPassword");
+    final String message =
         '{"type":"AuthRequest","data":{"username":"testUsername","password":"testPassword"}}';
-    VHook<bool> calledNext = VHook<bool>(false);
+    final VHook<bool> calledNext = VHook<bool>(false);
 
-    dynamic deserialized = await protocolMiddleware(
+    final dynamic deserialized = await protocolMiddleware(
       null,
       message,
       MiddlewareAction.recieve,
@@ -40,12 +40,12 @@ void main() {
     calledNext.expect(equals(true));
   });
   test('ProtocolMiddleware passes messages and finally serializes them', () async {
-    AuthRequest request = AuthRequest(username: "testUsername", password: "testPassword");
-    String message =
+    final AuthRequest request = AuthRequest(username: "testUsername", password: "testPassword");
+    final String message =
         '{"type":"AuthRequest","data":{"username":"testUsername","password":"testPassword"}}';
-    VHook<bool> calledNext = VHook<bool>(false);
+    final VHook<bool> calledNext = VHook<bool>(false);
 
-    dynamic serialized = await protocolMiddleware(
+    final dynamic serialized = await protocolMiddleware(
       null,
       request,
       MiddlewareAction.send,
@@ -64,10 +64,10 @@ void main() {
     calledNext.expect(equals(true));
   });
   test('ProtocolMiddleware catches exceptions', () async {
-    MockSession session = MockSession();
-    VHook<bool> calledNext = VHook<bool>(false);
+    final MockSession session = MockSession();
+    final VHook<bool> calledNext = VHook<bool>(false);
 
-    dynamic serialized = await protocolMiddleware(
+    final dynamic serialized = await protocolMiddleware(
       session,
       "ANYTHING",
       MiddlewareAction.recieve,
@@ -84,16 +84,16 @@ void main() {
   });
 
   test('AuthenticationMiddleware dont run on send', () async {
-    MockSession session = MockSession();
-    VHook<bool> calledAuthHandler = VHook<bool>(false);
-    VHook<bool> calledNext = VHook<bool>(false);
+    final MockSession session = MockSession();
+    final VHook<bool> calledAuthHandler = VHook<bool>(false);
+    final VHook<bool> calledNext = VHook<bool>(false);
 
-    MiddlewareFunc authMiddleware = makeAuthenticationMiddleware((AuthRequest request) async {
+    final MiddlewareFunc authMiddleware = makeAuthenticationMiddleware((AuthRequest request) async {
       calledAuthHandler.set(true);
       return true;
     });
 
-    dynamic response = await authMiddleware(
+    final dynamic response = await authMiddleware(
       session,
       null,
       MiddlewareAction.send,
@@ -110,16 +110,16 @@ void main() {
     expect(session.storage['authenticated'], equals(null));
   });
   test('AuthenticationMiddleware requires authentication', () async {
-    MockSession session = MockSession();
-    VHook<bool> calledAuthHandler = VHook<bool>(false);
-    VHook<bool> calledNext = VHook<bool>(false);
+    final MockSession session = MockSession();
+    final VHook<bool> calledAuthHandler = VHook<bool>(false);
+    final VHook<bool> calledNext = VHook<bool>(false);
 
-    MiddlewareFunc authMiddleware = makeAuthenticationMiddleware((AuthRequest request) async {
+    final MiddlewareFunc authMiddleware = makeAuthenticationMiddleware((AuthRequest request) async {
       calledAuthHandler.set(true);
       return true;
     });
 
-    dynamic response = await authMiddleware(
+    final dynamic response = await authMiddleware(
       session,
       "ANYTHING",
       MiddlewareAction.recieve,
@@ -138,17 +138,17 @@ void main() {
     expect(session.storage['authenticated'], equals(null));
   });
   test('AuthenticationMiddleware lets authed sessions pass', () async {
-    MockSession session = MockSession();
+    final MockSession session = MockSession();
     session.storage['authenticated'] = true;
-    VHook<bool> calledAuthHandler = VHook<bool>(false);
-    VHook<bool> calledNext = VHook<bool>(false);
+    final VHook<bool> calledAuthHandler = VHook<bool>(false);
+    final VHook<bool> calledNext = VHook<bool>(false);
 
-    MiddlewareFunc authMiddleware = makeAuthenticationMiddleware((AuthRequest request) async {
+    final MiddlewareFunc authMiddleware = makeAuthenticationMiddleware((AuthRequest request) async {
       calledAuthHandler.set(true);
       return false;
     });
 
-    dynamic response = await authMiddleware(
+    final dynamic response = await authMiddleware(
       session,
       "ANYTHING",
       MiddlewareAction.recieve,
@@ -168,11 +168,11 @@ void main() {
     expect(response, equals("ANYTHING"));
   });
   test('AuthenticationMiddleware can authentication', () async {
-    MockSession session = MockSession();
-    VHook<bool> calledAuthHandler = VHook<bool>(false);
-    VHook<bool> calledNext = VHook<bool>(false);
+    final MockSession session = MockSession();
+    final VHook<bool> calledAuthHandler = VHook<bool>(false);
+    final VHook<bool> calledNext = VHook<bool>(false);
 
-    MiddlewareFunc authMiddleware = makeAuthenticationMiddleware((AuthRequest request) async {
+    final MiddlewareFunc authMiddleware = makeAuthenticationMiddleware((AuthRequest request) async {
       expect(request.username, equals("testUsername"));
       expect(request.password, equals("testPassword"));
 
@@ -180,7 +180,7 @@ void main() {
       return true;
     });
 
-    dynamic response = await authMiddleware(
+    final dynamic response = await authMiddleware(
       session,
       AuthRequest(username: "testUsername", password: "testPassword"),
       MiddlewareAction.recieve,
@@ -199,11 +199,11 @@ void main() {
     expect(session.storage['authenticated'], equals(true));
   });
   test('AuthenticationMiddleware can reject', () async {
-    MockSession session = MockSession();
-    VHook<bool> calledAuthHandler = VHook<bool>(false);
-    VHook<bool> calledNext = VHook<bool>(false);
+    final MockSession session = MockSession();
+    final VHook<bool> calledAuthHandler = VHook<bool>(false);
+    final VHook<bool> calledNext = VHook<bool>(false);
 
-    MiddlewareFunc authMiddleware = makeAuthenticationMiddleware((AuthRequest request) async {
+    final MiddlewareFunc authMiddleware = makeAuthenticationMiddleware((AuthRequest request) async {
       expect(request.username, equals("testUsername"));
       expect(request.password, equals("testPassword"));
 
@@ -211,7 +211,7 @@ void main() {
       return false;
     });
 
-    dynamic response1 = await authMiddleware(
+    final dynamic response1 = await authMiddleware(
       session,
       AuthRequest(username: "testUsername", password: "testPassword"),
       MiddlewareAction.recieve,
@@ -233,7 +233,7 @@ void main() {
     calledAuthHandler.set(false);
     calledNext.set(false);
 
-    dynamic response2 = await authMiddleware(
+    final dynamic response2 = await authMiddleware(
       session,
       AuthRequest(username: "testUsername", password: "testPassword"),
       MiddlewareAction.recieve,
@@ -254,7 +254,7 @@ void main() {
 }
 
 class MockSession {
-  Map<dynamic, dynamic> storage = <dynamic, dynamic>{};
+  final Map<dynamic, dynamic> storage = <dynamic, dynamic>{};
 
   void raise(Object e) {}
 }

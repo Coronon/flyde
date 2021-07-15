@@ -6,6 +6,7 @@ typedef Deserialize<T> = T Function(Map<String, dynamic>);
 
 class ProtocolDelegate {
   /// A dictionary of all protocol elements and their coresponding deserializers
+  //? This should not be final because of how testing is implemented.
   static Map<String, Deserialize> elements = <String, Deserialize>{
     //* Authentication
     'AuthRequest': (Map<String, dynamic> json) => AuthRequest.fromJson(json),
@@ -14,18 +15,18 @@ class ProtocolDelegate {
 
   static String serialize(dynamic message) {
     // Get className
-    String type = message.runtimeType.toString();
-    String data = jsonEncode(message);
+    final String type = message.runtimeType.toString();
+    final String data = jsonEncode(message);
 
     return '{"type":"$type","data":$data}';
   }
 
   static dynamic deSerialize(String message) {
-    Map<String, dynamic> data = jsonDecode(message);
+    final Map<String, dynamic> data = jsonDecode(message);
     if (!data.containsKey('type')) {
       throw ProtocolException("Message does not contain 'type' property");
     }
-    String type = data['type'];
+    final String type = data['type'];
 
     if (!elements.containsKey(type)) {
       throw ProtocolException("'$type' unknown protocol element");
@@ -35,7 +36,7 @@ class ProtocolDelegate {
 }
 
 class ProtocolException implements Exception {
-  String message;
+  final String message;
   ProtocolException(this.message);
 
   @override

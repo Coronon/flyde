@@ -32,7 +32,7 @@ Future<bool> waitFor(
     expireTime = DateTime.now().add(timeout);
   }
 
-  Completer<bool> completer = Completer<bool>();
+  final Completer<bool> completer = Completer<bool>();
   // Check if test is true
   check() {
     if (test()) {

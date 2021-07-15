@@ -29,10 +29,10 @@ void main() {
 
   //* Tests
   test('Server receive, client send', () async {
-    VHook<String?> msgReceived = VHook<String?>(null);
+    final VHook<String?> msgReceived = VHook<String?>(null);
 
     server!.listen((HttpRequest request) {
-      ServerSession sess = ServerSession(request);
+      final ServerSession sess = ServerSession(request);
       sess.onMessage = (ServerSession sess, dynamic msg) async {
         msgReceived.set(msg);
 
@@ -41,7 +41,7 @@ void main() {
     });
 
     // Connect to WebServer and open ServerSession
-    ClientSession client = ClientSession(url.toString());
+    final ClientSession client = ClientSession(url.toString());
     client.send('ANYTHING');
 
     // Wait for msgs to be received
@@ -54,15 +54,15 @@ void main() {
     client.close();
   });
   test('Server send, client recieve', () async {
-    VHook<String?> msgReceived = VHook<String?>(null);
+    final VHook<String?> msgReceived = VHook<String?>(null);
 
     server!.listen((HttpRequest request) {
-      ServerSession sess = ServerSession(request);
+      final ServerSession sess = ServerSession(request);
       sess.send('ANYTHING');
     });
 
     // Connect to WebServer and open ServerSession
-    ClientSession client = ClientSession(url.toString());
+    final ClientSession client = ClientSession(url.toString());
     //? This is not a race condition, because of how the dart eventloop is implemented
     //? The internal 'WebSocket.connect' is scheduled and executed when this strain waits (await)
     client.onMessage = (ClientSession sess, dynamic msg) async {
@@ -80,17 +80,17 @@ void main() {
     client.close();
   });
   test('Middleware is run', () async {
-    VHook<bool?> msgClientReceived = VHook<bool?>(null);
+    final VHook<bool?> msgClientReceived = VHook<bool?>(null);
     // First middleware
-    VHook<String?> middlewareServerReceived1 = VHook<String?>(null);
-    VHook<String?> middlewareServerSend1 = VHook<String?>(null);
-    VHook<String?> middlewareClientReceived1 = VHook<String?>(null);
-    VHook<String?> middlewareClientSend1 = VHook<String?>(null);
+    final VHook<String?> middlewareServerReceived1 = VHook<String?>(null);
+    final VHook<String?> middlewareServerSend1 = VHook<String?>(null);
+    final VHook<String?> middlewareClientReceived1 = VHook<String?>(null);
+    final VHook<String?> middlewareClientSend1 = VHook<String?>(null);
     // Second middleware
-    VHook<String?> middlewareServerReceived2 = VHook<String?>(null);
-    VHook<String?> middlewareServerSend2 = VHook<String?>(null);
-    VHook<String?> middlewareClientReceived2 = VHook<String?>(null);
-    VHook<String?> middlewareClientSend2 = VHook<String?>(null);
+    final VHook<String?> middlewareServerReceived2 = VHook<String?>(null);
+    final VHook<String?> middlewareServerSend2 = VHook<String?>(null);
+    final VHook<String?> middlewareClientReceived2 = VHook<String?>(null);
+    final VHook<String?> middlewareClientSend2 = VHook<String?>(null);
 
     // Two middleware functions to test 'next' behavior
     Future<dynamic> middlewareFunc1(
@@ -139,10 +139,10 @@ void main() {
       return await next(message);
     }
 
-    List<MiddlewareFunc> middleware = <MiddlewareFunc>[middlewareFunc1, middlewareFunc2];
+    final List<MiddlewareFunc> middleware = <MiddlewareFunc>[middlewareFunc1, middlewareFunc2];
 
     server!.listen((HttpRequest request) {
-      ServerSession sess = ServerSession(request);
+      final ServerSession sess = ServerSession(request);
       sess.middleware = middleware;
       sess.onMessage = (ServerSession sess, dynamic msg) async {
         expect(msg, equals('ANYTHING-1'));
@@ -151,7 +151,7 @@ void main() {
     });
 
     // Connect to WebServer and open ServerSession
-    ClientSession client = ClientSession(url.toString());
+    final ClientSession client = ClientSession(url.toString());
     //? This is not a race condition, because of how the dart eventloop is implemented
     //? The internal 'WebSocket.connect' is scheduled and executed when this strain waits (await)
     client.middleware = middleware;
@@ -193,18 +193,18 @@ void main() {
     client.close();
   });
   test('OnDone is called', () async {
-    VHook<bool?> onDoneServerCalled = VHook<bool?>(null);
-    VHook<bool?> onDoneClientCalled = VHook<bool?>(null);
+    final VHook<bool?> onDoneServerCalled = VHook<bool?>(null);
+    final VHook<bool?> onDoneClientCalled = VHook<bool?>(null);
 
     server!.listen((HttpRequest request) {
-      ServerSession sess = ServerSession(request);
+      final ServerSession sess = ServerSession(request);
       sess.onDone = (ServerSession sess) {
         onDoneServerCalled.set(true);
       };
     });
 
     // Connect to WebServer and open ServerSession
-    ClientSession client = ClientSession(url.toString());
+    final ClientSession client = ClientSession(url.toString());
     //? This is not a race condition, because of how the dart eventloop is implemented
     //? The internal 'WebSocket.connect' is scheduled and executed when this strain waits (await)
     client.onDone = (ClientSession sess) {
@@ -220,9 +220,9 @@ void main() {
     onDoneClientCalled.expect(equals(true));
   });
   test('Storage is persisted', () async {
-    VHook<ServerSession?> serverSession = VHook<ServerSession?>(null);
-    VHook<bool?> serverPersisted = VHook<bool?>(null);
-    VHook<bool?> clientPersisted = VHook<bool?>(null);
+    final VHook<ServerSession?> serverSession = VHook<ServerSession?>(null);
+    final VHook<bool?> serverPersisted = VHook<bool?>(null);
+    final VHook<bool?> clientPersisted = VHook<bool?>(null);
 
     server!.listen((HttpRequest request) {
       serverSession.set(ServerSession(request));
@@ -234,7 +234,7 @@ void main() {
     });
 
     // Connect to WebServer and open ServerSession
-    ClientSession client = ClientSession(url.toString());
+    final ClientSession client = ClientSession(url.toString());
     //? This is not a race condition, because of how the dart eventloop is implemented
     //? The internal 'WebSocket.connect' is scheduled and executed when this strain waits (await)
     client.onMessage = (ClientSession sess, dynamic msg) async {
@@ -272,12 +272,12 @@ void main() {
     expect(client.storage['msg'], equals(null));
   });
   test('OnError is called', () async {
-    VHook<Object?> exceptionServer = VHook<Object?>(null);
-    VHook<Object?> exceptionClient = VHook<Object?>(null);
+    final VHook<Object?> exceptionServer = VHook<Object?>(null);
+    final VHook<Object?> exceptionClient = VHook<Object?>(null);
 
     //* Test server
-    StreamSubscription<HttpRequest> sub = server!.listen((HttpRequest request) {
-      ServerSession sess = ServerSession(request);
+    final StreamSubscription<HttpRequest> sub = server!.listen((HttpRequest request) {
+      final ServerSession sess = ServerSession(request);
       sess.onMessage = (ServerSession sess, dynamic msg) async {
         sess.raise(TestException(msg));
       };
@@ -306,7 +306,7 @@ void main() {
 
     //* Test client
     sub.onData((HttpRequest request) {
-      ServerSession sess = ServerSession(request);
+      final ServerSession sess = ServerSession(request);
       sess.send('ANYTHING-2');
     });
     await client.close();
@@ -337,12 +337,12 @@ void main() {
     );
   });
   test('OnMessage return is send', () async {
-    VHook<String?> msgReceivedFromServer = VHook<String?>(null);
-    VHook<String?> msgReceivedFromClient = VHook<String?>(null);
+    final VHook<String?> msgReceivedFromServer = VHook<String?>(null);
+    final VHook<String?> msgReceivedFromClient = VHook<String?>(null);
 
     //* Test server
-    StreamSubscription<HttpRequest> sub = server!.listen((HttpRequest request) {
-      ServerSession sess = ServerSession(request);
+    final StreamSubscription<HttpRequest> sub = server!.listen((HttpRequest request) {
+      final ServerSession sess = ServerSession(request);
       sess.onMessage = (ServerSession sess, dynamic msg) async {
         return 'ANYTHING-RETURN-1';
       };
@@ -367,7 +367,7 @@ void main() {
 
     //* Test client
     sub.onData((HttpRequest request) {
-      ServerSession sess = ServerSession(request);
+      final ServerSession sess = ServerSession(request);
       sess.onMessage = (ServerSession sess, dynamic msg) async {
         msgReceivedFromClient.set(msg);
       };
@@ -399,7 +399,7 @@ void main() {
 class TestException implements Exception {
   final String message;
 
-  TestException(this.message);
+  const TestException(this.message);
 
   @override
   String toString() {

@@ -64,7 +64,7 @@ MiddlewareFunc makeAuthenticationMiddleware(
 
     if (message is AuthRequest) {
       // Let handler check if user is authenticated
-      bool authenticated = await isAuthenticated(message);
+      final bool authenticated = await isAuthenticated(message);
       session.storage['authenticated'] = authenticated;
 
       return AuthResponse(

@@ -6,13 +6,13 @@ import 'middleware.dart';
 /// Base class for client and server sessions
 abstract class Session<T> {
   /// Awaitable to ensure ready for use
-  late Future<void> ready;
+  late final Future<void> ready;
 
   /// Individial storage attached to each session for ephemeral data
   Map<dynamic, dynamic> storage = <dynamic, dynamic>{};
 
   /// WebSocket connection used to transfer data from client <-> server
-  late WebSocket _socket;
+  late final WebSocket _socket;
 
   /// A reference to the instantiated subclass.
   /// This is used to allow passing of non base [Session] objects
@@ -57,7 +57,7 @@ abstract class Session<T> {
   /// Internal delegation handler for received messages
   void _onData(dynamic message) async {
     if (onMessage != null) {
-      dynamic response = await onMessage!(_ref!, message);
+      final dynamic response = await onMessage!(_ref!, message);
       if (response != null) send(response);
     }
   }

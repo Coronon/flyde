@@ -90,7 +90,7 @@ class VHook<T> {
       expireTime = DateTime.now().add(timeout);
     }
 
-    Completer<bool> completer = Completer<bool>();
+    final Completer<bool> completer = Completer<bool>();
     // Check if the value has changed
     check() {
       if (value != null) {
