@@ -58,7 +58,7 @@ void main() {
     await expectLater(cache.remove('test'), completion(isA<void>()));
     expect(cache.availableProjects, unorderedEquals({'test-2'}));
     expect(cache.has('test'), equals(false));
-    await expectLater(cache.get('test'), throwsA(isA<Exception>()));
+    await expectLater(cache.get('test'), throwsA(isA<ArgumentError>()));
     await expectLater(cache.all, completion(hasLength(1)));
     await expectLater(Directory('$_cachePath/cache/test').exists(), completion(equals(false)));
   });

@@ -113,6 +113,6 @@ void main() {
 
   test('Fails when not in sync', () async {
     final comp = Compiler(config1, fileOverview, cache);
-    await expectLater(comp.compile(), throwsA(isA<Exception>()));
+    await expectLater(comp.compile(), throwsA(isA<StateError>()));
   });
 }
