@@ -24,8 +24,11 @@ class Cache {
   Cache._(this._workingDirectory, this._lock);
 
   /// Loads the cache from disk and returns an instance of `Cache`.
-  static Future<Cache> load() async {
-    final appLibPath = StandardLocation.applicationLibrary.directory.path;
+  ///
+  /// A [from] directory can be passed will be the location where
+  /// the cache is stored. If not specified a standard location will be used.
+  static Future<Cache> load({Directory? from}) async {
+    final appLibPath = from?.path ?? StandardLocation.applicationLibrary.directory.path;
     final workingDir = Directory(join(appLibPath, 'cache'));
     final lockFile = File(join(workingDir.path, '.lock.json'));
     late final CacheLock lock;
