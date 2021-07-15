@@ -29,7 +29,7 @@ class ProjectCache {
   CompilerConfig? _config;
 
   ProjectCache(this._projectId, Directory cacheDir) {
-    _workingDirectory = Directory(join(cacheDir.path, '$_projectId'));
+    _workingDirectory = Directory(join(cacheDir.path, _projectId));
   }
 
   /// Initiates the cache and loads persisted state if available.
@@ -106,7 +106,7 @@ class ProjectCache {
     final path = joinAll([
       _workingDirectory.path,
       'src',
-      '${file.entry.toString()}',
+      file.entry.toString(),
       ...file.path,
       '${file.name}.${file.extension}'
     ]);

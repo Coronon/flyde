@@ -16,7 +16,7 @@ import '../../helpers/create_dummy_project_cache.dart';
 const _cacheId = 'compiler_test';
 
 Future<String> _run(File file) async {
-  final proc = await Process.run('${file.path}', []);
+  final proc = await Process.run(file.path, []);
   return proc.stdout as String;
 }
 
