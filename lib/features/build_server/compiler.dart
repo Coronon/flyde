@@ -119,7 +119,7 @@ class Compiler {
       }
     };
 
-    for (var i = 0; i < invocations.length; ++i) {
+    for (int i = 0; i < invocations.length; ++i) {
       groups[i % threads].add(invocations[i]);
     }
 

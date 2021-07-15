@@ -29,7 +29,7 @@ extension InstalledCompilerImpl on InstalledCompiler {
     }
 
     // TODO: When supporting windows as a build platform, change compiler search
-    var out = '';
+    String out = '';
     final proc = await Process.start('which', [_command()]);
 
     await proc.stdout.transform(utf8.decoder).forEach((el) => out += el);

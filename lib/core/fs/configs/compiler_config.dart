@@ -54,7 +54,7 @@ class CompilerConfig {
       throw ArgumentError(message);
     }
 
-    for (var flag in [...compilerFlags, ...linkerFlags]) {
+    for (String flag in [...compilerFlags, ...linkerFlags]) {
       if (invalidOptions.contains(flag)) {
         throw ArgumentError('"$flag" is not allowed in configuration files.');
       }
