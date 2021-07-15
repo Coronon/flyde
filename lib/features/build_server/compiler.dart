@@ -54,7 +54,7 @@ class Compiler {
     }
 
     if (_outdatedFiles!.isNotEmpty) {
-      throw Exception(
+      throw StateError(
           'There are ${_outdatedFiles!.length} outdated files. Use `insert` to sync your project.');
     }
 
@@ -78,7 +78,7 @@ class Compiler {
 
   Future<_ProcessInvocation> _buildCompileCommand(ImplementationObjectRef ref) async {
     if (!await _config.compiler.isAvailable()) {
-      throw Exception('Requested compiler is not available on build machine');
+      throw ArgumentError('Requested compiler is not available on build machine');
     }
 
     // TODO: Change include command construction algorythm when supporting more compilers

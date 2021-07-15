@@ -50,13 +50,13 @@ class CompilerConfig {
     const invalidOptions = ['-c'];
 
     if (threads <= 0) {
-      final message = 'The number od used threads has to be greater than zero. Given: $threads';
-      throw Exception(message);
+      final message = 'The number of used threads has to be greater than zero. Given: $threads';
+      throw ArgumentError(message);
     }
 
     for (var flag in [...compilerFlags, ...linkerFlags]) {
       if (invalidOptions.contains(flag)) {
-        throw Exception('"$flag" is not allowed in configuration files.');
+        throw ArgumentError('"$flag" is not allowed in configuration files.');
       }
 
       if (!flag.startsWith(RegExp('-(-?)')) && !(flag.startsWith('"') && flag.endsWith('"'))) {

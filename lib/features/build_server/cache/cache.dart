@@ -69,7 +69,7 @@ class Cache {
     _validateId(projectId);
 
     if (!has(projectId)) {
-      throw Exception('No project with id $projectId exists.');
+      throw ArgumentError('No project with id $projectId exists.');
     }
 
     final dir = _getProjectDirectory(projectId);
@@ -84,7 +84,7 @@ class Cache {
     _validateId(projectId);
 
     if (has(projectId)) {
-      throw Exception(
+      throw ArgumentError(
           'Project with id "$projectId" already exists. Consider choosing a different id.');
     }
 
@@ -98,7 +98,7 @@ class Cache {
     _validateId(projectId);
 
     if (!has(projectId)) {
-      throw Exception('No project with id $projectId exists.');
+      throw ArgumentError('No project with id $projectId exists.');
     }
 
     final project = ProjectCache(projectId, _workingDirectory);
@@ -118,7 +118,7 @@ class Cache {
     final match = regex.stringMatch(projectId);
 
     if (match != projectId) {
-      throw Exception(
+      throw ArgumentError(
           '"$projectId" is not a valid project id. The id has to match' r' "[a-zA-Z0-9\-]+"');
     }
   }

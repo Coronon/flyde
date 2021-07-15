@@ -45,7 +45,7 @@ class SourceFile {
     } else if (file != null) {
       _file = file;
     } else {
-      throw Exception('Either file or data has to be provided');
+      throw ArgumentError('Either file or data has to be provided');
     }
   }
 
@@ -57,7 +57,7 @@ class SourceFile {
     } else if (p.isRelative(file.path)) {
       relPath = file.path;
     } else {
-      throw Exception(
+      throw ArgumentError(
           '[file] must not have an absolute path, but be relative to the entry directory.');
     }
 

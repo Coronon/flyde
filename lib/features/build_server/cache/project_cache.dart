@@ -74,7 +74,7 @@ class ProjectCache {
       final matches = _lock.files.where((file) => file.id == id);
 
       if (matches.length > 1) {
-        throw Exception('Did not expect to find more than one file of the same id in the lock.');
+        throw StateError('Did not expect to find more than one file of the same id in the lock.');
       }
 
       if (matches.isEmpty) {
