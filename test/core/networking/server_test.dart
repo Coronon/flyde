@@ -6,7 +6,7 @@ import 'package:flyde/core/networking/server.dart';
 import 'package:flyde/core/networking/websockets/session.dart';
 
 import '../../helpers/value_hook.dart';
-import '../../helpers/wait.dart';
+import '../../helpers/wait_for.dart';
 
 void main() {
   test('Can receive http request', () async {
@@ -121,7 +121,7 @@ void main() {
     // Wait for connection to be closed
     await closed.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
     closed.expect(equals(true));
-    waitWhile(() => server.isEmpty, timeout: Duration(seconds: 5), raiseOnTimeout: true);
+    waitFor(() => server.isEmpty, timeout: Duration(seconds: 5), raiseOnTimeout: true);
   });
   test('Can redirect websocket', () async {
     VHook<bool?> received = VHook<bool?>(null);

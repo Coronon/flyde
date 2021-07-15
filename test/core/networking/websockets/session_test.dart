@@ -6,7 +6,7 @@ import 'package:flyde/core/networking/websockets/session.dart';
 import 'package:flyde/core/networking/websockets/middleware.dart';
 
 import '../../../helpers/value_hook.dart';
-import '../../../helpers/wait.dart';
+import '../../../helpers/wait_for.dart';
 
 //? The WebSocket uses in this file are not race conditions,
 //? because of how the dart eventloop is implemented.
@@ -262,7 +262,7 @@ void main() {
     client.close();
 
     // Wait for storage to be erased
-    await waitWhile(
+    await waitFor(
       () => client.storage.isEmpty,
       timeout: Duration(seconds: 5),
       raiseOnTimeout: true,

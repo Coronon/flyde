@@ -18,9 +18,9 @@ import 'dart:async';
 /// willSetFlag(someFlag);
 ///
 /// // Wait for the Flag to be set
-/// waitWhile(() => someFlag.value, timeout: Duration(seconds: 5), raiseOnTimeout: true);
+/// waitFor(() => someFlag.value, timeout: Duration(seconds: 5), raiseOnTimeout: true);
 /// ```
-Future<bool> waitWhile(
+Future<bool> waitFor(
   bool Function() test, {
   Duration? timeout,
   Duration pollInterval = Duration.zero,
