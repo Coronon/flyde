@@ -8,18 +8,38 @@ import 'package:flyde/features/build_server/cache/project_cache.dart';
 import 'package:path/path.dart';
 
 class Compiler {
-  final CompilerConfig _config;
+  CompilerConfig _config;
 
   final ProjectCache _cache;
 
-  final Map<String, String> _projectFiles;
+  Map<String, String> _projectFiles;
+
+  List<String>? _outdatedFiles;
 
   Compiler(this._config, this._projectFiles, this._cache);
 
   /// List of all outdated project file ids.
   /// These files have to be `insert`ed.
   Future<List<String>> get outdatedFiles async {
-    return await _cache.sync(_projectFiles, _config);
+    if (_outdatedFiles != null) {
+      return _outdatedFiles!;
+    }
+
+    return await _syncCache();
+  }
+
+  Future<File?> get lastExecutable async {
+    try {
+      return await _cache.executable;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  void update(CompilerConfig config, Map<String, String> projectFiles) {
+    _projectFiles = projectFiles;
+    _config = config;
+    _outdatedFiles = null;
   }
 
   /// Adds the [file] to the cache. Required for all files which should be compiled.
@@ -29,6 +49,15 @@ class Compiler {
 
   /// Compiles the project.
   Future<void> compile() async {
+    if (_outdatedFiles == null) {
+      await _syncCache();
+    }
+
+    if (_outdatedFiles!.isNotEmpty) {
+      throw Exception(
+          'There are ${_outdatedFiles!.length} outdated files. Use `insert` to sync your project.');
+    }
+
     final srcFiles = await _cache.sourceFiles;
     final compileCommands = <_ProcessInvocation>[];
 
@@ -39,6 +68,12 @@ class Compiler {
     await _runCommands(compileCommands, threads: _config.threads);
     await _runCommands([await _buildLinkCommand()]);
     await _cache.finish();
+  }
+
+  Future<List<String>> _syncCache() async {
+    final files = await _cache.sync(_projectFiles, _config);
+    _outdatedFiles = files;
+    return files;
   }
 
   Future<_ProcessInvocation> _buildCompileCommand(ImplementationObjectRef ref) async {
