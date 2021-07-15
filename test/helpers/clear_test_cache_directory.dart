@@ -1,15 +1,10 @@
 import 'dart:io';
 
-Future<void> clearTestCacheDirectory() async {
-  final dir = Directory('./flyde-test-lib');
+Future<void> clearTestCacheDirectory({String id = ''}) async {
+  final suffix = '${id.isNotEmpty ? '-' : ''}$id';
+  final dir = Directory('./flyde-test-lib$suffix');
 
-  if (!await dir.exists()) {
-    await dir.create();
-  }
-
-  final items = await dir.list(recursive: false).toList();
-
-  for (final entity in items) {
-    await entity.delete(recursive: true);
+  if (await dir.exists()) {
+    await dir.delete(recursive: true);
   }
 }
