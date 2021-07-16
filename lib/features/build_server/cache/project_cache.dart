@@ -208,14 +208,11 @@ class ProjectCache {
   File get _lockFile => File(join(_workingDirectory.path, '.lock.json'));
 
   bool _isCompiled(String fileId) {
-    return _lock.configs
-        .singleWhere((conf) => conf.checksum == _config!.hash)
-        .compiledFiles
-        .contains(fileId);
+    return _currentConfigLock.compiledFiles.contains(fileId);
   }
 
   void _setIsCompiled(String fileId, bool compiled) {
-    final files = _lock.configs.singleWhere((conf) => conf.checksum == _config!.hash).compiledFiles;
+    final files = _currentConfigLock.compiledFiles;
 
     if (compiled) {
       files.add(fileId);
@@ -223,4 +220,7 @@ class ProjectCache {
       files.remove(fileId);
     }
   }
+
+  ConfigLock get _currentConfigLock =>
+      _lock.configs.singleWhere((conf) => conf.checksum == _config!.hash);
 }
