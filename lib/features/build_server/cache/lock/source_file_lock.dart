@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'source_file_lock.g.dart';
 
-/// The model of the persistet information of
+/// The model of the persisted information of
 /// the available source files.
 @JsonSerializable()
 class SourceFileLock {
