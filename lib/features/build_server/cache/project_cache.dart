@@ -48,6 +48,7 @@ class ProjectCache {
     }
   }
 
+  /// Saves the cache state to disk.
   Future<void> finish() async {
     await _lockFile.writeAsString(json.encode(_lock.toJson()));
   }
@@ -84,17 +85,6 @@ class ProjectCache {
         required.add(id);
       } else {
         inSync.add(id);
-      }
-    }
-
-    // Delete all files which are not required for update or already in sync.
-    // These files are not included in the latest project state and should therefore be deleted.
-    for (final entry in files.entries) {
-      if (!required.contains(entry.key) && !inSync.contains(entry.key)) {
-        final lock = _lock.files.singleWhere((file) => file.id == entry.key);
-
-        await File(lock.path).delete();
-        _lock.files.removeWhere((file) => file.id == entry.key);
       }
     }
 
