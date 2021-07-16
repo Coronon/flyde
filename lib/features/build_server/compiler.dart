@@ -10,7 +10,7 @@ import 'package:path/path.dart';
 /// A class that manages compilation and caching of user C++ projects.
 ///
 /// ```dart
-/// final  Compiler compiler = Compiler(configuration, filesOfTheProject, cacheInstance);
+/// final Compiler compiler = Compiler(configuration, filesOfTheProject, cacheInstance);
 ///
 /// // A list of all the files that are absent or out of date in the cache.
 /// final List<String> filesToUpdate = await compiler.outdatedFiles;
@@ -61,7 +61,7 @@ class Compiler {
 
   /// A file reference to the last compiled executable of the currect config.
   ///
-  /// If no executable is available, this will be `null`.
+  /// If no executable is available, `null` is returned.
   Future<File?> get lastExecutable async {
     await _syncCache();
     final exe = await _cache.executable;

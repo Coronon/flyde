@@ -39,7 +39,7 @@ class CompilerConfig {
 
   Map<String, dynamic> toJson() => _$CompilerConfigToJson(this);
 
-  /// A hash which is unique when the produced object files are the same.
+  /// A hash which is unique for each compiler + linker configuration.
   String get hash {
     final output = AccumulatorSink<Digest>();
     final input = sha256.startChunkedConversion(output);
