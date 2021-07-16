@@ -166,12 +166,12 @@ class Compiler {
     /// Each process will be started after the previous one has finished.
     /// If all started processes are using only one thread,
     /// `run` will also only use one thread at a time.
-    final run = (List<_ProcessInvocation> invocs) async {
+    Future<void> run(List<_ProcessInvocation> invocs) async {
       for (final invoc in invocs) {
         await Process.run(invoc.executable, invoc.args);
         await invoc.completionHandler?.call();
       }
-    };
+    }
 
     // We group the commands in [threads] groups.
     // So each group contains the same number of commands (+- 1).

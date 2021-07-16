@@ -71,7 +71,7 @@ class CompilerConfig {
     /// // ['-x', '"hello"']
     /// print(list);
     /// ```
-    final cleanInput = (String flag) {
+    String cleanInput(String flag) {
       if (invalidOptions.contains(flag)) {
         throw ArgumentError('"$flag" is not allowed in configuration files.');
       }
@@ -84,7 +84,7 @@ class CompilerConfig {
       }
 
       return flag;
-    };
+    }
 
     compilerFlags = compilerFlags.map(cleanInput).toList();
     linkerFlags = linkerFlags.map(cleanInput).toList();
