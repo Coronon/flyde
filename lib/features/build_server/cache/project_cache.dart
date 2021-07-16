@@ -58,7 +58,6 @@ class ProjectCache {
   /// [files] is a map where each unique file id is associated to it's hash value.
   /// `sync` checks which stored files are outdated and returns a `List` of
   /// those outdated files and each file which is not present in cache.
-  /// If a file is stored which is not present in [files] it will be deleted.
   ///
   /// [config] will be used to put files at the correct destination. To change the
   /// used config, call `sync` once more.
