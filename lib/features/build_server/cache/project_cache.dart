@@ -128,7 +128,7 @@ class ProjectCache {
     return headers;
   }
 
-  /// A list of all stored source files.
+  /// A list of all stored uncompiled source files.
   ///
   /// Each source file is returned as an object which contains
   /// a path to the source file itself and to the object file.
