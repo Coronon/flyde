@@ -23,9 +23,8 @@ extension InstalledCompilerImpl on InstalledCompiler {
   }
 
   Future<String?> path() async {
-    if (InstalledCompilerImpl._available.containsKey(this) &&
-        InstalledCompilerImpl._available[this] == false) {
-      return null;
+    if (InstalledCompilerImpl._available.containsKey(this)) {
+      return InstalledCompilerImpl._location[this];
     }
 
     // TODO: When supporting windows as a build platform, change compiler search
