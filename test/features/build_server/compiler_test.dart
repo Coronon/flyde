@@ -115,4 +115,9 @@ void main() {
     final comp = Compiler(config1, fileOverview, cache);
     await expectLater(comp.compile(), throwsA(isA<StateError>()));
   });
+
+  test('Executable is null if nothing has been compiled', () async {
+    final comp = Compiler(config1, fileOverview, cache);
+    await expectLater(comp.lastExecutable, completion(equals(null)));
+  });
 }

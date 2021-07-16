@@ -59,11 +59,14 @@ class Compiler {
   ///
   /// If no executable is available, this will be `null`.
   Future<File?> get lastExecutable async {
-    try {
-      return await _cache.executable;
-    } catch (_) {
+    await _syncCache();
+    final exe = await _cache.executable;
+
+    if ((await exe.stat()).size == 0) {
       return null;
     }
+
+    return exe;
   }
 
   /// Updates the cache with the given project files and config.
@@ -107,9 +110,8 @@ class Compiler {
   ///
   /// A list of all files which require an update is returned and stored in `_outdatedFiles`.
   Future<List<String>> _syncCache() async {
-    final files = await _cache.sync(_projectFiles, _config);
-    _outdatedFiles = files;
-    return files;
+    _outdatedFiles = await _cache.sync(_projectFiles, _config);
+    return _outdatedFiles!;
   }
 
   /// Builds the command that compiles the given source file.
