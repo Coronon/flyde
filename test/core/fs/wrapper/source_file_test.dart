@@ -12,7 +12,7 @@ void main() {
     final hash = await srcFile.hash;
 
     expect(data, isNotEmpty);
-    expect(id, equals('84728edd64e9e57bfadf71a0edacd55d0b9398f04e3603a12bae84f454edf588'));
+    expect(id, equals('c058d89c09ad3dff84c14c15be2181d8c687edea3062ae455d84223f2dd39296'));
     expect(hash, equals('63bf8796ebbce7587b03af682924e3b12fdcda0ac40b174cec60e8094594fb07'));
   });
 
@@ -27,7 +27,7 @@ void main() {
     expect(srcFile.extension, equals('cpp'));
     expect(srcFile.name, equals('main'));
     expect(srcFile.path, orderedEquals(['src']));
-    expect(id, equals('84728edd64e9e57bfadf71a0edacd55d0b9398f04e3603a12bae84f454edf588'));
+    expect(id, equals('c058d89c09ad3dff84c14c15be2181d8c687edea3062ae455d84223f2dd39296'));
     expect(hash, equals('63bf8796ebbce7587b03af682924e3b12fdcda0ac40b174cec60e8094594fb07'));
   });
 
@@ -39,7 +39,7 @@ void main() {
     final hash = await srcFile.hash;
 
     expect(data, isNotEmpty);
-    expect(id, equals('84728edd64e9e57bfadf71a0edacd55d0b9398f04e3603a12bae84f454edf588'));
+    expect(id, equals('c058d89c09ad3dff84c14c15be2181d8c687edea3062ae455d84223f2dd39296'));
     expect(hash, equals('63bf8796ebbce7587b03af682924e3b12fdcda0ac40b174cec60e8094594fb07'));
   });
 

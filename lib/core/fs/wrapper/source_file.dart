@@ -78,13 +78,18 @@ class SourceFile {
   String get _id {
     final output = AccumulatorSink<Digest>();
     final input = sha256.startChunkedConversion(output);
+    final delimiter = utf8.encode(':--:').toList();
 
     input.add([entry]);
+    input.add(delimiter);
     input.add(utf8.encode(name));
+    input.add(delimiter);
     input.add(utf8.encode(extension));
+    input.add(delimiter);
 
     for (final pathSegement in path) {
       input.add(utf8.encode(pathSegement));
+      input.add(delimiter);
     }
 
     input.close();
