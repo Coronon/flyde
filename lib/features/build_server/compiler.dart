@@ -95,7 +95,8 @@ class Compiler {
     // We cannot compile if not all files required are in the cache yet.
     if (_outdatedFiles!.isNotEmpty) {
       throw StateError(
-          'There are ${_outdatedFiles!.length} outdated files. Pass those files to `insert` in order to finish synchronization.');
+        'There are ${_outdatedFiles!.length} outdated files. Pass those files to `insert` in order to finish synchronization.',
+      );
     }
 
     final srcFiles = await _cache.sourceFiles;

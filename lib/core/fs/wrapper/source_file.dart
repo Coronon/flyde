@@ -58,7 +58,8 @@ class SourceFile {
       relPath = file.path;
     } else {
       throw ArgumentError(
-          '[file] must not have an absolute path, but be relative to the entry directory.');
+        '[file] must not have an absolute path, but be relative to the entry directory.',
+      );
     }
 
     name = p.basenameWithoutExtension(relPath);

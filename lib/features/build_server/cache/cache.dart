@@ -85,7 +85,8 @@ class Cache {
 
     if (has(projectId)) {
       throw ArgumentError(
-          'Project with id "$projectId" already exists. Consider choosing a different id.');
+        'Project with id "$projectId" already exists. Consider choosing a different id.',
+      );
     }
 
     _lock.projects.add(projectId);
@@ -119,7 +120,8 @@ class Cache {
 
     if (match != projectId) {
       throw ArgumentError(
-          '"$projectId" is not a valid project id. The id has to match' r' "[a-zA-Z0-9\-]+"');
+        '"$projectId" is not a valid project id. The id has to match' r' "[a-zA-Z0-9\-]+"',
+      );
     }
   }
 
