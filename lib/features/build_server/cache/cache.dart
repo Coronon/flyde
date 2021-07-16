@@ -9,7 +9,7 @@ import 'package:path/path.dart';
 /// Class to manage access to the compiler cache.
 ///
 /// `Cache` allows to get, add and remove caches for projects
-/// and takes core of the right location on disk as to initialize
+/// and takes care of the right location on disk as to initialize
 /// the project caches.
 ///
 /// Use the async static method `load` to get an instance of `Cache`.
