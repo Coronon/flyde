@@ -154,18 +154,26 @@ class Compiler {
 
     final groups = List<List<_ProcessInvocation>>.generate(threads, (_) => <_ProcessInvocation>[]);
 
-    final runSync = (List<_ProcessInvocation> invocs) async {
+    /// Runs the commands in the order they are present in [invocs]
+    /// and calls each completion handler after execution.
+    /// Each process will be started after the previous one has finished.
+    /// If all started processes are using only one thread,
+    /// `run` will also only use one thread at a time.
+    final run = (List<_ProcessInvocation> invocs) async {
       for (final invoc in invocs) {
         await Process.run(invoc.executable, invoc.args);
         await invoc.completionHandler?.call();
       }
     };
 
+    // We group the commands in [threads] groups.
+    // So each group contains the same number of commands (+- 1).
     for (int i = 0; i < invocations.length; ++i) {
       groups[i % threads].add(invocations[i]);
     }
 
-    await Future.wait(groups.map((group) => runSync(group)));
+    // We run all the groups in parallel.
+    await Future.wait(groups.map((group) => run(group)));
   }
 }
 
