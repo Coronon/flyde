@@ -35,12 +35,16 @@ import 'package:path/path.dart';
 /// compiler.update(newConfig, newFileList);
 /// ```
 class Compiler {
+  /// The configuration used to compile the project.
   CompilerConfig _config;
 
+  /// The object which takes care of file placement and caching.
   final ProjectCache _cache;
 
+  /// A list of all files of the user project with their id and hash.
   Map<String, String> _projectFiles;
 
+  /// List of all outdated and unavailable files.
   List<String>? _outdatedFiles;
 
   Compiler(this._config, this._projectFiles, this._cache);
