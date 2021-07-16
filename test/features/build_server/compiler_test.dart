@@ -20,7 +20,7 @@ Future<String> _run(File file) async {
   return proc.stdout as String;
 }
 
-void main() {
+Future<void> main() async {
   final config1 = CompilerConfig(
       compiler: InstalledCompiler.gpp,
       threads: 4,
@@ -35,28 +35,26 @@ void main() {
       compilerFlags: ['-O3', '-DPRINTBYE'],
       linkerFlags: ['-flto']);
 
-  late ProjectCache cache;
-  late List<SourceFile> files;
+  ProjectCache cache = await createDummyProjectCache(init: true, id: _cacheId);
   final fileOverview = <String, String>{};
+  final files = await searchDirectory(Directory('./example'), (e) {
+    final isSource = FileExtension.sources.contains(p.extension(e.path));
+    final isHeader = FileExtension.headers.contains(p.extension(e.path));
+
+    if (e is File && (isSource || isHeader)) {
+      return SourceFile.fromFile(0, e, entryDirectory: Directory('./example'));
+    }
+
+    return null;
+  });
+
+  for (final file in files) {
+    fileOverview[file.id] = await file.hash;
+  }
 
   setUp(() async {
     await clearTestCacheDirectory(id: _cacheId);
     cache = await createDummyProjectCache(init: true, id: _cacheId);
-
-    files = await searchDirectory(Directory('./example'), (e) {
-      final isSource = FileExtension.sources.contains(p.extension(e.path));
-      final isHeader = FileExtension.headers.contains(p.extension(e.path));
-
-      if (e is File && (isSource || isHeader)) {
-        return SourceFile.fromFile(0, e, entryDirectory: Directory('./example'));
-      }
-
-      return null;
-    });
-
-    for (final file in files) {
-      fileOverview[file.id] = await file.hash;
-    }
   });
 
   tearDown(() async => await clearTestCacheDirectory(id: _cacheId));
