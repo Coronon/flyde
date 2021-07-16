@@ -2,8 +2,9 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'config_lock.g.dart';
 
-/// The model of the lock file entry for
-/// compiler configurations.
+/// The model of the lock file entry which
+/// stores the persisted configuration data
+/// of the compiler.
 @JsonSerializable()
 class ConfigLock {
   /// The checksum of the configuration.

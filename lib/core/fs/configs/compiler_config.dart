@@ -7,16 +7,22 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'compiler_config.g.dart';
 
+/// A JSON serializable class that contains the compiler configuration.
 @JsonSerializable()
 class CompilerConfig {
+  /// The used compiler.
   final InstalledCompiler compiler;
 
+  /// The number of threads used by the compiler.
   final int threads;
 
+  /// A list of all directory pathes where source files are located.
   final List<String> sourceDirectories;
 
+  /// The flags to pass to the compiler.
   List<String> compilerFlags;
 
+  /// The flags to pass to the linker.
   List<String> linkerFlags;
 
   CompilerConfig({
@@ -33,6 +39,7 @@ class CompilerConfig {
 
   Map<String, dynamic> toJson() => _$CompilerConfigToJson(this);
 
+  /// A hash which is unique when the produced object files are the same.
   String get hash {
     final output = AccumulatorSink<Digest>();
     final input = sha256.startChunkedConversion(output);
@@ -46,6 +53,7 @@ class CompilerConfig {
     return output.events.single.toString();
   }
 
+  /// Validates the input and throws an exception if it is invalid.
   void _validate() {
     const invalidOptions = ['-c', '-o'];
 

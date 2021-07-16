@@ -7,6 +7,33 @@ import 'package:flyde/features/build_server/cache/implementation_object_ref.dart
 import 'package:flyde/features/build_server/cache/project_cache.dart';
 import 'package:path/path.dart';
 
+/// A class that manages compilation and caching of user C++ projects.
+///
+/// ```dart
+/// final  Compiler compiler = Compiler(configuration, filesOfTheProject, cacheInstance);
+///
+/// // A list of all the files that are absent or out of date in the cache.
+/// final List<String> filesToUpdate = await compiler.outdatedFiles;
+///
+/// // We have to insert all the files that are absent or out of date.
+/// for (final outdated in filesToUpdate) {
+///   final SourceFile sourceFile = loadSourceFile(outdated);
+///   await compiler.insert(sourceFile);
+/// }
+///
+/// // We call compile so the compiler will invoke the C++ compiler and handle the cache.
+/// await compiler.compile();
+///
+/// // Now we can run the compiled binary.
+/// runBinary(compiler.lastExecutable!);
+/// ```
+///
+/// If the configuration or the project changes over time we can update the compiler as well.
+/// Afterwards we have to check if there are new outdated files and insert them.
+///
+/// ```dart
+/// compiler.update(newConfig, newFileList);
+/// ```
 class Compiler {
   CompilerConfig _config;
 
@@ -28,6 +55,9 @@ class Compiler {
     return await _syncCache();
   }
 
+  /// A file reference to the last compiled executable of the currect config.
+  ///
+  /// If no executable is available, this will be `null`.
   Future<File?> get lastExecutable async {
     try {
       return await _cache.executable;
@@ -36,6 +66,7 @@ class Compiler {
     }
   }
 
+  /// Updates the cache with the given project files and config.
   void update(CompilerConfig config, Map<String, String> projectFiles) {
     _projectFiles = projectFiles;
     _config = config;
@@ -49,10 +80,12 @@ class Compiler {
 
   /// Compiles the project.
   Future<void> compile() async {
+    // If we don't have information about the sync status, we need to sync.
     if (_outdatedFiles == null) {
       await _syncCache();
     }
 
+    // We cannot compile if not all files required are in the cache yet.
     if (_outdatedFiles!.isNotEmpty) {
       throw StateError(
           'There are ${_outdatedFiles!.length} outdated files. Use `insert` to sync your project.');
@@ -70,12 +103,19 @@ class Compiler {
     await _cache.finish();
   }
 
+  /// Synchronizes the cache with the given project files and config.
+  ///
+  /// A list of all files which require an update is returned and stored in `_outdatedFiles`.
   Future<List<String>> _syncCache() async {
     final files = await _cache.sync(_projectFiles, _config);
     _outdatedFiles = files;
     return files;
   }
 
+  /// Builds the command that compiles the given source file.
+  ///
+  /// When compilation is done the `link` method of [ref] is called,
+  /// which signals that the source file has now an up to date object file.
   Future<_ProcessInvocation> _buildCompileCommand(ImplementationObjectRef ref) async {
     if (!await _config.compiler.isAvailable()) {
       throw ArgumentError('Requested compiler is not available on build machine');
@@ -91,6 +131,7 @@ class Compiler {
         [...includes, '-c', sourcePath, '-o', objectPath, ..._config.compilerFlags], ref.link);
   }
 
+  /// Builds the command that links the given object files.
   Future<_ProcessInvocation> _buildLinkCommand() async {
     final path = await _config.compiler.path();
     final objectFiles = await _cache.objectFiles;
@@ -107,6 +148,7 @@ class Compiler {
         null);
   }
 
+  /// Runs the given commands on multiple [threads].
   static Future<void> _runCommands(List<_ProcessInvocation> invocations, {int threads = 1}) async {
     threads = threads < 1 ? 1 : threads;
 
@@ -127,11 +169,15 @@ class Compiler {
   }
 }
 
+/// A class which stores the data to invoke a process and a completion handler.
 class _ProcessInvocation {
+  /// The path to the executable.
   final String executable;
 
+  /// The arguments to invoke the executable with.
   final List<String> args;
 
+  /// A completion handler which should be called when the process has finished.
   final Future<void> Function()? completionHandler;
 
   _ProcessInvocation(this.executable, this.args, this.completionHandler);

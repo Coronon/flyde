@@ -5,6 +5,7 @@ import 'package:flyde/features/build_server/cache/lock/source_file_lock.dart';
 part 'project_cache_lock.g.dart';
 
 /// Model for project cache lock files.
+///
 /// The persisted state of  `ProjectCache` is
 /// stored in an object of `ProjectCacheLock`.
 @JsonSerializable()
