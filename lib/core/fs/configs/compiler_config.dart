@@ -15,9 +15,9 @@ class CompilerConfig {
 
   final List<String> sourceDirectories;
 
-  final List<String> compilerFlags;
+  List<String> compilerFlags;
 
-  final List<String> linkerFlags;
+  List<String> linkerFlags;
 
   CompilerConfig({
     required this.compiler,
@@ -47,21 +47,38 @@ class CompilerConfig {
   }
 
   void _validate() {
-    const invalidOptions = ['-c'];
+    const invalidOptions = ['-c', '-o'];
 
     if (threads <= 0) {
       final message = 'The number of used threads has to be greater than zero. Given: $threads';
       throw ArgumentError(message);
     }
 
-    for (String flag in [...compilerFlags, ...linkerFlags]) {
+    /// Throws an error if a flag which is not allowed is used
+    /// and wraps value args in double braces.
+    /// ```dart
+    /// var list = ['-c', '-o', '-x', 'hello'];
+    /// list = list.map(cleanInput).toList();
+    ///
+    /// // ['-x', '"hello"']
+    /// print(list);
+    /// ```
+    final cleanInput = (String flag) {
       if (invalidOptions.contains(flag)) {
         throw ArgumentError('"$flag" is not allowed in configuration files.');
       }
 
-      if (!flag.startsWith(RegExp('-(-?)')) && !(flag.startsWith('"') && flag.endsWith('"'))) {
-        flag = '"$flag"';
+      final isFlag = RegExp(r'-{1,2}[a-zA-Z0-9]+[^\s]*').stringMatch(flag)?.length == flag.length;
+      final isValue = RegExp(r'[a-zA-Z0-9]+[^\s]*').stringMatch(flag)?.length == flag.length;
+
+      if (!isFlag && isValue) {
+        return '"$flag"';
       }
-    }
+
+      return flag;
+    };
+
+    compilerFlags = compilerFlags.map(cleanInput).toList();
+    linkerFlags = linkerFlags.map(cleanInput).toList();
   }
 }
