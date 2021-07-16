@@ -24,6 +24,18 @@ void main() {
       compilerFlags: ['-O2'],
       linkerFlags: ['-flto']);
 
+  test('Throws on invalid input', () {
+    expect(
+        () => CompilerConfig(
+              compiler: InstalledCompiler.gpp,
+              threads: 4,
+              sourceDirectories: ['./example'],
+              compilerFlags: ['-O2', '-c'],
+              linkerFlags: ['-flto'],
+            ),
+        throwsA(isA<ArgumentError>()));
+  });
+
   test('Creates consistent hash value', () {
     final hash1 = config.hash;
     final hash2 = config.hash;
