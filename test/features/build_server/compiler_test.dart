@@ -55,7 +55,7 @@ void main() {
     });
 
     for (final file in files) {
-      fileOverview.addEntries([MapEntry(file.id, await file.hash)]);
+      fileOverview[file.id] = await file.hash;
     }
   });
 
