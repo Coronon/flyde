@@ -45,7 +45,7 @@ class Compiler {
 
   Compiler(this._config, this._projectFiles, this._cache);
 
-  /// List of all outdated project file ids.
+  /// List of all outdated and unavailable files.
   /// These files have to be `insert`ed.
   Future<List<String>> get outdatedFiles async {
     if (_outdatedFiles != null) {
@@ -88,7 +88,7 @@ class Compiler {
     // We cannot compile if not all files required are in the cache yet.
     if (_outdatedFiles!.isNotEmpty) {
       throw StateError(
-          'There are ${_outdatedFiles!.length} outdated files. Use `insert` to sync your project.');
+          'There are ${_outdatedFiles!.length} outdated files. Pass those files to `insert` in order to finish synchronization.');
     }
 
     final srcFiles = await _cache.sourceFiles;
