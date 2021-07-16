@@ -25,7 +25,7 @@ class Cache {
 
   /// Loads the cache from disk and returns an instance of `Cache`.
   ///
-  /// A [from] directory can be passed will be the location where
+  /// A [from] directory can be passed, which will be the location where
   /// the cache is stored. If not specified a standard location will be used.
   static Future<Cache> load({Directory? from}) async {
     final appLibPath = from?.path ?? StandardLocation.applicationLibrary.directory.path;
