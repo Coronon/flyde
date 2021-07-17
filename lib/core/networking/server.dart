@@ -92,21 +92,20 @@ class WebServer {
 
   /// Internal request handler
   void _onRequest(HttpRequest req) async {
-    bool isWebsocketRequest = req.headers['upgrade'] != null &&
+    final bool isWebsocketRequest = req.headers['upgrade'] != null &&
         req.headers['upgrade']!.length == 1 &&
         req.headers['upgrade']![0] == 'websocket';
 
     // Handle WebSocket connections
     if (wsOnMessage != null && isWebsocketRequest) {
-      ServerSession newSess = ServerSession(req);
+      final newSess = ServerSession(req);
       newSess.middleware = wsMiddleware;
       newSess.onMessage = wsOnMessage;
       newSess.onError = wsOnError;
       newSess.onDone = wsOnDoneTeardown;
 
       _wsSessions.add(newSess);
-    } else if (httpOnRequest != null &&
-        (!isWebsocketRequest || redirectWebsocket)) {
+    } else if (httpOnRequest != null && (!isWebsocketRequest || redirectWebsocket)) {
       // Handle normal requests (or redirected WebSocket connections)
       httpOnRequest!(req);
     } else {
@@ -145,7 +144,7 @@ class WebServer {
 
     await _server!.close();
 
-    for (ServerSession sess in _wsSessions) {
+    for (final ServerSession sess in _wsSessions) {
       // Remove wrapped done handler, as we will clear the sessions afterwards
       sess.onDone = wsOnDone;
       await sess.close();

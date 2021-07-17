@@ -8,7 +8,7 @@ void main() {
       (Map<String, dynamic> json) => MockSerializable.fromJson(json);
 
   test('ProtocolDelegate can recreate object', () {
-    final MockSerializable serializable = MockSerializable("ANYTHING");
+    final serializable = MockSerializable("ANYTHING");
 
     final dynamic recreated =
         ProtocolDelegate.deSerialize(ProtocolDelegate.serialize(serializable));
@@ -19,7 +19,7 @@ void main() {
   });
 
   test('ProtocolDelegate can serialize object', () {
-    final MockSerializable serializable = MockSerializable("ANYTHING");
+    final serializable = MockSerializable("ANYTHING");
 
     final String serialized = ProtocolDelegate.serialize(serializable);
 

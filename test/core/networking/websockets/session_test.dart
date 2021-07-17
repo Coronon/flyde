@@ -29,7 +29,7 @@ void main() {
 
   //* Tests
   test('Server receive, client send', () async {
-    final VHook<String?> msgReceived = VHook<String?>(null);
+    final msgReceived = VHook<String?>(null);
 
     server!.listen((HttpRequest request) {
       final ServerSession sess = ServerSession(request);
@@ -54,7 +54,7 @@ void main() {
     client.close();
   });
   test('Server send, client recieve', () async {
-    final VHook<String?> msgReceived = VHook<String?>(null);
+    final msgReceived = VHook<String?>(null);
 
     server!.listen((HttpRequest request) {
       final ServerSession sess = ServerSession(request);
@@ -80,17 +80,17 @@ void main() {
     client.close();
   });
   test('Middleware is run', () async {
-    final VHook<bool?> msgClientReceived = VHook<bool?>(null);
+    final msgClientReceived = VHook<bool?>(null);
     // First middleware
-    final VHook<String?> middlewareServerReceived1 = VHook<String?>(null);
-    final VHook<String?> middlewareServerSend1 = VHook<String?>(null);
-    final VHook<String?> middlewareClientReceived1 = VHook<String?>(null);
-    final VHook<String?> middlewareClientSend1 = VHook<String?>(null);
+    final middlewareServerReceived1 = VHook<String?>(null);
+    final middlewareServerSend1 = VHook<String?>(null);
+    final middlewareClientReceived1 = VHook<String?>(null);
+    final middlewareClientSend1 = VHook<String?>(null);
     // Second middleware
-    final VHook<String?> middlewareServerReceived2 = VHook<String?>(null);
-    final VHook<String?> middlewareServerSend2 = VHook<String?>(null);
-    final VHook<String?> middlewareClientReceived2 = VHook<String?>(null);
-    final VHook<String?> middlewareClientSend2 = VHook<String?>(null);
+    final middlewareServerReceived2 = VHook<String?>(null);
+    final middlewareServerSend2 = VHook<String?>(null);
+    final middlewareClientReceived2 = VHook<String?>(null);
+    final middlewareClientSend2 = VHook<String?>(null);
 
     // Two middleware functions to test 'next' behavior
     Future<dynamic> middlewareFunc1(
@@ -193,8 +193,8 @@ void main() {
     client.close();
   });
   test('OnDone is called', () async {
-    final VHook<bool?> onDoneServerCalled = VHook<bool?>(null);
-    final VHook<bool?> onDoneClientCalled = VHook<bool?>(null);
+    final onDoneServerCalled = VHook<bool?>(null);
+    final onDoneClientCalled = VHook<bool?>(null);
 
     server!.listen((HttpRequest request) {
       final ServerSession sess = ServerSession(request);
@@ -220,9 +220,9 @@ void main() {
     onDoneClientCalled.expect(equals(true));
   });
   test('Storage is persisted', () async {
-    final VHook<ServerSession?> serverSession = VHook<ServerSession?>(null);
-    final VHook<bool?> serverPersisted = VHook<bool?>(null);
-    final VHook<bool?> clientPersisted = VHook<bool?>(null);
+    final serverSession = VHook<ServerSession?>(null);
+    final serverPersisted = VHook<bool?>(null);
+    final clientPersisted = VHook<bool?>(null);
 
     server!.listen((HttpRequest request) {
       serverSession.set(ServerSession(request));
@@ -272,8 +272,8 @@ void main() {
     expect(client.storage['msg'], equals(null));
   });
   test('OnError is called', () async {
-    final VHook<Object?> exceptionServer = VHook<Object?>(null);
-    final VHook<Object?> exceptionClient = VHook<Object?>(null);
+    final exceptionServer = VHook<Object?>(null);
+    final exceptionClient = VHook<Object?>(null);
 
     //* Test server
     final StreamSubscription<HttpRequest> sub = server!.listen((HttpRequest request) {
@@ -337,8 +337,8 @@ void main() {
     );
   });
   test('OnMessage return is send', () async {
-    final VHook<String?> msgReceivedFromServer = VHook<String?>(null);
-    final VHook<String?> msgReceivedFromClient = VHook<String?>(null);
+    final msgReceivedFromServer = VHook<String?>(null);
+    final msgReceivedFromClient = VHook<String?>(null);
 
     //* Test server
     final StreamSubscription<HttpRequest> sub = server!.listen((HttpRequest request) {

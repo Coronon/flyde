@@ -10,7 +10,7 @@ void main() {
     });
 
     test('Can serialize', () {
-      final AuthRequest request = AuthRequest(username: "testUser", password: "testPassword");
+      final request = AuthRequest(username: "testUser", password: "testPassword");
 
       final String serialized = ProtocolDelegate.serialize(request);
 
@@ -41,9 +41,9 @@ void main() {
     });
 
     test('Can serialize', () {
-      final AuthResponse response1 = AuthResponse(status: AuthResponseStatus.required);
-      final AuthResponse response2 = AuthResponse(status: AuthResponseStatus.success);
-      final AuthResponse response3 = AuthResponse(status: AuthResponseStatus.failure);
+      final response1 = AuthResponse(status: AuthResponseStatus.required);
+      final response2 = AuthResponse(status: AuthResponseStatus.success);
+      final response3 = AuthResponse(status: AuthResponseStatus.failure);
 
       final String serialized1 = ProtocolDelegate.serialize(response1);
       final String serialized2 = ProtocolDelegate.serialize(response2);
