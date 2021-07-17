@@ -158,14 +158,18 @@ class ProjectCache {
 
         await objectFile.create(recursive: true);
 
-        refs.add(ImplementationObjectRef(sourceFile, objectFile, () async {
-          final exists = await objectFile.exists();
-          final isNotEmpty = (await objectFile.stat()).size > 0;
+        refs.add(ImplementationObjectRef(
+          sourceFile,
+          objectFile,
+          () async {
+            final exists = await objectFile.exists();
+            final isNotEmpty = (await objectFile.stat()).size > 0;
 
-          if (exists && isNotEmpty) {
-            _setIsCompiled(file.id, true);
-          }
-        }));
+            if (exists && isNotEmpty) {
+              _setIsCompiled(file.id, true);
+            }
+          },
+        ));
       }
     }
 
