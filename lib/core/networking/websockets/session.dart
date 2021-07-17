@@ -4,6 +4,9 @@ import 'dart:io';
 import 'middleware.dart';
 
 /// Base class for client and server sessions
+///
+/// Template type [T] is used to allow passing of non base [Session] objects
+/// such as [ServerSession] or [ClientSession].
 abstract class Session<T> {
   /// Awaitable to ensure ready for use
   late final Future<void> ready;
@@ -13,11 +16,6 @@ abstract class Session<T> {
 
   /// WebSocket connection used to transfer data from client <-> server
   late final WebSocket _socket;
-
-  /// A reference to the instantiated subclass.
-  /// This is used to allow passing of non base [Session] objects
-  /// such as [ServerSession] or [ClientSession].
-  T? _ref;
 
   /// Handler for received messages
   Future<dynamic> Function(T, dynamic)? onMessage;
@@ -57,7 +55,7 @@ abstract class Session<T> {
   /// Internal delegation handler for received messages
   void _onData(dynamic message) async {
     if (onMessage != null) {
-      final dynamic response = await onMessage!(_ref!, message);
+      final dynamic response = await onMessage!(this as T, message);
       if (response != null) send(response);
     }
   }
@@ -65,7 +63,7 @@ abstract class Session<T> {
   /// Internal delegation handler for encountered errors
   void _onError(Object error) async {
     if (onError != null) {
-      onError!(_ref!, error);
+      onError!(this as T, error);
     }
 
     await close();
@@ -74,11 +72,10 @@ abstract class Session<T> {
   /// Internal delegation handler for stream closure
   void _onDone() {
     if (onDone != null) {
-      onDone!(_ref!);
+      onDone!(this as T);
     }
 
     storage.clear();
-    _ref = null;
     onMessage = null;
     onError = null;
   }
@@ -114,7 +111,7 @@ class MiddlewareSession<T> extends Session<T> {
     _middlewareIndex += 1;
 
     return await middleware[_middlewareIndex - 1](
-      _ref!,
+      this as T,
       message,
       _middlewareAction,
       _nextMiddleware,
@@ -143,10 +140,6 @@ class MiddlewareSession<T> extends Session<T> {
 /// Session implementation specific to server-side applications
 class ServerSession extends MiddlewareSession<ServerSession> {
   ServerSession(HttpRequest request) {
-    // This reference is used to allow the superclass [Session] to pass
-    // on a reference to this subclass
-    _ref = this;
-
     ready = _init(request);
   }
 
@@ -161,10 +154,6 @@ class ServerSession extends MiddlewareSession<ServerSession> {
 
 class ClientSession extends MiddlewareSession<ClientSession> {
   ClientSession(String url) {
-    // This reference is used to allow the superclass [Session] to pass
-    // on a reference to this subclass
-    _ref = this;
-
     ready = _init(url);
   }
 
