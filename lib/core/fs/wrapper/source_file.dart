@@ -12,6 +12,10 @@ import '../read_as_posix_file.dart';
 ///
 /// The file data can either be stored in memory or referenced on disk,
 /// making the class usable on the front and backend.
+///
+/// If constructed using raw data, it must be ensured that the file's
+/// data has been converted to posix line feed format.
+/// It is recommended to use the `readAsPosixFile` function to do this.
 class SourceFile {
   Uint8List? _data;
 
