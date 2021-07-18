@@ -1,3 +1,5 @@
+@TestOn('!windows')
+
 import 'dart:io';
 
 import 'package:flyde/core/fs/compiler/installed_compiler.dart';
