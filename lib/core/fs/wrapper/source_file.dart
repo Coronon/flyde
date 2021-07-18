@@ -6,6 +6,8 @@ import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 
+import '../read_as_posix_file.dart';
+
 /// Representation of source files.
 ///
 /// The file data can either be stored in memory or referenced on disk,
@@ -75,16 +77,7 @@ class SourceFile {
   ///
   /// When the data is provided by a file, all line feeds are converted
   /// to `\n`.
-  Future<Uint8List> get data async {
-    if (_data != null) {
-      return _data!;
-    }
-
-    final content = await _file!.readAsString();
-    final normalized = content.replaceAll('\r\n', '\n');
-
-    return Uint8List.fromList(utf8.encode(normalized));
-  }
+  Future<Uint8List> get data async => _data ?? await _file!.readAsPosixBytes();
 
   Future<String> get _hash async => sha256.convert((await data).toList()).toString();
 

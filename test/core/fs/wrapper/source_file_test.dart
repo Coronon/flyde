@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flyde/core/fs/wrapper/source_file.dart';
+import 'package:flyde/core/fs/read_as_posix_file.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -33,7 +34,7 @@ void main() {
 
   test('Can be created from raw data', () async {
     final file = File('./example/src/main.cpp');
-    final srcFile = SourceFile(0, ['src'], 'main', 'cpp', data: await file.readAsBytes());
+    final srcFile = SourceFile(0, ['src'], 'main', 'cpp', data: await file.readAsPosixBytes());
     final data = await srcFile.data;
     final id = srcFile.id;
     final hash = await srcFile.hash;
