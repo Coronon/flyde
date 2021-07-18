@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flyde/core/fs/standard_location.dart';
-import 'package:flyde/features/build_server/cache/lock/cache_lock.dart';
+import 'package:flyde/features/build_server/cache/state/cache_state.dart';
 import 'package:flyde/features/build_server/cache/project_cache.dart';
 import 'package:path/path.dart';
 
@@ -19,9 +19,9 @@ import 'package:path/path.dart';
 class Cache {
   final Directory _workingDirectory;
 
-  final CacheLock _lock;
+  final CacheState _state;
 
-  Cache._(this._workingDirectory, this._lock);
+  Cache._(this._workingDirectory, this._state);
 
   /// Loads the cache from disk and returns an instance of `Cache`.
   ///
@@ -30,24 +30,24 @@ class Cache {
   static Future<Cache> load({Directory? from}) async {
     final appLibPath = from?.path ?? StandardLocation.applicationLibrary.directory.path;
     final workingDir = Directory(join(appLibPath, 'cache'));
-    final lockFile = File(join(workingDir.path, '.lock.json'));
-    late final CacheLock lock;
+    final stateFile = File(join(workingDir.path, '.state.json'));
+    late final CacheState state;
 
     await workingDir.create(recursive: true);
 
-    if (await lockFile.exists()) {
-      final content = await lockFile.readAsString();
+    if (await stateFile.exists()) {
+      final content = await stateFile.readAsString();
 
       if (content.isEmpty) {
-        lock = CacheLock(projects: {});
+        state = CacheState(projects: {});
       } else {
-        lock = CacheLock.fromJson(jsonDecode(content));
+        state = CacheState.fromJson(jsonDecode(content));
       }
     } else {
-      lock = CacheLock(projects: {});
+      state = CacheState(projects: {});
     }
 
-    return Cache._(workingDir, lock);
+    return Cache._(workingDir, state);
   }
 
   /// A list of all available project caches.
@@ -62,7 +62,7 @@ class Cache {
   }
 
   /// A list of all available project ids.
-  Set<String> get availableProjects => {..._lock.projects};
+  Set<String> get availableProjects => {..._state.projects};
 
   /// Permanently deletes the project cache with the given id [projectId].
   Future<void> remove(String projectId) async {
@@ -75,7 +75,7 @@ class Cache {
     final dir = _getProjectDirectory(projectId);
 
     await dir.delete(recursive: true);
-    _lock.projects.remove(projectId);
+    _state.projects.remove(projectId);
     await _save();
   }
 
@@ -89,7 +89,7 @@ class Cache {
       );
     }
 
-    _lock.projects.add(projectId);
+    _state.projects.add(projectId);
     await _save();
     return await get(projectId);
   }
@@ -111,7 +111,7 @@ class Cache {
   bool has(String projectId) {
     _validateId(projectId);
 
-    return _lock.projects.contains(projectId);
+    return _state.projects.contains(projectId);
   }
 
   void _validateId(String projectId) {
@@ -130,7 +130,7 @@ class Cache {
   }
 
   Future<void> _save() async {
-    final lockFile = File(join(_workingDirectory.path, '.lock.json'));
-    await lockFile.writeAsString(json.encode(_lock.toJson()));
+    final stateFile = File(join(_workingDirectory.path, '.state.json'));
+    await stateFile.writeAsString(json.encode(_state.toJson()));
   }
 }

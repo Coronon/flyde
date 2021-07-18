@@ -1,12 +1,12 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'config_lock.g.dart';
+part 'config_state.g.dart';
 
-/// The model of the lock file entry which
-/// stores the persisted configuration data
-/// of the compiler.
+/// The persisted state of `CompilerConfig`.
+///
+/// The state should be part of the project cache's `.state.json` file.
 @JsonSerializable()
-class ConfigLock {
+class ConfigState {
   /// The checksum of the configuration.
   /// It should be unique for each config producing a different executable.
   final String checksum;
@@ -14,15 +14,15 @@ class ConfigLock {
   /// Set of all files which latest version is available as object file for this config.
   final Set<String> compiledFiles;
 
-  ConfigLock({required this.checksum, required this.compiledFiles});
+  ConfigState({required this.checksum, required this.compiledFiles});
 
-  factory ConfigLock.fromJson(Map<String, dynamic> json) => _$ConfigLockFromJson(json);
+  factory ConfigState.fromJson(Map<String, dynamic> json) => _$ConfigStateFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ConfigLockToJson(this);
+  Map<String, dynamic> toJson() => _$ConfigStateToJson(this);
 
   @override
   bool operator ==(other) {
-    if (other is! ConfigLock) {
+    if (other is! ConfigState) {
       return false;
     }
 

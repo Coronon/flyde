@@ -22,11 +22,11 @@ void main() {
 
     await expectLater(cache.create('test'), completion(isA<ProjectCache>()));
 
-    final cacheLock = File('$_cachePath/cache/.lock.json');
-    final pCacheLock = File('$_cachePath/cache/test/.lock.json');
+    final cacheState = File('$_cachePath/cache/.state.json');
+    final pCacheState = File('$_cachePath/cache/test/.state.json');
 
-    await expectLater(cacheLock.exists(), completion(equals(true)));
-    await expectLater(pCacheLock.exists(), completion(equals(true)));
+    await expectLater(cacheState.exists(), completion(equals(true)));
+    await expectLater(pCacheState.exists(), completion(equals(true)));
   });
 
   test('Can list all project caches', () async {

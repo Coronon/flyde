@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:flyde/core/fs/configs/compiler_config.dart';
 import 'package:flyde/core/fs/file_extension.dart';
 import 'package:flyde/features/build_server/cache/implementation_object_ref.dart';
-import 'package:flyde/features/build_server/cache/lock/config_lock.dart';
-import 'package:flyde/features/build_server/cache/lock/project_cache_lock.dart';
+import 'package:flyde/features/build_server/cache/state/config_state.dart';
+import 'package:flyde/features/build_server/cache/state/project_cache_state.dart';
 import 'package:flyde/core/fs/wrapper/source_file.dart';
-import 'package:flyde/features/build_server/cache/lock/source_file_lock.dart';
+import 'package:flyde/features/build_server/cache/state/source_file_state.dart';
 import 'package:path/path.dart';
 
 /// The cache for a single project.
@@ -24,7 +24,7 @@ class ProjectCache {
 
   late final Directory _workingDirectory;
 
-  late final ProjectCacheLock _lock;
+  late final ProjectCacheState _state;
 
   CompilerConfig? _config;
 
@@ -34,23 +34,23 @@ class ProjectCache {
 
   /// Initiates the cache and loads persisted state if available.
   Future<void> init() async {
-    if (await _lockFile.exists()) {
-      final content = await _lockFile.readAsString();
+    if (await _stateFile.exists()) {
+      final content = await _stateFile.readAsString();
 
       if (content.isEmpty) {
-        _lock = ProjectCacheLock(configs: {}, files: {});
+        _state = ProjectCacheState(configs: {}, files: {});
       } else {
-        _lock = ProjectCacheLock.fromJson(jsonDecode(content));
+        _state = ProjectCacheState.fromJson(jsonDecode(content));
       }
     } else {
-      await _lockFile.create(recursive: true);
-      _lock = ProjectCacheLock(configs: {}, files: {});
+      await _stateFile.create(recursive: true);
+      _state = ProjectCacheState(configs: {}, files: {});
     }
   }
 
   /// Saves the cache state to disk.
   Future<void> finish() async {
-    await _lockFile.writeAsString(json.encode(_lock.toJson()));
+    await _stateFile.writeAsString(json.encode(_state.toJson()));
   }
 
   /// Synchronizes the cache with the user project.
@@ -63,7 +63,7 @@ class ProjectCache {
   /// used config, call `sync` once more.
   Future<List<String>> sync(Map<String, String> files, CompilerConfig config) async {
     _config = config;
-    _lock.configs.add(ConfigLock(checksum: config.hash, compiledFiles: {}));
+    _state.configs.add(ConfigState(checksum: config.hash, compiledFiles: {}));
 
     final required = <String>[];
     final inSync = <String>[];
@@ -71,10 +71,12 @@ class ProjectCache {
     for (final entry in files.entries) {
       final id = entry.key;
       final checksum = entry.value;
-      final matches = _lock.files.where((file) => file.id == id);
+      final matches = _state.files.where((file) => file.id == id);
 
       if (matches.length > 1) {
-        throw StateError('Did not expect to find more than one file of the same id in the lock.');
+        throw StateError(
+          'Did not expect to find more than one file of the same id in the state file.',
+        );
       }
 
       if (matches.isEmpty) {
@@ -104,11 +106,11 @@ class ProjectCache {
     await diskFile.create(recursive: true);
     await diskFile.writeAsBytes(await file.data, flush: true);
 
-    if (_lock.files.where((f) => f.id == file.id).isNotEmpty) {
-      final lockFile = _lock.files.singleWhere((f) => f.id == file.id);
-      lockFile.hash = await file.hash;
+    if (_state.files.where((f) => f.id == file.id).isNotEmpty) {
+      final stateFile = _state.files.singleWhere((f) => f.id == file.id);
+      stateFile.hash = await file.hash;
     } else {
-      _lock.files.add(SourceFileLock(id: file.id, hash: await file.hash, path: path));
+      _state.files.add(SourceFileState(id: file.id, hash: await file.hash, path: path));
     }
   }
 
@@ -116,7 +118,7 @@ class ProjectCache {
   List<File> get headerFiles {
     final headers = <File>[];
 
-    for (final file in _lock.files) {
+    for (final file in _state.files) {
       final ext = extension(file.path);
 
       if (FileExtension.headers.contains(ext)) {
@@ -145,7 +147,7 @@ class ProjectCache {
   Future<List<ImplementationObjectRef>> get sourceFiles async {
     final refs = <ImplementationObjectRef>[];
 
-    for (final file in _lock.files) {
+    for (final file in _state.files) {
       if (_isCompiled(file.id)) {
         continue;
       }
@@ -183,7 +185,7 @@ class ProjectCache {
   Future<List<File>> get objectFiles async {
     final objectFiles = <File>[];
 
-    for (final file in _lock.files) {
+    for (final file in _state.files) {
       if (_isCompiled(file.id)) {
         objectFiles.add(File(_objectPath(file.id)));
       }
@@ -208,14 +210,14 @@ class ProjectCache {
     return joinAll([_workingDirectory.path, 'obj', _config!.hash, '$sourceId.o']);
   }
 
-  File get _lockFile => File(join(_workingDirectory.path, '.lock.json'));
+  File get _stateFile => File(join(_workingDirectory.path, '.state.json'));
 
   bool _isCompiled(String fileId) {
-    return _currentConfigLock.compiledFiles.contains(fileId);
+    return _currentConfigState.compiledFiles.contains(fileId);
   }
 
   void _setIsCompiled(String fileId, bool compiled) {
-    final files = _currentConfigLock.compiledFiles;
+    final files = _currentConfigState.compiledFiles;
 
     if (compiled) {
       files.add(fileId);
@@ -224,6 +226,6 @@ class ProjectCache {
     }
   }
 
-  ConfigLock get _currentConfigLock =>
-      _lock.configs.singleWhere((conf) => conf.checksum == _config!.hash);
+  ConfigState get _currentConfigState =>
+      _state.configs.singleWhere((conf) => conf.checksum == _config!.hash);
 }

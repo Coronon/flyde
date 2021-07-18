@@ -13,11 +13,11 @@ void main() {
   setUp(() async => await clearTestCacheDirectory(id: _cacheId));
   tearDown(() async => await clearTestCacheDirectory(id: _cacheId));
 
-  test('Creates lock file on init', () async {
+  test('Creates state file on init', () async {
     await createDummyProjectCache(id: _cacheId);
 
-    final lock = File('$_dummyProjectCachePath/.lock.json');
-    final exists = await lock.exists();
+    final state = File('$_dummyProjectCachePath/.state.json');
+    final exists = await state.exists();
 
     expect(exists, true);
   });

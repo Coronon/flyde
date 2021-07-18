@@ -1,11 +1,12 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'source_file_lock.g.dart';
+part 'source_file_state.g.dart';
 
-/// The model of the persisted information of
-/// the available source files.
+/// The persisted state of a source file.
+///
+/// The state should be part of the project cache's `.state.json` file.
 @JsonSerializable()
-class SourceFileLock {
+class SourceFileState {
   /// The unique id of the project file.
   final String id;
 
@@ -15,15 +16,15 @@ class SourceFileLock {
   /// The path to the in cache stored file copy.
   final String path;
 
-  SourceFileLock({required this.id, required this.hash, required this.path});
+  SourceFileState({required this.id, required this.hash, required this.path});
 
-  factory SourceFileLock.fromJson(Map<String, dynamic> json) => _$SourceFileLockFromJson(json);
+  factory SourceFileState.fromJson(Map<String, dynamic> json) => _$SourceFileStateFromJson(json);
 
-  Map<String, dynamic> toJson() => _$SourceFileLockToJson(this);
+  Map<String, dynamic> toJson() => _$SourceFileStateToJson(this);
 
   @override
   bool operator ==(other) {
-    if (other is! SourceFileLock) {
+    if (other is! SourceFileState) {
       return false;
     }
 
