@@ -2,8 +2,13 @@ import 'dart:convert';
 
 import 'authentication.dart';
 
+/// Function signature of '$.fromJson'
 typedef Deserialize<T> = T Function(Map<String, dynamic>);
 
+/// Intermediate between transmittable and usable messages.
+///
+/// This class translates protocol messages to transmittable (string)
+/// messages and vice versa.
 class ProtocolDelegate {
   /// A dictionary of all protocol elements and their coresponding deserializers
   //? This should not be final because of how testing is implemented.
@@ -13,6 +18,7 @@ class ProtocolDelegate {
     'AuthResponse': (Map<String, dynamic> json) => AuthResponse.fromJson(json),
   };
 
+  /// Serialize a protocol message to a transmittable message
   static String serialize(dynamic message) {
     // Get className
     final String type = message.runtimeType.toString();
@@ -21,7 +27,7 @@ class ProtocolDelegate {
     return '{"type":"$type","data":$data}';
   }
 
-  static dynamic deSerialize(String message) {
+  /// Deserialize a transmittable message to a protocol message
     final Map<String, dynamic> data = jsonDecode(message);
     if (!data.containsKey('type')) {
       throw ProtocolException("Message does not contain 'type' property");
@@ -35,6 +41,7 @@ class ProtocolDelegate {
   }
 }
 
+/// Exception exclusively used by [ProtocolDelegate]
 class ProtocolException implements Exception {
   final String message;
   ProtocolException(this.message);

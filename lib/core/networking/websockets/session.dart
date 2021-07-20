@@ -49,6 +49,7 @@ abstract class Session<T> {
   void raise(Object error) => _onError(error);
 
   /// Listen on the WebSocket.
+  /// 
   /// This should be called AFTER the WebSocket has been created by the subclass.
   void _listen() => _socket.listen(_onData, onError: _onError, onDone: _onDone);
 

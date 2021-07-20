@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:test/test.dart' as test show expect, Matcher;
 
 /// Useful to easily test handler functions
-///  that set values outside of their scope.
+/// that set values outside of their scope.
 ///
 /// ```dart
 /// // Construct VHook with initial value of 'false'
 /// VHook<bool> calledHandler = VHook<bool>(false);
 ///
-/// willCallHandler((){
+/// willCallHandler(() {
 ///   calledHandler.set(true);
 ///   // Some handler code
 /// });
@@ -22,11 +22,10 @@ class VHook<T> {
   /// The value of the variable.
   T? value;
 
-  /// Construct a new VariableHook with the given initial value.
-  VHook(T this.value);
+  /// Construct a new ValueHook with the given initial value.
 
   /// Set the value of the variable.
-  void set(T val) => value = val;
+  /// Current value
 
   /// Check the value of the variable.
   ///
@@ -64,7 +63,7 @@ class VHook<T> {
   /// VHook<bool?> conditionValue = VHook<bool?>(null);
   ///
   /// // This function is supposed to call the handler soon
-  /// willCallHandlerAsync((){
+  /// willCallHandlerAsync(() {
   ///   if (someCondition) {
   ///     conditionValue.set(true);
   ///   } else {

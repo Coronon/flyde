@@ -4,11 +4,26 @@ import 'dart:io';
 import 'websockets/session.dart';
 import 'websockets/middleware.dart';
 
+/// WebServer that can handle both HTTP and WS
+///
+/// This class is directly integrated with [ServerSession].
+/// Its main purpose is the creation, handling and freeing
+/// of multiple concurrent [Session] instances.
+///
+/// Note: After creating an instance make sure to `await server.ready;`
+/// ```dart
+/// final server = WebServer(
+///   InternetAddress.anyIPv4,
+///   1706,
+///   // Optional handlers and middleware
+/// );
+/// await server.ready;
+/// ```
 class WebServer {
   /// Awaitable to ensure ready for use
   late Future<void> ready;
 
-  /// List of middleware that should be installed in each WebSocket session.
+  /// List of middleware that should be installed in each [ServerSession].
   ///
   /// Each middleware recieves the calling [Session] instance, message,
   /// [MiddlewareAction] and a proxy to the next [MiddlewareFunc].

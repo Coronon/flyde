@@ -81,7 +81,7 @@ void main() {
   });
 }
 
-class MockSerializable {
+/// Mock class to test serialization
   final String value;
 
   const MockSerializable(this.value);

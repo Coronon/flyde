@@ -280,10 +280,12 @@ void main() {
   });
 }
 
+/// Get current URI to server
 Uri getUri(WebServer? server, String prefix) {
   return Uri.parse('$prefix://${server!.address!.host}:${server.port!}');
 }
 
+/// Mock exception used for testing
 class TestException implements Exception {
   final String message;
 
