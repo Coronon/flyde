@@ -108,7 +108,7 @@ void main() {
     // Wait for connection to be closed
     await closed.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
     closed.expect(equals(true));
-    waitFor(() => server.isEmpty, timeout: Duration(seconds: 5), raiseOnTimeout: true);
+    waitFor(() => server.hasNoSessions, timeout: Duration(seconds: 5), raiseOnTimeout: true);
   });
 
   test('Can redirect websocket', () async {
@@ -228,7 +228,7 @@ void main() {
       received.set(true);
     };
 
-    expect(server.isEmpty, equals(true));
+    expect(server.hasNoSessions, equals(true));
 
     // Connect a client
     final ClientSession client = ClientSession(getUri(server, 'ws').toString());
@@ -238,13 +238,13 @@ void main() {
     await received.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
     received.expect(equals(true));
 
-    expect(server.isEmpty, equals(false));
+    expect(server.hasNoSessions, equals(false));
 
     // Teardown
     client.close();
     await server.close();
 
     // Is empty again
-    expect(server.isEmpty, equals(true));
+    expect(server.hasNoSessions, equals(true));
   });
 }

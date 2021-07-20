@@ -167,7 +167,7 @@ class WebServer {
   int get port => _server.port;
 
   /// Whether there are no active WebSocket connections
-  bool get isEmpty => _wsSessions.isEmpty;
+  bool get hasNoSessions => _wsSessions.isEmpty;
 
   /// Close the WebServer and teardown all connections
   Future<void> close() async {
