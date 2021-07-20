@@ -10,14 +10,16 @@ import 'websockets/middleware.dart';
 /// Its main purpose is the creation, handling and freeing
 /// of multiple concurrent [Session] instances.
 ///
-/// Note: After creating an instance make sure to `await server.ready;`
 /// ```dart
-/// final server = WebServer(
+/// final server = await WebServer.open(
 ///   InternetAddress.anyIPv4,
 ///   1706,
 ///   // Optional handlers and middleware
 /// );
-/// await server.ready;
+/// // You may assign handlers later
+/// server.wsOnMessage(ServerSession sess, dynamic msg) {
+///   // ...
+/// }
 /// ```
 class WebServer {
   /// Awaitable to ensure ready for use
@@ -57,10 +59,8 @@ class WebServer {
   /// List of all connected WebSockets
   final List<ServerSession> _wsSessions = <ServerSession>[];
 
-  /// Create a WebServer that can handle HTTP and WebSocket connections
-  ///
-  /// For a secure connection specify a [securityContext] the server should use.
-  WebServer(
+  /// Private constructor to force usage of `.open`
+  WebServer._(
     InternetAddress bindAddress,
     int bindPort, {
     SecurityContext? securityContext,
@@ -79,6 +79,36 @@ class WebServer {
     };
 
     ready = _init(bindAddress, bindPort, securityContext);
+  }
+
+  /// Create a WebServer that can handle HTTP and WebSocket connections
+  ///
+  /// For a secure connection specify a [securityContext] the server should use.
+  static Future<WebServer> open(
+    InternetAddress bindAddress,
+    int bindPort, {
+    SecurityContext? securityContext,
+    List<MiddlewareFunc> wsMiddleware = const [],
+    Future<dynamic> Function(ServerSession, dynamic)? wsOnMessage,
+    void Function(ServerSession, Object)? wsOnError,
+    void Function(ServerSession)? wsOnDone,
+    void Function(HttpRequest)? httpOnRequest,
+    bool redirectWebsocket = false,
+  }) async {
+    WebServer server = WebServer._(
+      bindAddress,
+      bindPort,
+      securityContext: securityContext,
+      wsMiddleware: wsMiddleware,
+      wsOnMessage: wsOnMessage,
+      wsOnError: wsOnError,
+      wsOnDone: wsOnDone,
+      httpOnRequest: httpOnRequest,
+      redirectWebsocket: redirectWebsocket,
+    );
+    await server.ready;
+
+    return server;
   }
 
   /// Internal initialisation

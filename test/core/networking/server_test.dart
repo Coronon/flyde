@@ -8,22 +8,19 @@ import 'package:flyde/core/networking/websockets/session.dart';
 import '../../helpers/value_hook.dart';
 import '../../helpers/wait_for.dart';
 import '../../helpers/get_uri.dart';
+import '../../helpers/open_webserver.dart';
 import '../../helpers/mocks/mock_exception.dart';
 
 void main() {
   test('Can receive http request', () async {
     final VHook<bool?> received = VHook<bool?>(null);
 
-    final WebServer server = WebServer(
-      InternetAddress.loopbackIPv4,
-      0,
-      httpOnRequest: (HttpRequest req) {
-        received.set(true);
-        req.response.statusCode = 404;
-        req.response.close();
-      },
-    );
-    await server.ready;
+    final WebServer server = await openWebServer();
+    server.httpOnRequest = (HttpRequest req) {
+      received.set(true);
+      req.response.statusCode = 404;
+      req.response.close();
+    };
 
     http.get(getUri(server, 'http'));
 
@@ -36,16 +33,12 @@ void main() {
   });
 
   test('Can respond to http request', () async {
-    final WebServer server = WebServer(
-      InternetAddress.loopbackIPv4,
-      0,
-      httpOnRequest: (HttpRequest req) {
-        req.response.statusCode = 200;
-        req.response.write('ANYTHING');
-        req.response.close();
-      },
-    );
-    await server.ready;
+    final WebServer server = await openWebServer();
+    server.httpOnRequest = (HttpRequest req) {
+      req.response.statusCode = 200;
+      req.response.write('ANYTHING');
+      req.response.close();
+    };
 
     final http.Response response = await http.get(getUri(server, 'http'));
 
@@ -58,11 +51,7 @@ void main() {
   });
 
   test('Returns 404 if no handler set', () async {
-    final WebServer server = WebServer(
-      InternetAddress.loopbackIPv4,
-      0,
-    );
-    await server.ready;
+    final WebServer server = await openWebServer();
 
     final http.Response response = await http.get(getUri(server, 'http'));
 
@@ -77,14 +66,10 @@ void main() {
   test('Can establish websocket connection', () async {
     final VHook<bool?> received = VHook<bool?>(null);
 
-    final WebServer server = WebServer(
-      InternetAddress.loopbackIPv4,
-      0,
-      wsOnMessage: (ServerSession sess, dynamic msg) async {
-        received.set(true);
-      },
-    );
-    await server.ready;
+    final WebServer server = await openWebServer();
+    server.wsOnMessage = (ServerSession sess, dynamic msg) async {
+      received.set(true);
+    };
 
     final WebSocket client = await WebSocket.connect(getUri(server, 'ws').toString());
     client.add('ANYTHING');
@@ -102,14 +87,10 @@ void main() {
     final VHook<bool?> established = VHook<bool?>(null);
     final VHook<bool?> closed = VHook<bool?>(null);
 
-    final WebServer server = WebServer(
-      InternetAddress.loopbackIPv4,
-      0,
-      wsOnMessage: (ServerSession sess, dynamic msg) async {
-        established.set(true);
-      },
-    );
-    await server.ready;
+    final WebServer server = await openWebServer();
+    server.wsOnMessage = (ServerSession sess, dynamic msg) async {
+      established.set(true);
+    };
 
     final ClientSession client = ClientSession(getUri(server, 'ws').toString());
     client.onDone = (ClientSession _) async {
@@ -133,17 +114,13 @@ void main() {
   test('Can redirect websocket', () async {
     final VHook<bool?> received = VHook<bool?>(null);
 
-    final WebServer server = WebServer(
-      InternetAddress.loopbackIPv4,
-      0,
-      redirectWebsocket: true,
-      httpOnRequest: (HttpRequest req) {
-        received.set(true);
-        req.response.statusCode = 404;
-        req.response.close();
-      },
-    );
-    await server.ready;
+    final WebServer server = await openWebServer();
+    server.redirectWebsocket = true;
+    server.httpOnRequest = (HttpRequest req) {
+      received.set(true);
+      req.response.statusCode = 404;
+      req.response.close();
+    };
 
     expect(
       () async {
@@ -175,17 +152,13 @@ void main() {
   test('OnError is called', () async {
     final VHook<Object?> called = VHook<Object?>(null);
 
-    final WebServer server = WebServer(
-      InternetAddress.loopbackIPv4,
-      0,
-      wsOnError: (ServerSession sess, Object error) {
-        called.set(error);
-      },
-      wsOnMessage: (ServerSession sess, dynamic msg) async {
-        sess.raise(MockException(msg));
-      },
-    );
-    await server.ready;
+    final WebServer server = await openWebServer();
+    server.wsOnError = (ServerSession sess, Object error) {
+      called.set(error);
+    };
+    server.wsOnMessage = (ServerSession sess, dynamic msg) async {
+      sess.raise(MockException(msg));
+    };
 
     // Connect client
     final ClientSession client = ClientSession(getUri(server, 'ws').toString());
@@ -209,15 +182,11 @@ void main() {
   test('OnDone is called', () async {
     final VHook<bool?> called = VHook<bool?>(null);
 
-    final WebServer server = WebServer(
-      InternetAddress.loopbackIPv4,
-      0,
-      wsOnDone: (ServerSession sess) {
-        called.set(true);
-      },
-      wsOnMessage: (ServerSession sess, dynamic msg) async {},
-    );
-    await server.ready;
+    final WebServer server = await openWebServer();
+    server.wsOnDone = (ServerSession sess) {
+      called.set(true);
+    };
+    server.wsOnMessage = (ServerSession sess, dynamic msg) async {};
 
     // Connect client
     final ClientSession client = ClientSession(getUri(server, 'ws').toString());
@@ -234,11 +203,7 @@ void main() {
   });
 
   test('Get address', () async {
-    final WebServer server = WebServer(
-      InternetAddress.loopbackIPv4,
-      0,
-    );
-    await server.ready;
+    final WebServer server = await openWebServer();
 
     expect(server.address, equals(InternetAddress.loopbackIPv4));
 
@@ -247,11 +212,7 @@ void main() {
   });
 
   test('Get port', () async {
-    final WebServer server = WebServer(
-      InternetAddress.loopbackIPv4,
-      0,
-    );
-    await server.ready;
+    final WebServer server = await openWebServer();
 
     expect(server.port, isA<int>());
 
@@ -262,14 +223,10 @@ void main() {
   test('Get isEmpty', () async {
     final VHook<bool?> received = VHook<bool?>(null);
 
-    WebServer server = WebServer(
-      InternetAddress.loopbackIPv4,
-      0,
-      wsOnMessage: (ServerSession sess, dynamic msg) async {
-        received.set(true);
-      },
-    );
-    await server.ready;
+    final WebServer server = await openWebServer();
+    server.wsOnMessage = (ServerSession sess, dynamic msg) async {
+      received.set(true);
+    };
 
     expect(server.isEmpty, equals(true));
 
