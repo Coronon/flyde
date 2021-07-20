@@ -6,12 +6,11 @@ import 'package:flyde/core/networking/protocol/protocol.dart';
 void main() {
   group('AuthRequest', () {
     test('In ProtocolDelegate.elements', () {
-      expect(ProtocolDelegate.elements['AuthRequest'], equals(isA<Deserialize>()));
+      expect(ProtocolDelegate.elements['AuthRequest'], isA<Deserialize>());
     });
 
     test('Can serialize', () {
       final request = AuthRequest(username: "testUser", password: "testPassword");
-
       final String serialized = ProtocolDelegate.serialize(request);
 
       expect(
@@ -28,7 +27,7 @@ void main() {
 
       final dynamic deserialized = ProtocolDelegate.deserialize(request);
 
-      expect(deserialized, equals(isA<AuthRequest>()));
+      expect(deserialized, isA<AuthRequest>());
       deserialized as AuthRequest;
       expect(deserialized.username, equals('testUser'));
       expect(deserialized.password, equals('testPassword'));
@@ -37,7 +36,7 @@ void main() {
 
   group('AuthResponse', () {
     test('In ProtocolDelegate.elements', () {
-      expect(ProtocolDelegate.elements['AuthResponse'], equals(isA<Deserialize>()));
+      expect(ProtocolDelegate.elements['AuthResponse'], isA<Deserialize>());
     });
 
     test('Can serialize', () {
@@ -78,15 +77,15 @@ void main() {
       final dynamic deserialized2 = ProtocolDelegate.deserialize(response2);
       final dynamic deserialized3 = ProtocolDelegate.deserialize(response3);
 
-      expect(deserialized1, equals(isA<AuthResponse>()));
+      expect(deserialized1, isA<AuthResponse>());
       deserialized1 as AuthResponse;
       expect(deserialized1.status, equals(AuthResponseStatus.required));
 
-      expect(deserialized2, equals(isA<AuthResponse>()));
+      expect(deserialized2, isA<AuthResponse>());
       deserialized2 as AuthResponse;
       expect(deserialized2.status, equals(AuthResponseStatus.success));
 
-      expect(deserialized3, equals(isA<AuthResponse>()));
+      expect(deserialized3, isA<AuthResponse>());
       deserialized3 as AuthResponse;
       expect(deserialized3.status, equals(AuthResponseStatus.failure));
     });

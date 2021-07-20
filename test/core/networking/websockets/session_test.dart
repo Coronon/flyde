@@ -251,7 +251,7 @@ void main() {
     await clientPersisted.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
 
     // Check persisted data
-    serverSession.expect(equals(isA<ServerSession>()));
+    serverSession.expect(isA<ServerSession>());
     serverPersisted.expect(equals(true));
     clientPersisted.expect(equals(true));
 

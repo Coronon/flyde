@@ -13,7 +13,7 @@ void main() {
     final dynamic recreated =
         ProtocolDelegate.deserialize(ProtocolDelegate.serialize(serializable));
 
-    expect(recreated is MockSerializable, equals(true));
+    expect(recreated, isA<MockSerializable>());
     recreated as MockSerializable;
     expect(recreated.value, equals(serializable.value));
   });
@@ -31,7 +31,7 @@ void main() {
 
     final dynamic deSerialized = ProtocolDelegate.deserialize(serialized);
 
-    expect(deSerialized is MockSerializable, equals(true));
+    expect(deSerialized, isA<MockSerializable>());
     deSerialized as MockSerializable;
     expect(deSerialized.value, equals("ANYTHING"));
   });
@@ -82,6 +82,7 @@ void main() {
 }
 
 /// Mock class to test serialization
+class MockSerializable {
   final String value;
 
   const MockSerializable(this.value);

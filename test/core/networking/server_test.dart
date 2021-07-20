@@ -242,7 +242,7 @@ void main() {
     );
     await server.ready;
 
-    expect(server.port, equals(isA<int>()));
+    expect(server.port, isA<int>());
 
     // Teardown
     server.close();
