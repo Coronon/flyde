@@ -32,6 +32,7 @@ void main() {
     // Teardown
     server.close();
   });
+
   test('Can respond to http request', () async {
     final WebServer server = WebServer(
       InternetAddress.loopbackIPv4,
@@ -53,6 +54,7 @@ void main() {
     // Teardown
     server.close();
   });
+
   test('Returns 404 if no handler set', () async {
     final WebServer server = WebServer(
       InternetAddress.loopbackIPv4,
@@ -69,6 +71,7 @@ void main() {
     // Teardown
     server.close();
   });
+
   test('Can establish websocket connection', () async {
     final VHook<bool?> received = VHook<bool?>(null);
 
@@ -92,6 +95,7 @@ void main() {
     client.close();
     server.close();
   });
+
   test('Can close all WebSocket connections', () async {
     final VHook<bool?> established = VHook<bool?>(null);
     final VHook<bool?> closed = VHook<bool?>(null);
@@ -123,6 +127,7 @@ void main() {
     closed.expect(equals(true));
     waitFor(() => server.isEmpty, timeout: Duration(seconds: 5), raiseOnTimeout: true);
   });
+
   test('Can redirect websocket', () async {
     final VHook<bool?> received = VHook<bool?>(null);
 
@@ -164,6 +169,7 @@ void main() {
     // Teardown
     server.close();
   });
+
   test('OnError is called', () async {
     final VHook<Object?> called = VHook<Object?>(null);
 
@@ -197,6 +203,7 @@ void main() {
     client.close();
     server.close();
   });
+
   test('OnDone is called', () async {
     final VHook<bool?> called = VHook<bool?>(null);
 
@@ -223,6 +230,7 @@ void main() {
     client.close();
     server.close();
   });
+
   test('Get address', () async {
     final WebServer server = WebServer(
       InternetAddress.loopbackIPv4,
@@ -235,6 +243,7 @@ void main() {
     // Teardown
     server.close();
   });
+
   test('Get port', () async {
     final WebServer server = WebServer(
       InternetAddress.loopbackIPv4,
@@ -247,6 +256,7 @@ void main() {
     // Teardown
     server.close();
   });
+
   test('Get isEmpty', () async {
     final VHook<bool?> received = VHook<bool?>(null);
 
