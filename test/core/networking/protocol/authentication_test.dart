@@ -26,7 +26,7 @@ void main() {
       final String request =
           '{"type":"AuthRequest","data":{"username":"testUser","password":"testPassword"}}';
 
-      final dynamic deserialized = ProtocolDelegate.deSerialize(request);
+      final dynamic deserialized = ProtocolDelegate.deserialize(request);
 
       expect(deserialized, equals(isA<AuthRequest>()));
       deserialized as AuthRequest;
@@ -74,9 +74,9 @@ void main() {
       final String response2 = '{"type":"AuthResponse","data":{"status":"success"}}';
       final String response3 = '{"type":"AuthResponse","data":{"status":"failure"}}';
 
-      final dynamic deserialized1 = ProtocolDelegate.deSerialize(response1);
-      final dynamic deserialized2 = ProtocolDelegate.deSerialize(response2);
-      final dynamic deserialized3 = ProtocolDelegate.deSerialize(response3);
+      final dynamic deserialized1 = ProtocolDelegate.deserialize(response1);
+      final dynamic deserialized2 = ProtocolDelegate.deserialize(response2);
+      final dynamic deserialized3 = ProtocolDelegate.deserialize(response3);
 
       expect(deserialized1, equals(isA<AuthResponse>()));
       deserialized1 as AuthResponse;

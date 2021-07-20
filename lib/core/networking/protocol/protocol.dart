@@ -27,6 +27,7 @@ class ProtocolDelegate {
   }
 
   /// Deserialize a transmittable message to a protocol message
+  static dynamic deserialize(String message) {
     final Map<String, dynamic> data = jsonDecode(message);
     if (!data.containsKey('type')) {
       throw ProtocolException("Message does not contain 'type' property");

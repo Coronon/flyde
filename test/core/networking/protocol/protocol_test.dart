@@ -11,7 +11,7 @@ void main() {
     final serializable = MockSerializable("ANYTHING");
 
     final dynamic recreated =
-        ProtocolDelegate.deSerialize(ProtocolDelegate.serialize(serializable));
+        ProtocolDelegate.deserialize(ProtocolDelegate.serialize(serializable));
 
     expect(recreated is MockSerializable, equals(true));
     recreated as MockSerializable;
@@ -29,7 +29,7 @@ void main() {
   test('ProtocolDelegate can deserialize object', () {
     final String serialized = '{"type":"MockSerializable","data":{"value":"ANYTHING"}}';
 
-    final dynamic deSerialized = ProtocolDelegate.deSerialize(serialized);
+    final dynamic deSerialized = ProtocolDelegate.deserialize(serialized);
 
     expect(deSerialized is MockSerializable, equals(true));
     deSerialized as MockSerializable;
@@ -40,7 +40,7 @@ void main() {
     final String msg = '{"data": {"value": "MockSerializable"}}';
 
     expect(
-      () => ProtocolDelegate.deSerialize(msg),
+      () => ProtocolDelegate.deserialize(msg),
       throwsA(
         isA<ProtocolException>().having(
           (ProtocolException error) => error.message,
@@ -55,7 +55,7 @@ void main() {
     final String msg = '{"type": "NonExistentType", "data": {"value": "MockSerializable"}}';
 
     expect(
-      () => ProtocolDelegate.deSerialize(msg),
+      () => ProtocolDelegate.deserialize(msg),
       throwsA(
         isA<ProtocolException>().having(
           (ProtocolException error) => error.message,
@@ -70,14 +70,14 @@ void main() {
     final String msg1 = '{"type": "MockSerializable", "data": {"value": 1}}';
     final String msg2 = '{"type": "MockSerializable", "data": {"ANYTHING": "ANYTHING"}}';
 
-    expect(() => ProtocolDelegate.deSerialize(msg1), throwsA(isA<TypeError>()));
-    expect(() => ProtocolDelegate.deSerialize(msg2), throwsA(isA<TypeError>()));
+    expect(() => ProtocolDelegate.deserialize(msg1), throwsA(isA<TypeError>()));
+    expect(() => ProtocolDelegate.deserialize(msg2), throwsA(isA<TypeError>()));
   });
 
   test('ProtocolDelegate throw if not json string', () {
     final String msg = 'ANYTHING';
 
-    expect(() => ProtocolDelegate.deSerialize(msg), throwsA(isA<FormatException>()));
+    expect(() => ProtocolDelegate.deserialize(msg), throwsA(isA<FormatException>()));
   });
 }
 
