@@ -11,8 +11,7 @@ typedef Deserialize<T> = T Function(Map<String, dynamic>);
 /// messages and vice versa.
 class ProtocolDelegate {
   /// A dictionary of all protocol elements and their coresponding deserializers
-  //? This should not be final because of how testing is implemented.
-  static Map<String, Deserialize> elements = <String, Deserialize>{
+  static final Map<String, Deserialize> elements = <String, Deserialize>{
     //* Authentication
     'AuthRequest': (Map<String, dynamic> json) => AuthRequest.fromJson(json),
     'AuthResponse': (Map<String, dynamic> json) => AuthResponse.fromJson(json),
