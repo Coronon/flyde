@@ -20,12 +20,16 @@ import 'package:test/test.dart' as test show expect, Matcher;
 /// ```
 class VHook<T> {
   /// The value of the variable.
-  T? value;
+  T _value;
 
   /// Construct a new ValueHook with the given initial value.
+  VHook(this._value);
 
   /// Set the value of the variable.
+  void set(T val) => _value = val;
+
   /// Current value
+  T get value => _value;
 
   /// Check the value of the variable.
   ///
