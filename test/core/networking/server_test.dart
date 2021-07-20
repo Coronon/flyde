@@ -7,6 +7,8 @@ import 'package:flyde/core/networking/websockets/session.dart';
 
 import '../../helpers/value_hook.dart';
 import '../../helpers/wait_for.dart';
+import '../../helpers/get_uri.dart';
+import '../../helpers/mocks/mock_exception.dart';
 
 void main() {
   test('Can receive http request', () async {
@@ -180,7 +182,7 @@ void main() {
         called.set(error);
       },
       wsOnMessage: (ServerSession sess, dynamic msg) async {
-        sess.raise(TestException(msg));
+        sess.raise(MockException(msg));
       },
     );
     await server.ready;
@@ -192,8 +194,8 @@ void main() {
     // Wait for handler to be called
     await called.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
     called.expect(
-      isA<TestException>().having(
-        (TestException e) => e.message,
+      isA<MockException>().having(
+        (MockException e) => e.message,
         'message',
         equals('ANYTHING'),
       ),
@@ -288,19 +290,4 @@ void main() {
     // Is empty again
     expect(server.isEmpty, equals(true));
   });
-}
-
-/// Get current URI to server
-Uri getUri(WebServer? server, String prefix) {
-  return Uri.parse('$prefix://${server!.address!.host}:${server.port!}');
-}
-
-/// Mock exception used for testing
-class TestException implements Exception {
-  final String message;
-
-  const TestException(this.message);
-
-  @override
-  String toString() => message;
 }

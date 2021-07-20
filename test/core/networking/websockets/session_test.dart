@@ -7,6 +7,7 @@ import 'package:flyde/core/networking/websockets/middleware.dart';
 
 import '../../../helpers/value_hook.dart';
 import '../../../helpers/wait_for.dart';
+import '../../../helpers/mocks/mock_exception.dart';
 
 void main() {
   late HttpServer? server;
@@ -274,7 +275,7 @@ void main() {
     final StreamSubscription<HttpRequest> sub = server!.listen((HttpRequest request) {
       final ServerSession sess = ServerSession(request);
       sess.onMessage = (ServerSession sess, dynamic msg) async {
-        sess.raise(TestException(msg));
+        sess.raise(MockException(msg));
       };
       sess.onError = (ServerSession sess, Object ex) {
         exceptionServer.set(ex);
@@ -291,8 +292,8 @@ void main() {
     // Check exception
     exceptionServer.expect(
       equals(
-        isA<TestException>().having(
-          (TestException e) => e.message,
+        isA<MockException>().having(
+          (MockException e) => e.message,
           'message',
           equals('ANYTHING-1'),
         ),
@@ -311,7 +312,7 @@ void main() {
     //? This is not a race condition, because of how the dart eventloop is implemented
     //? The internal 'WebSocket.connect' is scheduled and executed when this strain waits (await)
     client.onMessage = (ClientSession sess, dynamic msg) async {
-      sess.raise(TestException(msg));
+      sess.raise(MockException(msg));
     };
     client.onError = (ClientSession sess, Object ex) {
       exceptionClient.set(ex);
@@ -323,8 +324,8 @@ void main() {
     // Check exception
     exceptionClient.expect(
       equals(
-        isA<TestException>().having(
-          (TestException e) => e.message,
+        isA<MockException>().having(
+          (MockException e) => e.message,
           'message',
           equals('ANYTHING-2'),
         ),
@@ -389,13 +390,4 @@ void main() {
     // Teardown
     client.close();
   });
-}
-
-class TestException implements Exception {
-  final String message;
-
-  const TestException(this.message);
-
-  @override
-  String toString() => message;
 }

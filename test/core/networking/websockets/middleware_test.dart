@@ -4,6 +4,7 @@ import 'package:flyde/core/networking/protocol/authentication.dart';
 import 'package:flyde/core/networking/websockets/middleware.dart';
 
 import '../../../helpers/value_hook.dart';
+import '../../../helpers/mocks/mock_session.dart';
 
 void main() {
   test('ProtocolMiddleware deserializes messages and passes them onwards', () async {
@@ -251,10 +252,4 @@ void main() {
     expect(response2.status, equals(AuthResponseStatus.failure));
     expect(session.storage['authenticated'], equals(false));
   });
-}
-
-class MockSession {
-  final Map<dynamic, dynamic> storage = <dynamic, dynamic>{};
-
-  void raise(Object e) {}
 }

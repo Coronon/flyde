@@ -2,6 +2,8 @@ import 'package:test/test.dart';
 
 import 'package:flyde/core/networking/protocol/protocol.dart';
 
+import '../../../helpers/mocks/mock_serializable.dart';
+
 void main() {
   // Add to known elements
   ProtocolDelegate.elements['MockSerializable'] =
@@ -79,14 +81,4 @@ void main() {
 
     expect(() => ProtocolDelegate.deserialize(msg), throwsA(isA<FormatException>()));
   });
-}
-
-/// Mock class to test serialization
-class MockSerializable {
-  final String value;
-
-  const MockSerializable(this.value);
-
-  factory MockSerializable.fromJson(Map<String, dynamic> json) => MockSerializable(json['value']);
-  Map<String, dynamic> toJson() => <String, dynamic>{'value': value};
 }
