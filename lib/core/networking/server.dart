@@ -54,7 +54,7 @@ class WebServer {
   late void Function(ServerSession) wsOnDoneTeardown;
 
   /// HttpServer instance used to establish initial connection
-  HttpServer? _server;
+  late HttpServer _server;
 
   /// List of all connected WebSockets
   final List<ServerSession> _wsSessions = <ServerSession>[];
@@ -131,8 +131,8 @@ class WebServer {
         shared: true,
       );
     }
-    _server!.autoCompress = true;
-    _server!.listen(_onRequest);
+    _server.autoCompress = true;
+    _server.listen(_onRequest);
   }
 
   /// Internal request handler
@@ -161,33 +161,19 @@ class WebServer {
   }
 
   /// The address the server is bound to
-  InternetAddress? get address {
-    if (_server == null) {
-      return null;
-    }
-
-    return _server!.address;
-  }
+  InternetAddress get address => _server.address;
 
   /// The port the server is listening on
-  int? get port {
-    if (_server == null) {
-      return null;
-    }
-
-    return _server!.port;
-  }
+  int get port => _server.port;
 
   /// Whether there are no active WebSocket connections
-  bool get isEmpty {
-    return _wsSessions.isEmpty;
-  }
+  bool get isEmpty => _wsSessions.isEmpty;
 
   /// Close the WebServer and teardown all connections
   Future<void> close() async {
     await ready;
 
-    await _server!.close();
+    await _server.close();
 
     for (final ServerSession sess in _wsSessions) {
       // Remove wrapped done handler, as we will clear the sessions afterwards
