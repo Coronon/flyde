@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:test/test.dart' as test show expect, Matcher;
 
+import 'wait_for.dart';
+
 /// Useful to easily test handler functions
 /// that set values outside of their scope.
 ///
@@ -84,27 +86,11 @@ class VHook<T> {
     Duration pollInterval = Duration.zero,
     bool raiseOnTimeout = false,
   }) async {
-    // Handle optional timeout
-    DateTime? expireTime;
-    if (timeout != null) {
-      expireTime = DateTime.now().add(timeout);
-    }
-
-    final Completer<bool> completer = Completer<bool>();
-    // Check if the value has changed
-    check() {
-      if (value != null) {
-        completer.complete(true);
-      } else if (expireTime != null && DateTime.now().isAfter(expireTime)) {
-        if (raiseOnTimeout) throw TimeoutException("Timed out awaiting value");
-
-        completer.complete(false);
-      } else {
-        Timer(pollInterval, check);
-      }
-    }
-
-    check();
-    return completer.future;
+    return waitFor(
+      () => _value != null,
+      timeout: timeout,
+      pollInterval: pollInterval,
+      raiseOnTimeout: raiseOnTimeout,
+    );
   }
 }
