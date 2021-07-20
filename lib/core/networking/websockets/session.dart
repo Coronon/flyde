@@ -14,9 +14,6 @@ abstract class Session<T> {
   /// Individial storage attached to each session for ephemeral data
   Map<dynamic, dynamic> storage = <dynamic, dynamic>{};
 
-  /// WebSocket connection used to transfer data from client <-> server
-  late final WebSocket _socket;
-
   /// Handler for received messages
   Future<dynamic> Function(T, dynamic)? onMessage;
 
@@ -25,6 +22,9 @@ abstract class Session<T> {
 
   /// Handler for stream closure
   void Function(T)? onDone;
+
+  /// WebSocket connection used to transfer data from client <-> server
+  late final WebSocket _socket;
 
   /// Send data over the WebSocket
   Future<void> send(dynamic message) async {
