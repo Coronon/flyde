@@ -36,16 +36,13 @@ class VHook<T> {
   /// This method uses 'expect' from the 'test' package.
   /// [val] is the expected value e.g. `equals(true)`
   void expect(
-    dynamic val, {
+    test.Matcher matcher, {
     String? reason,
     dynamic skip,
-    @Deprecated("Deprecated in 'test' package, does nothing") bool verbose = false,
-    @Deprecated("Deprecated in 'test' package, does nothing")
-        String Function(dynamic, test.Matcher, String?, Map<dynamic, dynamic>, bool)? formatter,
   }) =>
       test.expect(
-        value,
-        val,
+        _value,
+        matcher,
         reason: reason,
         skip: skip,
       );
