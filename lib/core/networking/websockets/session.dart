@@ -49,7 +49,7 @@ abstract class Session<T> {
   void raise(Object error) => _onError(error);
 
   /// Listen on the WebSocket.
-  /// 
+  ///
   /// This should be called AFTER the WebSocket has been created by the subclass.
   void _listen() => _socket.listen(_onData, onError: _onError, onDone: _onDone);
 
@@ -97,7 +97,7 @@ class MiddlewareSession<T> extends Session<T> {
   late MiddlewareAction _middlewareAction;
 
   /// Run all installed middleware on given message and action
-  Future<dynamic> runMiddleware(
+  Future<dynamic> _runMiddleware(
     dynamic message,
     MiddlewareAction action,
   ) async {
@@ -121,7 +121,7 @@ class MiddlewareSession<T> extends Session<T> {
   //* Overrides to include middleware
   @override
   Future<void> send(dynamic message) async {
-    message = await runMiddleware(message, MiddlewareAction.send);
+    message = await _runMiddleware(message, MiddlewareAction.send);
     if (message == null) return;
 
     await super.send(message);
@@ -129,7 +129,7 @@ class MiddlewareSession<T> extends Session<T> {
 
   @override
   void _onData(dynamic message) async {
-    message = await runMiddleware(message, MiddlewareAction.receive);
+    message = await _runMiddleware(message, MiddlewareAction.receive);
     if (message == null) return;
 
     super._onData(message);
