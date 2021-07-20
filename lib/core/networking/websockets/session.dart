@@ -109,9 +109,8 @@ class MiddlewareSession<T> extends Session<T> {
   /// Internal implementation of recursively running middleware
   Future<dynamic> _nextMiddleware(dynamic message) async {
     if (_middlewareIndex == middleware.length) return message;
-    _middlewareIndex += 1;
 
-    return await middleware[_middlewareIndex - 1](
+    return await middleware[_middlewareIndex++](
       this as T,
       message,
       _middlewareAction,
@@ -120,7 +119,6 @@ class MiddlewareSession<T> extends Session<T> {
   }
 
   //* Overrides to include middleware
-
   @override
   Future<void> send(dynamic message) async {
     message = await runMiddleware(message, MiddlewareAction.send);

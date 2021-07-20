@@ -292,7 +292,5 @@ class TestException implements Exception {
   const TestException(this.message);
 
   @override
-  String toString() {
-    return message;
-  }
+  String toString() => message;
 }

@@ -47,7 +47,5 @@ class ProtocolException implements Exception {
   ProtocolException(this.message);
 
   @override
-  String toString() {
-    return message;
-  }
+  String toString() => message;
 }
