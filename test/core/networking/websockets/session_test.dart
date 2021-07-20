@@ -8,10 +8,6 @@ import 'package:flyde/core/networking/websockets/middleware.dart';
 import '../../../helpers/value_hook.dart';
 import '../../../helpers/wait_for.dart';
 
-//? The WebSocket uses in this file are not race conditions,
-//? because of how the dart eventloop is implemented.
-//? The internal WebSocket connect is !scheduled! and executed when the main strain waits (await)
-
 void main() {
   late HttpServer? server;
   late Uri? url;
@@ -27,7 +23,6 @@ void main() {
     url = null;
   });
 
-  //* Tests
   test('Server receive, client send', () async {
     final msgReceived = VHook<String?>(null);
 
