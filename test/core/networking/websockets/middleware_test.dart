@@ -83,7 +83,7 @@ void main() {
     calledNext.expect(equals(false));
   });
 
-  test('AuthenticationMiddleware dont run on send', () async {
+  test('AuthenticationMiddleware does not run on send', () async {
     final session = MockSession();
     final calledAuthHandler = VHook<bool>(false);
     final calledNext = VHook<bool>(false);
