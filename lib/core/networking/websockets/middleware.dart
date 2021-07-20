@@ -6,7 +6,7 @@ import 'session.dart';
 //* Type declarations
 /// Different actions middleware can handle
 enum MiddlewareAction {
-  recieve,
+  receive,
   send,
 }
 
@@ -28,8 +28,7 @@ Future<dynamic> protocolMiddleware(
   MiddlewareAction action,
   Future<dynamic> Function(dynamic) next,
 ) async {
-  if (action == MiddlewareAction.recieve) {
-    // Instantly deSerialize the message so other middleware can work with it
+  if (action == MiddlewareAction.receive) {
     dynamic msg;
     // We catch all errors here as we can't trust the incoming data
     try {

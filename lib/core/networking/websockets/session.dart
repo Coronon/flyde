@@ -86,7 +86,7 @@ abstract class Session<T> {
 class MiddlewareSession<T> extends Session<T> {
   /// List of installed middleware.
   ///
-  /// Each middleware recieves the calling [Session] instance, message,
+  /// Each middleware receives the calling [Session] instance, message,
   /// [MiddlewareAction] and a proxy to the next [MiddlewareFunc].
   List<MiddlewareFunc> middleware = <MiddlewareFunc>[];
 
@@ -131,7 +131,7 @@ class MiddlewareSession<T> extends Session<T> {
 
   @override
   void _onData(dynamic message) async {
-    message = await runMiddleware(message, MiddlewareAction.recieve);
+    message = await runMiddleware(message, MiddlewareAction.receive);
     if (message == null) return;
 
     super._onData(message);

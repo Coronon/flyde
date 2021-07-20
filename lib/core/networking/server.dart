@@ -25,7 +25,7 @@ class WebServer {
 
   /// List of middleware that should be installed in each [ServerSession].
   ///
-  /// Each middleware recieves the calling [Session] instance, message,
+  /// Each middleware receives the calling [Session] instance, message,
   /// [MiddlewareAction] and a proxy to the next [MiddlewareFunc].
   List<MiddlewareFunc> wsMiddleware;
 
@@ -148,7 +148,7 @@ class WebServer {
     return _server!.port;
   }
 
-  /// Wether there are no active WebSocket connections
+  /// Whether there are no active WebSocket connections
   bool get isEmpty {
     return _wsSessions.isEmpty;
   }

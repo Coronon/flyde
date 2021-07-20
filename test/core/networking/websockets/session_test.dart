@@ -92,7 +92,7 @@ void main() {
     final middlewareClientReceived2 = VHook<String?>(null);
     final middlewareClientSend2 = VHook<String?>(null);
 
-    // Two middleware functions to test 'next' behavior
+    // Two middleware functions to test 'next' behaviour
     Future<dynamic> middlewareFunc1(
       dynamic session,
       dynamic message,
@@ -100,13 +100,13 @@ void main() {
       Future<dynamic> Function(dynamic) next,
     ) async {
       if (session is ServerSession) {
-        if (action == MiddlewareAction.recieve) {
+        if (action == MiddlewareAction.receive) {
           middlewareServerReceived1.set(message);
         } else {
           middlewareServerSend1.set(message);
         }
       } else {
-        if (action == MiddlewareAction.recieve) {
+        if (action == MiddlewareAction.receive) {
           middlewareClientReceived1.set(message);
         } else {
           middlewareClientSend1.set(message);
@@ -123,13 +123,13 @@ void main() {
       Future<dynamic> Function(dynamic) next,
     ) async {
       if (session is ServerSession) {
-        if (action == MiddlewareAction.recieve) {
+        if (action == MiddlewareAction.receive) {
           middlewareServerReceived2.set(message);
         } else {
           middlewareServerSend2.set(message);
         }
       } else {
-        if (action == MiddlewareAction.recieve) {
+        if (action == MiddlewareAction.receive) {
           middlewareClientReceived2.set(message);
         } else {
           middlewareClientSend2.set(message);

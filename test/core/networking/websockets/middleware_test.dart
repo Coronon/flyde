@@ -15,7 +15,7 @@ void main() {
     final dynamic deserialized = await protocolMiddleware(
       null,
       message,
-      MiddlewareAction.recieve,
+      MiddlewareAction.receive,
       (dynamic msg) async {
         expect(msg is AuthRequest, equals(true));
 
@@ -70,7 +70,7 @@ void main() {
     final dynamic serialized = await protocolMiddleware(
       session,
       "ANYTHING",
-      MiddlewareAction.recieve,
+      MiddlewareAction.receive,
       (dynamic msg) async {
         calledNext.set(true);
         return msg;
@@ -122,7 +122,7 @@ void main() {
     final dynamic response = await authMiddleware(
       session,
       "ANYTHING",
-      MiddlewareAction.recieve,
+      MiddlewareAction.receive,
       (dynamic msg) async {
         calledNext.set(true);
         return msg;
@@ -151,7 +151,7 @@ void main() {
     final dynamic response = await authMiddleware(
       session,
       "ANYTHING",
-      MiddlewareAction.recieve,
+      MiddlewareAction.receive,
       (dynamic msg) async {
         expect(msg, equals("ANYTHING"));
 
@@ -183,7 +183,7 @@ void main() {
     final dynamic response = await authMiddleware(
       session,
       AuthRequest(username: "testUsername", password: "testPassword"),
-      MiddlewareAction.recieve,
+      MiddlewareAction.receive,
       (dynamic msg) async {
         calledNext.set(true);
         return msg;
@@ -214,7 +214,7 @@ void main() {
     final dynamic response1 = await authMiddleware(
       session,
       AuthRequest(username: "testUsername", password: "testPassword"),
-      MiddlewareAction.recieve,
+      MiddlewareAction.receive,
       (dynamic msg) async {
         calledNext.set(true);
         return msg;
@@ -236,7 +236,7 @@ void main() {
     final dynamic response2 = await authMiddleware(
       session,
       AuthRequest(username: "testUsername", password: "testPassword"),
-      MiddlewareAction.recieve,
+      MiddlewareAction.receive,
       (dynamic msg) async {
         calledNext.set(true);
         return msg;
