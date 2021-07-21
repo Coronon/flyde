@@ -1,4 +1,4 @@
-/// Mock implementation of sesseion to test simple middleware
+/// Mock implementation of session to test simple middleware
 class MockSession {
   final Map<dynamic, dynamic> storage = <dynamic, dynamic>{};
 
