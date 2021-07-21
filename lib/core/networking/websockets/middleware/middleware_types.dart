@@ -8,8 +8,8 @@ enum MiddlewareAction {
 ///
 /// Arguments: Calling [Session] instance, message, [MiddlewareAction] action and a proxy to the next [MiddlewareFunc].
 typedef MiddlewareFunc = Future<dynamic> Function(
-  dynamic,
-  dynamic,
-  MiddlewareAction,
-  Future<dynamic> Function(dynamic),
+  dynamic session,
+  dynamic message,
+  MiddlewareAction action,
+  Future<dynamic> Function(dynamic) next,
 );
