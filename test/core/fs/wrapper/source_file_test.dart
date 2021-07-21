@@ -14,7 +14,7 @@ void main() {
 
     expect(data, isNotEmpty);
     expect(id, equals('c058d89c09ad3dff84c14c15be2181d8c687edea3062ae455d84223f2dd39296'));
-    expect(hash, equals('63bf8796ebbce7587b03af682924e3b12fdcda0ac40b174cec60e8094594fb07'));
+    expect(hash, equals('9a8f0b9ef11297264fc39ca736de238f798f7eaae1aa3612c0fba7e7df186ea6'));
   });
 
   test('Can be created from file constructor', () async {
@@ -29,7 +29,7 @@ void main() {
     expect(srcFile.name, equals('main'));
     expect(srcFile.path, orderedEquals(['src']));
     expect(id, equals('c058d89c09ad3dff84c14c15be2181d8c687edea3062ae455d84223f2dd39296'));
-    expect(hash, equals('63bf8796ebbce7587b03af682924e3b12fdcda0ac40b174cec60e8094594fb07'));
+    expect(hash, equals('9a8f0b9ef11297264fc39ca736de238f798f7eaae1aa3612c0fba7e7df186ea6'));
   });
 
   test('Can be created from raw data', () async {
@@ -41,7 +41,7 @@ void main() {
 
     expect(data, isNotEmpty);
     expect(id, equals('c058d89c09ad3dff84c14c15be2181d8c687edea3062ae455d84223f2dd39296'));
-    expect(hash, equals('63bf8796ebbce7587b03af682924e3b12fdcda0ac40b174cec60e8094594fb07'));
+    expect(hash, equals('9a8f0b9ef11297264fc39ca736de238f798f7eaae1aa3612c0fba7e7df186ea6'));
   });
 
   test('Has different ids and hashes for different files', () async {

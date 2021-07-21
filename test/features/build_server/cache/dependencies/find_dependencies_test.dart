@@ -9,7 +9,7 @@ void main() {
 
   test('All dependencies can be detected', () async {
     final deps = await findDependencies(file);
-    final expected = {'Calculator.hpp'};
+    final expected = {'Calculator.hpp', '../include/constants/numbers.hpp'};
 
     expect(deps, unorderedEquals(expected));
   });
