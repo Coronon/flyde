@@ -20,3 +20,4 @@ doc/api/
 
 # User files and directories
 .dev/
+flyde-test-lib*/
