@@ -31,11 +31,11 @@ void main() {
   test('ProtocolDelegate can deserialize object', () {
     final String serialized = '{"type":"MockSerializable","data":{"value":"ANYTHING"}}';
 
-    final dynamic deSerialized = ProtocolDelegate.deserialize(serialized);
+    final dynamic deserialized = ProtocolDelegate.deserialize(serialized);
 
-    expect(deSerialized, isA<MockSerializable>());
-    deSerialized as MockSerializable;
-    expect(deSerialized.value, equals("ANYTHING"));
+    expect(deserialized, isA<MockSerializable>());
+    deserialized as MockSerializable;
+    expect(deserialized.value, equals("ANYTHING"));
   });
 
   test('ProtocolDelegate throws if no type is provided', () {
