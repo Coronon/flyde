@@ -81,4 +81,10 @@ void main() {
 
     expect(() => ProtocolDelegate.deserialize(msg), throwsA(isA<FormatException>()));
   });
+
+  test('ProtocolException string representation is message', () {
+    final exception = ProtocolException('ANYTHING');
+
+    expect(exception.toString(), equals('ANYTHING'));
+  });
 }
