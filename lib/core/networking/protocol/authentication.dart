@@ -31,7 +31,7 @@ enum AuthResponseStatus {
 class AuthResponse {
   /// Type of [AuthResponse]
   ///
-  /// [AuthResponseStatus.required] if no [AuthRequest] recieved
+  /// [AuthResponseStatus.required] if no [AuthRequest] received
   /// before initial protoco message.
   final AuthResponseStatus status;
 

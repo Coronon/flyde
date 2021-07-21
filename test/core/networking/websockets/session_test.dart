@@ -49,7 +49,7 @@ void main() {
     // Teardown
     client.close();
   });
-  test('Server send, client recieve', () async {
+  test('Server send, client receive', () async {
     final msgReceived = VHook<String?>(null);
 
     server!.listen((HttpRequest request) {
