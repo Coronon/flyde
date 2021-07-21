@@ -14,7 +14,7 @@ Future<Set<String>> findDependencies(SourceFile file) async {
       // Get all possible includes
       .where((line) => line.startsWith('#include'))
       // Remove '#include' prefix
-      .map((line) => line.substring('#include'.length))
+      .map((line) => line.substring('#include'.length).trim())
       // Filter out all <*> includes and ensure "*" or '*'
       .where((include) =>
           !RegExp(r'^\<[^\0]+\>$').hasMatch(include) &&
