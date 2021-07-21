@@ -173,7 +173,7 @@ void main() {
     await middlewareClientSend2.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
 
     // Check received data
-    msgClientReceived.expect(equals(true));
+    msgClientReceived.expect(isTrue);
 
     middlewareServerReceived1.expect(equals('ANYTHING-1'));
     middlewareServerSend1.expect(equals('ANYTHING-2'));
@@ -212,8 +212,8 @@ void main() {
     await onDoneServerCalled.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
     await onDoneClientCalled.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
 
-    onDoneServerCalled.expect(equals(true));
-    onDoneClientCalled.expect(equals(true));
+    onDoneServerCalled.expect(isTrue);
+    onDoneClientCalled.expect(isTrue);
   });
   test('Storage is persisted', () async {
     final serverSession = VHook<ServerSession?>(null);
@@ -248,8 +248,8 @@ void main() {
 
     // Check persisted data
     serverSession.expect(isA<ServerSession>());
-    serverPersisted.expect(equals(true));
-    clientPersisted.expect(equals(true));
+    serverPersisted.expect(isTrue);
+    clientPersisted.expect(isTrue);
 
     expect(serverSession.value!.storage['msg'], equals('ANYTHING-1'));
     expect(client.storage['msg'], equals('ANYTHING-2'));
@@ -265,7 +265,7 @@ void main() {
     );
 
     // Check 'msg' not in storage
-    expect(client.storage['msg'], equals(null));
+    expect(client.storage['msg'], isNull);
   });
   test('OnError is called', () async {
     final exceptionServer = VHook<Object?>(null);

@@ -39,7 +39,7 @@ void main() {
       equals(request.password),
     );
 
-    calledNext.expect(equals(true));
+    calledNext.expect(isTrue);
   });
 
   test('ProtocolMiddleware passes messages and finally serializes them', () async {
@@ -64,7 +64,7 @@ void main() {
     //* Verify that the serialized message is the same as the original message
     expect(serialized, equals(message));
 
-    calledNext.expect(equals(true));
+    calledNext.expect(isTrue);
   });
 
   test('ProtocolMiddleware catches exceptions', () async {
@@ -82,8 +82,8 @@ void main() {
     );
 
     //* Verify that the middleware caught the exception
-    expect(serialized, equals(null));
+    expect(serialized, isNull);
 
-    calledNext.expect(equals(false));
+    calledNext.expect(isFalse);
   });
 }

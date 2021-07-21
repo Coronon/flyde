@@ -29,8 +29,8 @@ void main() {
     );
 
     //* Verify that the middleware did not intercept the message
-    calledAuthHandler.expect(equals(false));
-    calledNext.expect(equals(true));
+    calledAuthHandler.expect(isFalse);
+    calledNext.expect(isTrue);
     expect(response, isNull);
     expect(session.storage, isNot(contains('authenticated')));
   });
@@ -56,12 +56,12 @@ void main() {
     );
 
     //* Verify that the middleware rejected the message
-    calledAuthHandler.expect(equals(false));
-    calledNext.expect(equals(false));
+    calledAuthHandler.expect(isFalse);
+    calledNext.expect(isFalse);
     expect(response, isA<AuthResponse>());
     response as AuthResponse;
     expect(response.status, equals(AuthResponseStatus.required));
-    expect(session.storage['authenticated'], equals(null));
+    expect(session.storage['authenticated'], isNull);
   });
 
   test('AuthenticationMiddleware lets authed sessions pass', () async {
@@ -88,8 +88,8 @@ void main() {
     );
 
     //* Verify that the middleware let the message through
-    calledAuthHandler.expect(equals(false));
-    calledNext.expect(equals(true));
+    calledAuthHandler.expect(isFalse);
+    calledNext.expect(isTrue);
     expect(response, isA<String>());
     response as String;
     expect(response, equals("ANYTHING"));
@@ -119,12 +119,12 @@ void main() {
     );
 
     //* Verify that the middleware can accept AuthRequest's
-    calledAuthHandler.expect(equals(true));
-    calledNext.expect(equals(false));
+    calledAuthHandler.expect(isTrue);
+    calledNext.expect(isFalse);
     expect(response, isA<AuthResponse>());
     response as AuthResponse;
     expect(response.status, equals(AuthResponseStatus.success));
-    expect(session.storage['authenticated'], equals(true));
+    expect(session.storage['authenticated'], isTrue);
   });
 
   test('AuthenticationMiddleware can reject authentication', () async {
@@ -151,12 +151,12 @@ void main() {
     );
 
     //* Verify that the middleware can reject AuthRequest's
-    calledAuthHandler.expect(equals(true));
-    calledNext.expect(equals(false));
+    calledAuthHandler.expect(isTrue);
+    calledNext.expect(isFalse);
     expect(response1, isA<AuthResponse>());
     response1 as AuthResponse;
     expect(response1.status, equals(AuthResponseStatus.failure));
-    expect(session.storage['authenticated'], equals(false));
+    expect(session.storage['authenticated'], isFalse);
 
     //? Second attempt (session.storage['authenticated'] is now not 'null')
     calledAuthHandler.set(false);
@@ -173,11 +173,11 @@ void main() {
     );
 
     //* Verify that the middleware can reject AuthRequest's
-    calledAuthHandler.expect(equals(true));
-    calledNext.expect(equals(false));
+    calledAuthHandler.expect(isTrue);
+    calledNext.expect(isFalse);
     expect(response2, isA<AuthResponse>());
     response2 as AuthResponse;
     expect(response2.status, equals(AuthResponseStatus.failure));
-    expect(session.storage['authenticated'], equals(false));
+    expect(session.storage['authenticated'], isFalse);
   });
 }
