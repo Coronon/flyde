@@ -2,14 +2,17 @@
 # details and rationale, see
 # https://github.com/dart-lang/pedantic#enabled-lints.
 
-include: package:pedantic/analysis_options.yaml
+include: package:lints/recommended.yaml
 # For lint rules and documentation, see http://dart-lang.github.io/linter/lints.
 
 # Uncomment to specify additional rules.
 # linter:
 #   rules:
+#     - always_specify_types
 #     - camel_case_types
 
-# analyzer:
-#   exclude:
-#     - path/to/excluded/files/**
+analyzer:
+  errors:
+    omit_local_variable_types: ignore
+  exclude:
+    - '**/*.g.dart'
