@@ -74,6 +74,12 @@ class SourceFile {
     _file = file;
   }
 
+  /// Returns the file's path relative to [origin].
+  ///
+  /// If [filename] is false, only the directory will be returned.
+  String relativePath({String origin = '', bool filename = true}) =>
+      p.joinAll([origin, ...path, filename ? '$name.$extension' : '']);
+
   /// The content of the file as raw byte data.
   ///
   /// If the constructor was called with `file:` the getter will read
