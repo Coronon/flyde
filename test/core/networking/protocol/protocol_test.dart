@@ -53,7 +53,7 @@ void main() {
     );
   });
 
-  test('ProtocolDelegate throws if invalid type provided', () {
+  test('ProtocolDelegate throws if invalid type is provided', () {
     final String msg = '{"type": "NonExistentType", "data": {"value": "MockSerializable"}}';
 
     expect(
@@ -68,7 +68,7 @@ void main() {
     );
   });
 
-  test('ProtocolDelegate throw on invalid data', () {
+  test('ProtocolDelegate throws on invalid data', () {
     final String msg1 = '{"type": "MockSerializable", "data": {"value": 1}}';
     final String msg2 = '{"type": "MockSerializable", "data": {"ANYTHING": "ANYTHING"}}';
 
@@ -76,7 +76,7 @@ void main() {
     expect(() => ProtocolDelegate.deserialize(msg2), throwsA(isA<TypeError>()));
   });
 
-  test('ProtocolDelegate throws message is not valid JSON', () {
+  test('ProtocolDelegate throws if message is not valid JSON', () {
     final String msg = 'ANYTHING';
 
     expect(() => ProtocolDelegate.deserialize(msg), throwsA(isA<FormatException>()));

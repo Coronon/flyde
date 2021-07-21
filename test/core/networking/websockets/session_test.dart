@@ -24,7 +24,7 @@ void main() {
     url = null;
   });
 
-  test('Server receive, client send', () async {
+  test('Server can receive; Client can send', () async {
     final msgReceived = VHook<String?>(null);
 
     server!.listen((HttpRequest request) {
@@ -49,7 +49,7 @@ void main() {
     // Teardown
     client.close();
   });
-  test('Server send, client receive', () async {
+  test('Server can send; Client can receive', () async {
     final msgReceived = VHook<String?>(null);
 
     server!.listen((HttpRequest request) {

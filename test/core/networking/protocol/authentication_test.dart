@@ -5,11 +5,11 @@ import 'package:flyde/core/networking/protocol/protocol.dart';
 
 void main() {
   group('AuthRequest', () {
-    test('In ProtocolDelegate.elements', () {
+    test('is in ProtocolDelegate.elements', () {
       expect(ProtocolDelegate.elements['AuthRequest'], isA<Deserialize>());
     });
 
-    test('Can serialize', () {
+    test('can be serialized', () {
       final request = AuthRequest(username: "testUser", password: "testPassword");
       final String serialized = ProtocolDelegate.serialize(request);
 
@@ -21,7 +21,7 @@ void main() {
       );
     });
 
-    test('Can deserialize', () {
+    test('can be deserialized', () {
       final String request =
           '{"type":"AuthRequest","data":{"username":"testUser","password":"testPassword"}}';
 
@@ -35,11 +35,11 @@ void main() {
   });
 
   group('AuthResponse', () {
-    test('In ProtocolDelegate.elements', () {
+    test('is in ProtocolDelegate.elements', () {
       expect(ProtocolDelegate.elements['AuthResponse'], isA<Deserialize>());
     });
 
-    test('Can serialize', () {
+    test('can be serialized', () {
       final response1 = AuthResponse(status: AuthResponseStatus.required);
       final response2 = AuthResponse(status: AuthResponseStatus.success);
       final response3 = AuthResponse(status: AuthResponseStatus.failure);
@@ -68,7 +68,7 @@ void main() {
       );
     });
 
-    test('Can deserialize', () {
+    test('can be deserialized', () {
       final String response1 = '{"type":"AuthResponse","data":{"status":"required"}}';
       final String response2 = '{"type":"AuthResponse","data":{"status":"success"}}';
       final String response3 = '{"type":"AuthResponse","data":{"status":"failure"}}';

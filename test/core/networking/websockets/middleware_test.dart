@@ -168,7 +168,7 @@ void main() {
     response as String;
     expect(response, equals("ANYTHING"));
   });
-  test('AuthenticationMiddleware can authentication', () async {
+  test('AuthenticationMiddleware can authenticate session', () async {
     final session = MockSession();
     final calledAuthHandler = VHook<bool>(false);
     final calledNext = VHook<bool>(false);
@@ -199,7 +199,7 @@ void main() {
     expect(response.status, equals(AuthResponseStatus.success));
     expect(session.storage['authenticated'], equals(true));
   });
-  test('AuthenticationMiddleware can reject', () async {
+  test('AuthenticationMiddleware can reject authentication', () async {
     final session = MockSession();
     final calledAuthHandler = VHook<bool>(false);
     final calledNext = VHook<bool>(false);

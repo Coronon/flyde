@@ -12,7 +12,7 @@ import '../../helpers/open_webserver.dart';
 import '../../helpers/mocks/mock_exception.dart';
 
 void main() {
-  test('Can receive http request', () async {
+  test('WebServer can receive http request', () async {
     final VHook<bool?> received = VHook<bool?>(null);
 
     final WebServer server = await openWebServer();
@@ -32,7 +32,7 @@ void main() {
     server.close();
   });
 
-  test('Can respond to http request', () async {
+  test('WebServer can respond to http request', () async {
     final WebServer server = await openWebServer();
     server.httpOnRequest = (HttpRequest req) {
       req.response.statusCode = 200;
@@ -50,7 +50,7 @@ void main() {
     server.close();
   });
 
-  test('Returns 404 if no handler set', () async {
+  test('WebServer returns 404 if no handler was set', () async {
     final WebServer server = await openWebServer();
 
     final http.Response response = await http.get(getUri(server, 'http'));
@@ -63,7 +63,7 @@ void main() {
     server.close();
   });
 
-  test('Can establish websocket connection', () async {
+  test('WebServer can establish WebSocket connections', () async {
     final VHook<bool?> received = VHook<bool?>(null);
 
     final WebServer server = await openWebServer();
@@ -83,7 +83,7 @@ void main() {
     server.close();
   });
 
-  test('Can close all WebSocket connections', () async {
+  test('WebServer can close all WebSocket connections', () async {
     final VHook<bool?> established = VHook<bool?>(null);
     final VHook<bool?> closed = VHook<bool?>(null);
 
@@ -111,7 +111,7 @@ void main() {
     waitFor(() => server.hasNoSessions, timeout: Duration(seconds: 5), raiseOnTimeout: true);
   });
 
-  test('Can redirect websocket', () async {
+  test('WebServer can redirect WebSocket requests', () async {
     final VHook<bool?> received = VHook<bool?>(null);
 
     final WebServer server = await openWebServer();
@@ -202,7 +202,7 @@ void main() {
     server.close();
   });
 
-  test('Get address', () async {
+  test('Can get address from WebServer', () async {
     final WebServer server = await openWebServer();
 
     expect(server.address, equals(InternetAddress.loopbackIPv4));
@@ -211,7 +211,7 @@ void main() {
     server.close();
   });
 
-  test('Get port', () async {
+  test('Can get port from WebServer', () async {
     final WebServer server = await openWebServer();
 
     expect(server.port, isA<int>());
@@ -220,7 +220,7 @@ void main() {
     server.close();
   });
 
-  test('Get isEmpty', () async {
+  test('Can get hasNoSessions from WebServer', () async {
     final VHook<bool?> received = VHook<bool?>(null);
 
     final WebServer server = await openWebServer();
