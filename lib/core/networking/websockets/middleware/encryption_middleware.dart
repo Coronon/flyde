@@ -51,7 +51,7 @@ Future<dynamic> encryptionMiddleware(
 
 /// Check if message belongs to handshaking protocol
 bool _isHandshakeMsg(String msg) {
-  return msg.startsWith(_CryptoVars.prefix);
+  return msg.startsWith(_CryptoConstants.prefix);
 }
 
 /// Class that handles secure communication
@@ -151,14 +151,14 @@ class CryptoProvider {
         message = message.substring(1);
 
         // Determine msg type
-        if (message.startsWith(_CryptoVars.keyResponse) && _session is ClientSession) {
-          await _handleKeyResponse(message, _CryptoVars.keyResponse);
-        } else if (message.startsWith(_CryptoVars.keyRequest) && _session is ServerSession) {
+        if (message.startsWith(_CryptoConstants.keyResponse) && _session is ClientSession) {
+          await _handleKeyResponse(message, _CryptoConstants.keyResponse);
+        } else if (message.startsWith(_CryptoConstants.keyRequest) && _session is ServerSession) {
           // Send own public key
-          _session.send(_CryptoVars.prefix + _CryptoVars.keyResponse + _publicKeyStr);
+          _session.send(_CryptoConstants.prefix + _CryptoConstants.keyResponse + _publicKeyStr);
 
           // Generate shared key with remote public key
-          await _handleKeyResponse(message, _CryptoVars.keyRequest);
+          await _handleKeyResponse(message, _CryptoConstants.keyRequest);
         } else {
           throw HandshakeException("Invalid crypto message: '$message'");
         }
@@ -176,7 +176,7 @@ class CryptoProvider {
 
     // Request the other party's public key (only on client side)
     if (_session is ClientSession) {
-      _session.send(_CryptoVars.prefix + _CryptoVars.keyRequest + _publicKeyStr);
+      _session.send(_CryptoConstants.prefix + _CryptoConstants.keyRequest + _publicKeyStr);
     }
   }
 
@@ -186,7 +186,7 @@ class CryptoProvider {
     final String publicKeyStr = message.substring(prefix.length);
 
     // Check if the public key is valid (format)
-    if (!_CryptoVars.keyRegex.hasMatch(publicKeyStr)) {
+    if (!_CryptoConstants.keyRegex.hasMatch(publicKeyStr)) {
       throw HandshakeException('Received publicKey is invalid');
     }
 
@@ -208,7 +208,7 @@ class CryptoProvider {
 }
 
 /// Common shared variables for crypto
-class _CryptoVars {
+class _CryptoConstants {
   static const String prefix = '\$';
   static const String keyRequest = 'KEY_REQUEST';
   static const String keyResponse = 'KEY_RESPONSE';
