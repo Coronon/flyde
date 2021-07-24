@@ -50,7 +50,9 @@ Future<dynamic> encryptionMiddleware(
 }
 
 /// Check if message belongs to handshaking protocol
-bool _isHandshakeMsg(String msg) {
+bool _isHandshakeMsg(dynamic msg) {
+  if (msg is! String) return false;
+
   return msg.startsWith(_CryptoConstants.prefix);
 }
 
@@ -98,7 +100,7 @@ class _CryptoProvider {
   //* General use
 
   /// Encrypt the given [message] with the preestablished shared key
-  Future<String> _encrypt(String message) async {
+  Future<List<int>> _encrypt(String message) async {
     // Generate a new nonce (has to be unique every message!)
     final List<int> nonce = _CryptoProvider.encryptionAlgo.newNonce();
 
@@ -109,14 +111,14 @@ class _CryptoProvider {
       nonce: nonce,
     );
 
-    return box.concatenation().join('-');
+    return box.concatenation();
   }
 
   /// Decrypt the given [message] with the preestablished shared key
-  Future<String> _decrypt(String message) async {
+  Future<String> _decrypt(List<int> message) async {
     // Recreate SecretBox
     final SecretBox box = SecretBox.fromConcatenation(
-      message.split('-').map((e) => int.parse(e)).toList(),
+      message,
       nonceLength: 12,
       macLength: 16,
     );
