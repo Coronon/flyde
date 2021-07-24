@@ -36,7 +36,7 @@ Future<dynamic> encryptionMiddleware(
     // We catch all errors here as we can't trust the incoming data
     try {
       // Decrypt the message so other middleware can work with it
-      message = await provider.decrypt(message);
+      message = await provider._decrypt(message);
     } catch (e) {
       session.raise(e);
       return null;
@@ -45,7 +45,7 @@ Future<dynamic> encryptionMiddleware(
     return await next(message);
   } else {
     // Let other middleware work with the message, finally encrypt it
-    return await provider.encrypt(await next(message));
+    return await provider._encrypt(await next(message));
   }
 }
 
@@ -85,7 +85,7 @@ class _CryptoProvider {
   late SimpleKeyPair _ownKeyPair;
 
   /// The generated shared key
-  SecretKey? _sharedKey;
+  late SecretKey _sharedKey;
 
   _CryptoProvider(this._session) {
     // Install ourselves to the session
@@ -98,14 +98,14 @@ class _CryptoProvider {
   //* General use
 
   /// Encrypt the given [message] with the preestablished shared key
-  Future<String> encrypt(String message) async {
+  Future<String> _encrypt(String message) async {
     // Generate a new nonce (has to be unique every message!)
     final List<int> nonce = _CryptoProvider.encryptionAlgo.newNonce();
 
     // Encrypt the message
     final SecretBox box = await _CryptoProvider.encryptionAlgo.encrypt(
       utf8.encode(message),
-      secretKey: _sharedKey!,
+      secretKey: _sharedKey,
       nonce: nonce,
     );
 
@@ -113,7 +113,7 @@ class _CryptoProvider {
   }
 
   /// Decrypt the given [message] with the preestablished shared key
-  Future<String> decrypt(String message) async {
+  Future<String> _decrypt(String message) async {
     // Recreate SecretBox
     final SecretBox box = SecretBox.fromConcatenation(
       message.split('-').map((e) => int.parse(e)).toList(),
@@ -124,7 +124,7 @@ class _CryptoProvider {
     // Decrypt message
     final List<int> clearText = await _CryptoProvider.encryptionAlgo.decrypt(
       box,
-      secretKey: _sharedKey!,
+      secretKey: _sharedKey,
     );
 
     return utf8.decode(clearText);
