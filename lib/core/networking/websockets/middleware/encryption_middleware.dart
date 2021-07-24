@@ -183,7 +183,7 @@ class CryptoProvider {
   /// Handle the response to our key request
   Future<void> _handleKeyResponse(String message, String prefix) async {
     // Extract the public key
-    final String publicKeyStr = message.substring(prefix.length);
+    final publicKeyStr = message.substring(prefix.length);
 
     // Check if the public key is valid (format)
     if (!_CryptoConstants.keyRegex.hasMatch(publicKeyStr)) {
@@ -191,7 +191,7 @@ class CryptoProvider {
     }
 
     // Construct actual public key
-    final SimplePublicKey publicKey = SimplePublicKey(
+    final publicKey = SimplePublicKey(
       publicKeyStr.split('-').map((e) => int.parse(e)).toList(),
       type: KeyPairType.x25519,
     );
@@ -212,5 +212,5 @@ class _CryptoConstants {
   static const String prefix = r'$';
   static const String keyRequest = 'KEY_REQUEST';
   static const String keyResponse = 'KEY_RESPONSE';
-  static final RegExp keyRegex = RegExp(r'^(?:[\d]{0,3}-){31}[\d]{0,3}$');
+  static final keyRegex = RegExp(r'^(?:[\d]{0,3}-){31}[\d]{0,3}$');
 }
