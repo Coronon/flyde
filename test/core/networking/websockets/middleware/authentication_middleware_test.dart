@@ -47,7 +47,7 @@ void main() {
 
     final dynamic response = await authMiddleware(
       session,
-      "ANYTHING",
+      'ANYTHING',
       MiddlewareAction.receive,
       (dynamic msg) async {
         calledNext.set(true);
@@ -77,10 +77,10 @@ void main() {
 
     final dynamic response = await authMiddleware(
       session,
-      "ANYTHING",
+      'ANYTHING',
       MiddlewareAction.receive,
       (dynamic msg) async {
-        expect(msg, equals("ANYTHING"));
+        expect(msg, equals('ANYTHING'));
 
         calledNext.set(true);
         return msg;
@@ -92,7 +92,7 @@ void main() {
     calledNext.expect(isTrue);
     expect(response, isA<String>());
     response as String;
-    expect(response, equals("ANYTHING"));
+    expect(response, equals('ANYTHING'));
   });
 
   test('AuthenticationMiddleware can authenticate session', () async {
@@ -101,8 +101,8 @@ void main() {
     final calledNext = VHook<bool>(false);
 
     final MiddlewareFunc authMiddleware = makeAuthenticationMiddleware((AuthRequest request) async {
-      expect(request.username, equals("testUsername"));
-      expect(request.password, equals("testPassword"));
+      expect(request.username, equals('testUsername'));
+      expect(request.password, equals('testPassword'));
 
       calledAuthHandler.set(true);
       return true;
@@ -110,7 +110,7 @@ void main() {
 
     final dynamic response = await authMiddleware(
       session,
-      AuthRequest(username: "testUsername", password: "testPassword"),
+      AuthRequest(username: 'testUsername', password: 'testPassword'),
       MiddlewareAction.receive,
       (dynamic msg) async {
         calledNext.set(true);
@@ -133,8 +133,8 @@ void main() {
     final calledNext = VHook<bool>(false);
 
     final MiddlewareFunc authMiddleware = makeAuthenticationMiddleware((AuthRequest request) async {
-      expect(request.username, equals("testUsername"));
-      expect(request.password, equals("testPassword"));
+      expect(request.username, equals('testUsername'));
+      expect(request.password, equals('testPassword'));
 
       calledAuthHandler.set(true);
       return false;
@@ -142,7 +142,7 @@ void main() {
 
     final dynamic response1 = await authMiddleware(
       session,
-      AuthRequest(username: "testUsername", password: "testPassword"),
+      AuthRequest(username: 'testUsername', password: 'testPassword'),
       MiddlewareAction.receive,
       (dynamic msg) async {
         calledNext.set(true);
@@ -164,7 +164,7 @@ void main() {
 
     final dynamic response2 = await authMiddleware(
       session,
-      AuthRequest(username: "testUsername", password: "testPassword"),
+      AuthRequest(username: 'testUsername', password: 'testPassword'),
       MiddlewareAction.receive,
       (dynamic msg) async {
         calledNext.set(true);

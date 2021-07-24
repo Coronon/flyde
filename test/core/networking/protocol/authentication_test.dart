@@ -10,7 +10,7 @@ void main() {
     });
 
     test('can be serialized', () {
-      final request = AuthRequest(username: "testUser", password: "testPassword");
+      final request = AuthRequest(username: 'testUser', password: 'testPassword');
       final String serialized = ProtocolDelegate.serialize(request);
 
       expect(

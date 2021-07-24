@@ -9,7 +9,7 @@ import '../../../../helpers/mocks/mock_session.dart';
 
 void main() {
   test('ProtocolMiddleware deserializes messages and passes them onwards', () async {
-    final request = AuthRequest(username: "testUsername", password: "testPassword");
+    final request = AuthRequest(username: 'testUsername', password: 'testPassword');
     final String message =
         '{"type":"AuthRequest","data":{"username":"testUsername","password":"testPassword"}}';
     final calledNext = VHook<bool>(false);
@@ -43,7 +43,7 @@ void main() {
   });
 
   test('ProtocolMiddleware passes messages and finally serializes them', () async {
-    final request = AuthRequest(username: "testUsername", password: "testPassword");
+    final request = AuthRequest(username: 'testUsername', password: 'testPassword');
     final String message =
         '{"type":"AuthRequest","data":{"username":"testUsername","password":"testPassword"}}';
     final calledNext = VHook<bool>(false);
@@ -73,7 +73,7 @@ void main() {
 
     final dynamic serialized = await protocolMiddleware(
       session,
-      "ANYTHING",
+      'ANYTHING',
       MiddlewareAction.receive,
       (dynamic msg) async {
         calledNext.set(true);

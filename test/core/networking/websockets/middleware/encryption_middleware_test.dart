@@ -31,7 +31,7 @@ void main() {
     // Check message transmitted
     await receivedMessage.awaitValue(Duration(seconds: 10), raiseOnTimeout: true);
 
-    receivedMessage.expect(equals("ANYTHING"));
+    receivedMessage.expect(equals('ANYTHING'));
     expect(session.storage['crypto_provider'], equals(isA<CryptoProvider>()));
   });
 
@@ -75,7 +75,7 @@ void main() {
     await raisedException.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
     await closedSession.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
 
-    receivedNormalMessage.expect(equals("ANYTHING-1"));
+    receivedNormalMessage.expect(equals('ANYTHING-1'));
     receivedCryptoMessage.expect(isNull);
     closedSession.expect(isTrue);
     raisedException.expect(

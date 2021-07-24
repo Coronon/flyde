@@ -10,7 +10,7 @@ void main() {
       (Map<String, dynamic> json) => MockSerializable.fromJson(json);
 
   test('ProtocolDelegate can recreate object', () {
-    final serializable = MockSerializable("ANYTHING");
+    final serializable = MockSerializable('ANYTHING');
 
     final dynamic recreated =
         ProtocolDelegate.deserialize(ProtocolDelegate.serialize(serializable));
@@ -21,7 +21,7 @@ void main() {
   });
 
   test('ProtocolDelegate can serialize object', () {
-    final serializable = MockSerializable("ANYTHING");
+    final serializable = MockSerializable('ANYTHING');
 
     final String serialized = ProtocolDelegate.serialize(serializable);
 
@@ -35,7 +35,7 @@ void main() {
 
     expect(deserialized, isA<MockSerializable>());
     deserialized as MockSerializable;
-    expect(deserialized.value, equals("ANYTHING"));
+    expect(deserialized.value, equals('ANYTHING'));
   });
 
   test('ProtocolDelegate throws if no type is provided', () {
