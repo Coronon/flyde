@@ -38,7 +38,7 @@ Future<bool> waitFor(
     if (test()) {
       completer.complete(true);
     } else if (expireTime != null && DateTime.now().isAfter(expireTime)) {
-      if (raiseOnTimeout) throw TimeoutException("Timed out awaiting value");
+      if (raiseOnTimeout) throw TimeoutException('Timed out awaiting value');
 
       completer.complete(false);
     } else {

@@ -26,7 +26,35 @@ void main() {
 
     // Wait for handler to be called and check
     await received.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    received.expect(equals(true));
+    received.expect(isTrue);
+
+    // Teardown
+    server.close();
+  });
+
+  test('WebServer can receive https request', () async {
+    final VHook<bool?> received = VHook<bool?>(null);
+
+    final securityContext = SecurityContext()
+      ..useCertificateChain('./test/helpers/mocks/certs/mock_key_store.p12')
+      ..usePrivateKey('./test/helpers/mocks/certs/mock_key.pem');
+
+    final WebServer server = await openWebServer(securityContext: securityContext);
+    server.httpOnRequest = (HttpRequest req) {
+      received.set(true);
+      req.response.statusCode = 404;
+      req.response.close();
+    };
+
+    // Create HttpClient that accepts self-signed certificate and connect to server
+    final client = HttpClient()
+      // Trust every certificate
+      ..badCertificateCallback = ((X509Certificate cert, String host, int port) => true);
+    client.getUrl(getUri(server, 'https')).then((HttpClientRequest req) => req.close());
+
+    // Wait for handler to be called and check
+    await received.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
+    received.expect(isTrue);
 
     // Teardown
     server.close();
@@ -76,7 +104,7 @@ void main() {
 
     // Wait for handler to be called
     await received.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    received.expect(equals(true));
+    received.expect(isTrue);
 
     // Teardown
     client.close();
@@ -100,14 +128,14 @@ void main() {
 
     // Wait for connection to be established
     await established.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    established.expect(equals(true));
+    established.expect(isTrue);
 
     // Close server
     server.close();
 
     // Wait for connection to be closed
     await closed.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    closed.expect(equals(true));
+    closed.expect(isTrue);
     waitFor(() => server.hasNoSessions, timeout: Duration(seconds: 5), raiseOnTimeout: true);
   });
 
@@ -143,7 +171,7 @@ void main() {
 
     // Wait for handler to be called
     await received.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    received.expect(equals(true));
+    received.expect(isTrue);
 
     // Teardown
     server.close();
@@ -195,7 +223,7 @@ void main() {
 
     // Wait for handler to be called
     await called.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    called.expect(equals(true));
+    called.expect(isTrue);
 
     // Teardown
     client.close();
@@ -228,7 +256,7 @@ void main() {
       received.set(true);
     };
 
-    expect(server.hasNoSessions, equals(true));
+    expect(server.hasNoSessions, isTrue);
 
     // Connect a client
     final ClientSession client = ClientSession(getUri(server, 'ws').toString());
@@ -236,15 +264,15 @@ void main() {
 
     // Check if server is still empty
     await received.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    received.expect(equals(true));
+    received.expect(isTrue);
 
-    expect(server.hasNoSessions, equals(false));
+    expect(server.hasNoSessions, isFalse);
 
     // Teardown
     client.close();
     await server.close();
 
     // Is empty again
-    expect(server.hasNoSessions, equals(true));
+    expect(server.hasNoSessions, isTrue);
   });
 }
