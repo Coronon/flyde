@@ -69,7 +69,7 @@ void main() {
     await receivedNormalMessage.awaitValue(Duration(seconds: 10), raiseOnTimeout: true);
 
     // Send crypto message
-    session.send('\$ANYTHING-2');
+    session.send(r'$ANYTHING-2');
 
     // Check exception raised and connection closed
     await raisedException.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
@@ -110,7 +110,7 @@ void main() {
     });
 
     // Send invalid crypto message
-    client.add('\$ANYTHING');
+    client.add(r'$ANYTHING');
 
     // Check exception raised and connection closed
     await raisedException.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
@@ -152,7 +152,7 @@ void main() {
     });
 
     // Send invalid public key
-    client.add('\$KEY_REQUEST1-2-3-4-5-6-7-8-9-0');
+    client.add(r'$KEY_REQUEST1-2-3-4-5-6-7-8-9-0');
 
     // Check exception raised and connection closed
     await raisedException.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);

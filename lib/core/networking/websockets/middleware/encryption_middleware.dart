@@ -209,7 +209,7 @@ class CryptoProvider {
 
 /// Common shared variables for crypto
 class _CryptoConstants {
-  static const String prefix = '\$';
+  static const String prefix = r'$';
   static const String keyRequest = 'KEY_REQUEST';
   static const String keyResponse = 'KEY_RESPONSE';
   static final RegExp keyRegex = RegExp(r'^(?:[\d]{0,3}-){31}[\d]{0,3}$');
