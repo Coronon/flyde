@@ -60,7 +60,7 @@ void main() {
     // Connect to the server
     final session = ClientSession(getUri(server, 'ws').toString());
     session.middleware = middleware;
-    session.onDone = (dynamic session) {
+    session.onDone = (ClientSession session) {
       closedSession.set(true);
     };
 
