@@ -72,7 +72,7 @@ class _CryptoProvider {
   /// Completer that allows awaiting secure connection
   final Completer<void> _completer = Completer<void>();
 
-  /// Future that completes once the own key is available
+  /// Future that completes once the own key pair is available
   late final Future<void> _ready;
 
   /// Own public key as string
@@ -96,7 +96,8 @@ class _CryptoProvider {
   }
 
   //* General use
-  /// Encrypt the give [message] with the preestablished shared key
+
+  /// Encrypt the given [message] with the preestablished shared key
   Future<String> encrypt(String message) async {
     // Generate a new nonce (has to be unique every message!)
     final List<int> nonce = _CryptoProvider.encryptionAlgo.newNonce();
@@ -111,7 +112,7 @@ class _CryptoProvider {
     return box.concatenation().join('-');
   }
 
-  /// Decrypt the give [message] with the preestablished shared key
+  /// Decrypt the given [message] with the preestablished shared key
   Future<String> decrypt(String message) async {
     // Recreate SecretBox
     final SecretBox box = SecretBox.fromConcatenation(
@@ -135,8 +136,7 @@ class _CryptoProvider {
     // Wait for own key
     await _ready;
 
-    //? We can not trust the other party
-    // We catch all errors here as we can't trust the incoming data
+    //? We can not trust the other party -> catch all errors
     try {
       // Synchronize access to avoid multiple shared keys
       await synchronized<void>(() async {
