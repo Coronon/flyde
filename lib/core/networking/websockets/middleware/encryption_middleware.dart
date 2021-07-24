@@ -148,7 +148,7 @@ class _CryptoProvider {
         }
 
         // Remove the prefix ($) from the message
-        message = message.substring(1);
+        message = message.substring(_CryptoConstants.prefix.length);
 
         // Determine msg type
         if (message.startsWith(_CryptoConstants.keyResponse) && _session is ClientSession) {
