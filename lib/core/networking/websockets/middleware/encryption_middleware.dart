@@ -15,7 +15,7 @@ Future<dynamic> encryptionMiddleware(
   MiddlewareAction action,
   Future<dynamic> Function(dynamic) next,
 ) async {
-  final CryptoProvider provider = session.storage['crypto_provider'] ?? CryptoProvider(session);
+  final _CryptoProvider provider = session.storage['crypto_provider'] ?? _CryptoProvider(session);
 
   // Redirect handshaking messages to the crypto provider
   if (_isHandshakeMsg(message)) {
@@ -59,7 +59,7 @@ bool _isHandshakeMsg(String msg) {
 ///
 /// Every session has it's own instance of this class.
 /// It normally lives in `session.storage['crypto_provider']`
-class CryptoProvider {
+class _CryptoProvider {
   /// Algorithm used for key exchange
   static final X25519 keyExchangeAlgo = Cryptography.instance.x25519();
 
@@ -87,7 +87,7 @@ class CryptoProvider {
   /// The generated shared key
   SecretKey? _sharedKey;
 
-  CryptoProvider(this._session) {
+  _CryptoProvider(this._session) {
     // Install ourselves to the session
     _session.storage['crypto_provider'] = this;
 
@@ -99,10 +99,10 @@ class CryptoProvider {
   /// Encrypt the give [message] with the preestablished shared key
   Future<String> encrypt(String message) async {
     // Generate a new nonce (has to be unique every message!)
-    final List<int> nonce = CryptoProvider.encryptionAlgo.newNonce();
+    final List<int> nonce = _CryptoProvider.encryptionAlgo.newNonce();
 
     // Encrypt the message
-    final SecretBox box = await CryptoProvider.encryptionAlgo.encrypt(
+    final SecretBox box = await _CryptoProvider.encryptionAlgo.encrypt(
       utf8.encode(message),
       secretKey: _sharedKey!,
       nonce: nonce,
@@ -121,7 +121,7 @@ class CryptoProvider {
     );
 
     // Decrypt message
-    final List<int> clearText = await CryptoProvider.encryptionAlgo.decrypt(
+    final List<int> clearText = await _CryptoProvider.encryptionAlgo.decrypt(
       box,
       secretKey: _sharedKey!,
     );
@@ -171,7 +171,7 @@ class CryptoProvider {
   /// Start to handshakes with the other party
   Future<void> _initHandshake() async {
     // Generate our own key pair
-    _ownKeyPair = await CryptoProvider.keyExchangeAlgo.newKeyPair();
+    _ownKeyPair = await _CryptoProvider.keyExchangeAlgo.newKeyPair();
     _publicKeyStr = (await _ownKeyPair.extractPublicKey()).bytes.join('-');
 
     // Request the other party's public key (only on client side)
@@ -197,7 +197,7 @@ class CryptoProvider {
     );
 
     // Establish shared key
-    _sharedKey = await CryptoProvider.keyExchangeAlgo.sharedSecretKey(
+    _sharedKey = await _CryptoProvider.keyExchangeAlgo.sharedSecretKey(
       keyPair: _ownKeyPair,
       remotePublicKey: publicKey,
     );

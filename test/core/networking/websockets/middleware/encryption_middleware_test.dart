@@ -32,7 +32,7 @@ void main() {
     await receivedMessage.awaitValue(Duration(seconds: 10), raiseOnTimeout: true);
 
     receivedMessage.expect(equals('ANYTHING'));
-    expect(session.storage['crypto_provider'], isA<CryptoProvider>());
+    expect(session.storage['crypto_provider'].runtimeType.toString(), equals('_CryptoProvider'));
   });
 
   test('EncryptionMiddleware throws on crypto message after shared key is established', () async {
