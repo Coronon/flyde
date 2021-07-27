@@ -1,7 +1,6 @@
 name: Coverage pages
 
-on:
-  push:
+on: [push, pull_request]
 
 # Only run for most recent commit
 concurrency:
