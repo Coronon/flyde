@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/Coronon/flyde/branch/develop/graph/badge.svg?token=MG4AR31KY2)](https://codecov.io/gh/Coronon/flyde)
+
 # flyde
 
 _flyde_ is a command line tool, which boosts the productivity of C++ developers greatly.
