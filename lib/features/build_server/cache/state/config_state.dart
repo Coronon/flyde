@@ -1,3 +1,4 @@
+import 'package:flyde/features/build_server/cache/dependencies/dependency_graph.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'config_state.g.dart';
@@ -14,7 +15,10 @@ class ConfigState {
   /// Set of all files which latest version is available as object file for this config.
   final Set<String> compiledFiles;
 
-  ConfigState({required this.checksum, required this.compiledFiles});
+  /// A graph used to determine which files rely on each other.
+  final DependencyGraph dependencyGraph;
+
+  ConfigState({required this.checksum, required this.compiledFiles, required this.dependencyGraph});
 
   factory ConfigState.fromJson(Map<String, dynamic> json) => _$ConfigStateFromJson(json);
 
