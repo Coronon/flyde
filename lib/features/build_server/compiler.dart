@@ -82,6 +82,11 @@ class Compiler {
 
   /// Adds the [file] to the cache. Required for all files which should be compiled.
   Future<void> insert(SourceFile file) async {
+    if (_outdatedFiles == null) {
+      await _syncCache();
+    }
+
+    _outdatedFiles!.remove(file.id);
     await _cache.insert(file);
   }
 
