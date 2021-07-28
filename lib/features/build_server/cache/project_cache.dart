@@ -3,6 +3,9 @@ import 'dart:io';
 
 import 'package:flyde/core/fs/configs/compiler_config.dart';
 import 'package:flyde/core/fs/file_extension.dart';
+import 'package:flyde/features/build_server/cache/dependencies/dependency_graph.dart';
+import 'package:flyde/features/build_server/cache/dependencies/find_dependencies.dart';
+import 'package:flyde/features/build_server/cache/dependencies/resolve_dependency.dart';
 import 'package:flyde/features/build_server/cache/implementation_object_ref.dart';
 import 'package:flyde/features/build_server/cache/state/config_state.dart';
 import 'package:flyde/features/build_server/cache/state/project_cache_state.dart';
@@ -20,13 +23,24 @@ import 'package:path/path.dart';
 /// await cache.init(); // Neccessary to load persisted state
 /// ```
 class ProjectCache {
+  /// The id of the project.
   final String _projectId;
 
+  /// The directory where all cache files.
   late final Directory _workingDirectory;
 
+  /// The persisted state of the cache.
   late final ProjectCacheState _state;
 
+  /// The current config of the project.
   CompilerConfig? _config;
+
+  /// List of all file ids which are not synced
+  /// for the current config.
+  Set<String> _unsyncedFiles = <String>{};
+
+  /// Flag to indicate if the inter-file dependencies need to be updated.
+  bool _needsDependencyUpdate = true;
 
   ProjectCache(this._projectId, Directory cacheDir) {
     _workingDirectory = Directory(join(cacheDir.path, _projectId));
@@ -63,10 +77,17 @@ class ProjectCache {
   /// used config, call `sync` once more.
   Future<List<String>> sync(Map<String, String> files, CompilerConfig config) async {
     _config = config;
-    _state.configs.add(ConfigState(checksum: config.hash, compiledFiles: {}));
+    _state.configs.add(ConfigState(
+      checksum: config.hash,
+      compiledFiles: {},
+      dependencyGraph: DependencyGraph(nodes: {}),
+    ));
 
     final required = <String>[];
     final inSync = <String>[];
+
+    // Update dependency graph with new files
+    _currentConfigState.dependencyGraph.update(files.keys.toSet());
 
     for (final entry in files.entries) {
       final id = entry.key;
@@ -89,18 +110,20 @@ class ProjectCache {
       }
     }
 
+    _unsyncedFiles = required.toSet();
+    _needsDependencyUpdate = true;
+
     return required;
   }
 
   /// Persists the passed [file].
   Future<void> insert(SourceFile file) async {
-    final path = joinAll([
-      _workingDirectory.path,
-      'src',
-      file.entry.toString(),
-      ...file.path,
-      '${file.name}.${file.extension}'
-    ]);
+    if (!_unsyncedFiles.contains(file.id)) {
+      return;
+    }
+
+    final entryDirectory = Directory(join(_workingDirectory.path, 'src', file.entry.toString()));
+    final path = joinAll([entryDirectory.path, ...file.path, '${file.name}.${file.extension}']);
     final diskFile = File(path);
 
     await diskFile.create(recursive: true);
@@ -147,32 +170,29 @@ class ProjectCache {
   Future<List<ImplementationObjectRef>> get sourceFiles async {
     final refs = <ImplementationObjectRef>[];
 
-    for (final file in _state.files) {
-      if (_isCompiled(file.id)) {
-        continue;
-      }
+    if (_needsDependencyUpdate) {
+      _needsDependencyUpdate = false;
+      await _updateDependencyGraph();
+    }
 
-      final ext = extension(file.path);
+    for (final file in _state.files.where((f) => _isCompilationCandidate(f))) {
+      final sourceFile = File(file.path);
+      final objectFile = File(_objectPath(file.id));
 
-      if (FileExtension.sources.contains(ext)) {
-        final sourceFile = File(file.path);
-        final objectFile = File(_objectPath(file.id));
+      await objectFile.create(recursive: true);
 
-        await objectFile.create(recursive: true);
+      refs.add(ImplementationObjectRef(
+        sourceFile,
+        objectFile,
+        () async {
+          final exists = await objectFile.exists();
+          final isNotEmpty = (await objectFile.stat()).size > 0;
 
-        refs.add(ImplementationObjectRef(
-          sourceFile,
-          objectFile,
-          () async {
-            final exists = await objectFile.exists();
-            final isNotEmpty = (await objectFile.stat()).size > 0;
-
-            if (exists && isNotEmpty) {
-              _setIsCompiled(file.id, true);
-            }
-          },
-        ));
-      }
+          if (exists && isNotEmpty) {
+            _setIsCompiled(file.id, true);
+          }
+        },
+      ));
     }
 
     return refs;
@@ -210,12 +230,57 @@ class ProjectCache {
     return joinAll([_workingDirectory.path, 'obj', _config!.hash, '$sourceId.o']);
   }
 
+  /// A reference to the file which stores the state of the cache.
   File get _stateFile => File(join(_workingDirectory.path, '.state.json'));
 
+  /// Returns whether the given [file] is a candidate for compilation.
+  bool _isCompilationCandidate(SourceFileState file) {
+    final compiled = _isCompiled(file.id);
+    final ext = extension(file.path);
+    final isSource = FileExtension.sources.contains(ext);
+
+    if (!isSource) {
+      return false;
+    }
+
+    if (!compiled) {
+      return true;
+    }
+
+    final dependencies = _currentConfigState.dependencyGraph.indirectDependencies(file.id);
+    return dependencies.intersection(_unsyncedFiles).isNotEmpty;
+  }
+
+  /// Updates the dependency graph.
+  ///
+  /// Has to be called after all unsynced files have been inserted.
+  Future<void> _updateDependencyGraph() async {
+    final all = await _allSourceFiles;
+    final Map<String, SourceFile> fileMap = {
+      for (final file in all) file.id: file,
+    };
+
+    for (final id in _unsyncedFiles) {
+      final dependencies = await findDependencies(fileMap[id]!);
+      final entryDir = Directory(join(
+        _workingDirectory.path,
+        'src',
+        fileMap[id]!.entry.toString(),
+      ));
+      final resolved = await Future.wait(
+        dependencies.map((d) => resolve(d, fileMap[id]!, all, entryDir)),
+      );
+
+      _currentConfigState.dependencyGraph.connect(id, resolved.toSet());
+    }
+  }
+
+  /// Returns whether the file with given [fileId] has been compiled.
   bool _isCompiled(String fileId) {
     return _currentConfigState.compiledFiles.contains(fileId);
   }
 
+  /// Sets the [compiled] flag for the file with given [fileId].
   void _setIsCompiled(String fileId, bool compiled) {
     final files = _currentConfigState.compiledFiles;
 
@@ -226,6 +291,17 @@ class ProjectCache {
     }
   }
 
+  /// The currently used configuration state.
+  ///
+  /// Will be updated when synced with a different configuration.
   ConfigState get _currentConfigState =>
       _state.configs.singleWhere((conf) => conf.checksum == _config!.hash);
+
+  /// A list of all project files as `SourceFile`s.
+  Future<List<SourceFile>> get _allSourceFiles async {
+    final storageDir = Directory(join(_workingDirectory.path, 'src'));
+    return await Future.wait(_state.files.map(
+      (file) => file.toSourceFile(storageDir),
+    ));
+  }
 }
