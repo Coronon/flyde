@@ -52,8 +52,8 @@ class DependencyGraph {
     nodes.removeAll(toBeRemoved);
 
     for (final node in nodes) {
-      node.dependencies.removeAll(toBeRemoved);
-      node.dependents.removeAll(toBeRemoved);
+      node.dependencies.removeAll(toBeRemoved.map((node) => node.id));
+      node.dependents.removeAll(toBeRemoved.map((node) => node.id));
     }
   }
 
@@ -64,21 +64,21 @@ class DependencyGraph {
     for (final node in nodes) {
       // add dependencies to source node
       if (node == srcNode) {
-        node.dependencies = dependencies.map((e) => _getNode(e)).toSet();
+        node.dependencies = dependencies.toSet();
         continue;
       }
 
       // add source node to it's dependencies or remove if no longer included
       if (dependencies.contains(node.id)) {
-        node.dependents.add(srcNode);
+        node.dependents.add(srcNode.id);
       } else {
-        node.dependents.remove(srcNode);
+        node.dependents.remove(srcNode.id);
       }
     }
   }
 
   /// Returns a set of all nodes that depend on the node with the id [file].
-  Set<String> dependents(String file) => _getNode(file).dependents.map((e) => e.id).toSet();
+  Set<String> dependents(String file) => _getNode(file).dependents.toSet();
 
   /// Returns a set of all nodes that depend even indirectly on the node with the id [file].
   ///
@@ -89,7 +89,7 @@ class DependencyGraph {
     final result = <String>{};
 
     void addDepentents(_DependencyNode node) {
-      for (final dependent in node.dependents) {
+      for (final dependent in node.dependents.map((e) => _getNode(e))) {
         if (!result.contains(dependent.id)) {
           result.add(dependent.id);
           addDepentents(dependent);
@@ -103,7 +103,7 @@ class DependencyGraph {
   }
 
   /// Returns a set of all nodes that [file] depends on.
-  Set<String> dependencies(String file) => _getNode(file).dependencies.map((e) => e.id).toSet();
+  Set<String> dependencies(String file) => _getNode(file).dependencies.toSet();
 
   /// Returns a set of all nodes that [file] depends on even indirectly.
   ///
@@ -113,7 +113,7 @@ class DependencyGraph {
     final result = <String>{};
 
     void addDependencies(_DependencyNode node) {
-      for (final dependency in node.dependencies) {
+      for (final dependency in node.dependencies.map((e) => _getNode(e))) {
         if (!result.contains(dependency.id)) {
           result.add(dependency.id);
           addDependencies(dependency);
@@ -154,10 +154,10 @@ class _DependencyNode {
   final String id;
 
   /// The set of dependencies of the node.
-  Set<_DependencyNode> dependencies;
+  Set<String> dependencies;
 
   /// The set of dependents of the node.
-  Set<_DependencyNode> dependents;
+  Set<String> dependents;
 
   _DependencyNode({
     required this.id,
