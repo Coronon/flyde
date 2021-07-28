@@ -6,27 +6,21 @@ part of 'authentication.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-AuthRequest _$AuthRequestFromJson(Map<String, dynamic> json) {
-  return AuthRequest(
-    username: json['username'] as String,
-    password: json['password'] as String,
-  );
-}
+AuthRequest _$AuthRequestFromJson(Map<String, dynamic> json) => AuthRequest(
+      username: json['username'] as String,
+      password: json['password'] as String,
+    );
 
-Map<String, dynamic> _$AuthRequestToJson(AuthRequest instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$AuthRequestToJson(AuthRequest instance) => <String, dynamic>{
       'username': instance.username,
       'password': instance.password,
     };
 
-AuthResponse _$AuthResponseFromJson(Map<String, dynamic> json) {
-  return AuthResponse(
-    status: _$enumDecode(_$AuthResponseStatusEnumMap, json['status']),
-  );
-}
+AuthResponse _$AuthResponseFromJson(Map<String, dynamic> json) => AuthResponse(
+      status: _$enumDecode(_$AuthResponseStatusEnumMap, json['status']),
+    );
 
-Map<String, dynamic> _$AuthResponseToJson(AuthResponse instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$AuthResponseToJson(AuthResponse instance) => <String, dynamic>{
       'status': _$AuthResponseStatusEnumMap[instance.status],
     };
 
