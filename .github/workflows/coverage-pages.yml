@@ -1,0 +1,66 @@
+name: Coverage pages
+
+on:
+  push:
+    branches-ignore:
+      - 'gh-pages'
+  pull_request:
+    branches-ignore:
+      - 'gh-pages'
+
+# Avoid race conditions
+concurrency:
+  group: ${{ github.ref }}
+
+jobs:
+  test-coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🔔
+        uses: actions/checkout@v2
+
+      - name: Extract branch name 🔎
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      - name: Install Dart 🎯
+        uses: dart-lang/setup-dart@v1
+
+      - name: Install dependencies 📚
+        run: |
+          dart pub get
+          dart pub global activate coverage
+          dart pub global activate remove_from_coverage
+          sudo apt-get install -y lcov
+
+      - name: Run tests with coverage 🧪
+        run: dart test -r expanded --coverage coverage
+
+      - name: Format coverage data 🔣
+        run: |
+          dart pub global run coverage:format_coverage -o coverage/lcov.info -i coverage -l --report-on lib --packages .packages
+          dart pub global run remove_from_coverage:remove_from_coverage -f coverage/lcov.info -r '\.g\.dart$'
+
+      - name: Generate report ⚙️
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          genhtml -o coverage/staging/${{ steps.extract_branch.outputs.branch }} coverage/lcov.info
+          touch coverage/staging/${{ steps.extract_branch.outputs.branch }}/.nojekyll
+          touch coverage/staging/.nojekyll
+
+      - name: Deploy to GH-Pages 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        if: ${{ github.event_name == 'push' }}
+        with:
+          branch: gh-pages
+          folder: coverage/staging
+          clean: no
+
+      - name: Upload to Codecov ☂️
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/lcov.info
+          flags: unittests
