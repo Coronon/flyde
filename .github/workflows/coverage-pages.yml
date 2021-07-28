@@ -2,13 +2,12 @@ name: Coverage pages
 
 on: [push, pull_request]
 
-# Only run for most recent commit
+# Avoid race conditions
 concurrency:
   group: ${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
-  build:
+  test-coverage:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,7 +37,8 @@ jobs:
           dart pub global run coverage:format_coverage -o coverage/lcov.info -i coverage -l --report-on lib --packages .packages
           dart pub global run remove_from_coverage:remove_from_coverage -f coverage/lcov.info -r '\.g\.dart$'
 
-      - name: Generate report and index ⚙️
+      - name: Generate report ⚙️
+        if: ${{ github.event_name == 'push' }}
         run: |
           genhtml -o coverage/staging/${{ steps.extract_branch.outputs.branch }} coverage/lcov.info
           touch coverage/staging/${{ steps.extract_branch.outputs.branch }}/.nojekyll
