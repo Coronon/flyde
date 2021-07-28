@@ -1,6 +1,12 @@
 name: Coverage pages
 
-on: [push, pull_request]
+on:
+  push:
+    branches-ignore:
+      - 'gh-pages'
+  pull_request:
+    branches-ignore:
+      - 'gh-pages'
 
 # Avoid race conditions
 concurrency:
