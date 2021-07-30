@@ -26,7 +26,7 @@ class ProjectCache {
   /// The id of the project.
   final String _projectId;
 
-  /// The directory where all cache files.
+  /// The directory where all cache files reside.
   late final Directory _workingDirectory;
 
   /// The persisted state of the cache.
@@ -167,9 +167,13 @@ class ProjectCache {
   ///   await ref.link();
   /// }
   /// ```
+  ///
+  /// On the first call after [sync] the dependency graph is updated.
   Future<List<ImplementationObjectRef>> get sourceFiles async {
     final refs = <ImplementationObjectRef>[];
 
+    // Ensure that the dependency graph is up to date.
+    // Required to be able to determine which files have to be compiled.
     if (_needsDependencyUpdate) {
       _needsDependencyUpdate = false;
       await _updateDependencyGraph();
@@ -233,7 +237,7 @@ class ProjectCache {
   /// A reference to the file which stores the state of the cache.
   File get _stateFile => File(join(_workingDirectory.path, '.state.json'));
 
-  /// Returns whether the given [file] is a candidate for compilation.
+  /// Determine whether [file] has to be compiled based on previous compilation, extension and dependencies.
   bool _isCompilationCandidate(SourceFileState file) {
     final compiled = _isCompiled(file.id);
     final ext = extension(file.path);

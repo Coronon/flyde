@@ -3,6 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'dependency_graph.g.dart';
 
 /// A data structure connecting multiple nodes with each other.
+///
 /// The nodes are the different source files and the connnections
 /// are the deppendencies bewteen them.
 ///

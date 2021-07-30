@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flyde/core/fs/wrapper/source_file.dart';
 
-/// Find all dependencies in [file] and returns them as found in [file].
+/// Finds all direct dependencies in [file].
 Future<Set<String>> findDependencies(SourceFile file) async {
   final text = utf8.decode((await file.data).toList());
   final includes = LineSplitter()

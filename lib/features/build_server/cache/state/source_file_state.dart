@@ -28,12 +28,9 @@ class SourceFileState {
 
   /// Converts the [SourceFileState] back to a [SourceFile].
   ///
-  /// [storageDirectory] marks the folder where the source files are stored.
-  /// It is required to resolve the path of the state file to be relative
-  /// to the storage root. [storageDirectory] should not contain the entry point
-  /// directory, when it is expected to be already present in `path`.
-  /// If this is not the case, an [entry] can be passed which will exclude the
-  /// entry directory from the path of the [SourceFile].
+  /// [storageDirectory] is required to find the relative path to the file.
+  /// The entry id of the `SourceFile` is either determined by the first
+  /// component of the relative path or can be passed directly as [entry].
   Future<SourceFile> toSourceFile(Directory storageDirectory, {int? entry}) async {
     final relPath = relative(path, from: storageDirectory.path);
     final pathComps = split(normalize(relPath));

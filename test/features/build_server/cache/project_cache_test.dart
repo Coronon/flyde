@@ -16,7 +16,7 @@ import '../../../helpers/create_dummy_project_cache.dart';
 const _cacheId = 'project_cache_test';
 const _dummyProjectCachePath = './flyde-test-lib-$_cacheId/cache/testing';
 
-/// Reads the `./example` directory and returns a list of all files.
+/// Reads the `./example` directory and returns a list of all cpp related files.
 Future<List<File>> _loadExampleFiles() async {
   return [
     await for (final entity in Directory('./example').list(recursive: true)) entity,
@@ -31,7 +31,7 @@ Future<List<File>> _loadExampleFiles() async {
 /// Returns a list of all files in the `./example` directory converted
 /// to `SourceFile`s.
 ///
-/// If [changing] is not null, all files with the this name will be
+/// If [changing] is not null, all files with the name will be
 /// changed using the [withContent] function on it's data.
 Future<List<SourceFile>> _getSourceFiles({
   String? changing,
