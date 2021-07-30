@@ -83,10 +83,10 @@ class DependencyGraph {
 
   /// Returns a set of all nodes that depend even indirectly on the node with the id [file].
   ///
-  /// Unlike `dependents`, also node ids are returned which are not directly dependent on [file].
+  /// Unlike `dependents`, also node ids are returned which are transitive dependent on [file].
   /// If [file] is dependent on node `a` and node `a` is dependent on node `b`,
   /// node `a` is returned as well as node `b`.
-  Set<String> indirectDependents(String file) {
+  Set<String> transitiveDependents(String file) {
     final result = <String>{};
 
     void addDepentents(_DependencyNode node) {
@@ -106,11 +106,11 @@ class DependencyGraph {
   /// Returns a set of all nodes that [file] depends on.
   Set<String> dependencies(String file) => _getNode(file).dependencies.toSet();
 
-  /// Returns a set of all nodes that [file] depends on even indirectly.
+  /// Returns a set of all nodes that [file] depends on transitive.
   ///
   /// If [file] depents on node `a` and node `a` is dependent on node `b`,
   /// node `a` is returned as well as node `b`.
-  Set<String> indirectDependencies(String file) {
+  Set<String> transitiveDependencies(String file) {
     final result = <String>{};
 
     void addDependencies(_DependencyNode node) {

@@ -248,7 +248,7 @@ class ProjectCache {
       return true;
     }
 
-    final dependencies = _currentConfigState.dependencyGraph.indirectDependencies(file.id);
+    final dependencies = _currentConfigState.dependencyGraph.transitiveDependencies(file.id);
     return dependencies.intersection(_unsyncedFiles).isNotEmpty;
   }
 
