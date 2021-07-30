@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "Calculator.hpp"
-#include "../include/constants/numbers.hpp"
+#include "Calculator.hpp"                      // Include Calculator
+#include "../include/constants/numbers.hpp"    /* Include number constants */
 
 using namespace model;
 
