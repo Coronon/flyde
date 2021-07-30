@@ -143,7 +143,8 @@ class DependencyGraph {
 class _DependencyNode {
   /// The id of the node.
   ///
-  /// Sole parameter for equality checks.
+  /// It is recommended to set this field to the unique id of the corresponding source file.
+  /// It is the sole parameter for equality checks.
   final String id;
 
   /// The set of dependencies of the node.
