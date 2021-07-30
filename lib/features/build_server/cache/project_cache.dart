@@ -84,7 +84,6 @@ class ProjectCache {
     ));
 
     final required = <String>[];
-    final inSync = <String>[];
 
     // Update dependency graph with new files
     _currentConfigState.dependencyGraph.update(files.keys.toSet());
@@ -105,8 +104,6 @@ class ProjectCache {
       } else if (matches.isNotEmpty && matches.first.hash != checksum) {
         _setIsCompiled(matches.first.id, false);
         required.add(id);
-      } else {
-        inSync.add(id);
       }
     }
 
