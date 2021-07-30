@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:path/path.dart';
 
 part 'source_file_state.g.dart';
 
@@ -21,6 +25,26 @@ class SourceFileState {
   factory SourceFileState.fromJson(Map<String, dynamic> json) => _$SourceFileStateFromJson(json);
 
   Map<String, dynamic> toJson() => _$SourceFileStateToJson(this);
+
+  /// Converts the [SourceFileState] back to a [SourceFile].
+  ///
+  /// [storageDirectory] is required to find the relative path to the file.
+  /// The entry id of the `SourceFile` is either determined by the first
+  /// component of the relative path or can be passed directly as [entry].
+  Future<SourceFile> toSourceFile(Directory storageDirectory, {int? entry}) async {
+    final relPath = relative(path, from: storageDirectory.path);
+    final pathComps = split(normalize(relPath));
+    final entryId = entry ?? int.parse(pathComps[0]);
+
+    return SourceFile.fromFile(
+      entryId,
+      File(path),
+      entryDirectory: Directory(join(
+        storageDirectory.path,
+        entry is int ? null : entryId.toString(),
+      )),
+    );
+  }
 
   @override
   bool operator ==(other) {

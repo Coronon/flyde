@@ -6,12 +6,10 @@ part of 'cache_state.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-CacheState _$CacheStateFromJson(Map<String, dynamic> json) {
-  return CacheState(
-    projects:
-        (json['projects'] as List<dynamic>).map((e) => e as String).toSet(),
-  );
-}
+CacheState _$CacheStateFromJson(Map<String, dynamic> json) => CacheState(
+      projects:
+          (json['projects'] as List<dynamic>).map((e) => e as String).toSet(),
+    );
 
 Map<String, dynamic> _$CacheStateToJson(CacheState instance) =>
     <String, dynamic>{

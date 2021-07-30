@@ -6,20 +6,20 @@ part of 'compiler_config.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-CompilerConfig _$CompilerConfigFromJson(Map<String, dynamic> json) {
-  return CompilerConfig(
-    compiler: _$enumDecode(_$InstalledCompilerEnumMap, json['compiler']),
-    threads: json['threads'] as int,
-    sourceDirectories: (json['sourceDirectories'] as List<dynamic>)
-        .map((e) => e as String)
-        .toList(),
-    compilerFlags: (json['compilerFlags'] as List<dynamic>)
-        .map((e) => e as String)
-        .toList(),
-    linkerFlags:
-        (json['linkerFlags'] as List<dynamic>).map((e) => e as String).toList(),
-  );
-}
+CompilerConfig _$CompilerConfigFromJson(Map<String, dynamic> json) =>
+    CompilerConfig(
+      compiler: _$enumDecode(_$InstalledCompilerEnumMap, json['compiler']),
+      threads: json['threads'] as int,
+      sourceDirectories: (json['sourceDirectories'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      compilerFlags: (json['compilerFlags'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      linkerFlags: (json['linkerFlags'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+    );
 
 Map<String, dynamic> _$CompilerConfigToJson(CompilerConfig instance) =>
     <String, dynamic>{
