@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/Coronon/flyde/branch/develop/graph/badge.svg?token=MG4AR31KY2)](https://codecov.io/gh/Coronon/flyde)
+[![codecov](https://codecov.io/gh/Coronon/flyde/branch/master/graph/badge.svg?token=MG4AR31KY2)](https://codecov.io/gh/Coronon/flyde)
 
 # flyde
 
