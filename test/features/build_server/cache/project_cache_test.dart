@@ -122,7 +122,7 @@ void main() {
       changing: 'numbers',
       withContent: (cnt) => cnt.replaceFirst(
         'constexpr int seven = 7;',
-        'constexpr int seven = 9;',
+        'constexpr int seven = 42;',
       ),
     );
 
