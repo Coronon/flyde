@@ -130,15 +130,7 @@ class DependencyGraph {
   /// Finds the node with the given [id] and returns it.
   ///
   /// If no node with the given id exists, an error is thrown.
-  _DependencyNode _getNode(String id) {
-    for (final node in nodes) {
-      if (node.id == id) {
-        return node;
-      }
-    }
-
-    throw ArgumentError('No node with id "$id" exists');
-  }
+  _DependencyNode _getNode(String id) => nodes.singleWhere((node) => node.id == id);
 
   /// Converts a set of ids to a set of nodes without any dependencies.
   static Set<_DependencyNode> _convert(Set<String> ids) =>

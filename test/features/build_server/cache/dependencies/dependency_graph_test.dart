@@ -79,13 +79,7 @@ void main() {
     expect(graph.dependents('e'), unorderedEquals(['a']));
     expect(graph.indirectDependents('e'), unorderedEquals(['d', 'e', 'b', 'a']));
 
-    final errorMatcher = throwsA(
-      isA<ArgumentError>().having(
-        (e) => e.message.toString(),
-        'message',
-        equals('No node with id "c" exists'),
-      ),
-    );
+    final errorMatcher = throwsA(isA<StateError>());
 
     expect(() => graph.dependencies('c'), errorMatcher);
     expect(() => graph.indirectDependencies('c'), errorMatcher);
