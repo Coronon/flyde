@@ -7,8 +7,10 @@ Future<Set<String>> findDependencies(SourceFile file) async {
   final text = utf8.decode((await file.data).toList());
   final includes = LineSplitter()
       .convert(text)
-      // Remove comments
+      // Remove single line comments. // ...
       .map((line) => line.replaceAll(RegExp(r'\/\/.*$'), ""))
+      // Remove single line closed comments. /* ... */
+      .map((line) => line.replaceAll(RegExp(r'\/\*.*?\*\/'), ""))
       // Remove leading and trailing whitespace
       .map((line) => line.trim())
       // Get all possible includes
