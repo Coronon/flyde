@@ -263,13 +263,13 @@ class ProjectCache {
 
     for (final id in _unsyncedFiles) {
       final dependencies = await findDependencies(fileMap[id]!);
-      final entryDir = Directory(join(
+      final root = Directory(join(
         _workingDirectory.path,
         'src',
         fileMap[id]!.entry.toString(),
       ));
       final resolved = await Future.wait(
-        dependencies.map((d) => resolve(d, fileMap[id]!, all, entryDir)),
+        dependencies.map((d) => resolve(d, fileMap[id]!, all, root)),
       );
 
       _currentConfigState.dependencyGraph.connect(id, resolved.toSet());
