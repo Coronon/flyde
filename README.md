@@ -26,3 +26,11 @@ pub get
 ```sh
 dart run
 ```
+
+## Repository
+
+### GitHub Actions
+
+This project utilizes GitHub Actions for automation. Its uses are described below:
+- Coverage report generation for [Codecov](https://app.codecov.io/gh/Coronon/flyde) and our [self-hosted coverage index](https://coronon.github.io/flyde/)
+- NOTICES generation for licenses of used packages (not dev_dependencies) taken from `pubspec.yaml`
