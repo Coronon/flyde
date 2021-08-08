@@ -1,4 +1,4 @@
-name: Automatic maintenance
+name: Automatic Maintenance
 
 on:
   push:
