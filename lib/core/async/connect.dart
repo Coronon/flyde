@@ -50,6 +50,8 @@ void _spawn(List<dynamic> args) {
 /// The function spawns a new [Isolate] and returns an object containing the spawned [Isolate]
 /// and the receive port. The send port will be transmitted to the receive port and should
 /// be stored.
+///
+/// [spawnFunc] must be a static or top level function.
 Future<SpawnedIsolate> connect(ReceivePort mainReceive, SpawnFunc spawnFunc) async {
   final isolate = await Isolate.spawn<List<dynamic>>(
     _spawn,
