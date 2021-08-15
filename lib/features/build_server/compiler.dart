@@ -35,6 +35,9 @@ import 'package:path/path.dart';
 /// compiler.update(newConfig, newFileList);
 /// ```
 class Compiler {
+  /// Delegate object which is called when the build state changes.
+  CompilerStatusDelegate? delegate;
+
   /// The configuration used to compile the project.
   CompilerConfig _config;
 
@@ -46,6 +49,12 @@ class Compiler {
 
   /// List of all outdated and unavailable files.
   List<String>? _outdatedFiles;
+
+  /// The total count of all source files which will be compiled.
+  int srcFileCount = 0;
+
+  /// The current progress of compilation in a range from 0 to 1.
+  double progress = 0;
 
   Compiler(this._config, this._projectFiles, this._cache);
 
@@ -107,13 +116,22 @@ class Compiler {
     final srcFiles = await _cache.sourceFiles;
     final compileCommands = <_ProcessInvocation>[];
 
+    srcFileCount = srcFiles.length;
+    progress = 0;
+    delegate?.didStartCompilation();
+
     for (final file in srcFiles) {
       compileCommands.add(await _buildCompileCommand(file));
     }
 
     await _runCommands(compileCommands, threads: _config.threads);
+
+    delegate?.didFinishCompilation();
+
     await _runCommands([await _buildLinkCommand()]);
     await _cache.finish();
+
+    delegate?.done();
   }
 
   /// Synchronizes the cache with the given project files and config.
@@ -139,8 +157,14 @@ class Compiler {
     final sourcePath = ref.source.path;
     final objectPath = ref.object.path;
 
-    return _ProcessInvocation(compilerPath!,
-        [...includes, '-c', sourcePath, '-o', objectPath, ..._config.compilerFlags], ref.link);
+    return _ProcessInvocation(
+      compilerPath!,
+      [...includes, '-c', sourcePath, '-o', objectPath, ..._config.compilerFlags],
+      () async {
+        await ref.link();
+        delegate?.isCompiling(progress + (1 / srcFileCount));
+      },
+    );
   }
 
   /// Builds the command that links the given object files.
@@ -148,16 +172,19 @@ class Compiler {
     final path = await _config.compiler.path();
     final objectFiles = await _cache.objectFiles;
 
+    delegate?.didStartLinking();
+
     // TODO: Maybe call linker directly (eg ld)
     return _ProcessInvocation(
-        path!,
-        [
-          ...objectFiles.map((file) => file.path),
-          '-o',
-          (await _cache.executable).path,
-          ..._config.linkerFlags
-        ],
-        null);
+      path!,
+      [
+        ...objectFiles.map((file) => file.path),
+        '-o',
+        (await _cache.executable).path,
+        ..._config.linkerFlags
+      ],
+      () async => delegate?.didFinishLinking(),
+    );
   }
 
   /// Runs the given commands on multiple [threads].
@@ -206,4 +233,25 @@ class _ProcessInvocation {
   String toString() {
     return '$executable ${args.join(' ')}';
   }
+}
+
+/// The status delegate of the `Compiler`.
+mixin CompilerStatusDelegate {
+  /// Called when the compiler has started compiling.
+  void didStartCompilation();
+
+  /// Called when the compiler has finished a compiliation stage.
+  void isCompiling(double progress);
+
+  /// Called when the compiler has finished compiling.
+  void didFinishCompilation();
+
+  /// Called when the compiler has started linking.
+  void didStartLinking();
+
+  /// Called when the compiler has finished linking.
+  void didFinishLinking();
+
+  /// Called when the compiler has finished.
+  void done();
 }
