@@ -162,7 +162,8 @@ class Compiler {
       [...includes, '-c', sourcePath, '-o', objectPath, ..._config.compilerFlags],
       () async {
         await ref.link();
-        delegate?.isCompiling(progress + (1 / srcFileCount));
+        progress += 1 / srcFileCount;
+        delegate?.isCompiling(progress);
       },
     );
   }
