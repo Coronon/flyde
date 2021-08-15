@@ -113,15 +113,10 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
     try {
       await _compiler.compile();
     } catch (e) {
-      await call(
-        InterfaceMessage(
-          _MessageIdentifiers.stateUpdate,
-          CompileStatusMessage(
-            status: CompileStatus.failed,
-            payload: e.toString(),
-          ),
-        ),
-      );
+      await updateState(CompileStatusMessage(
+        status: CompileStatus.failed,
+        payload: e.toString(),
+      ));
     }
 
     _hasCapacity = true;
