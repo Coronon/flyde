@@ -18,24 +18,35 @@ class CompileStatusMessage<T> {
   factory CompileStatusMessage.fromJson(Map<String, dynamic> json) =>
       _$CompileStatusMessageFromJson(json, (obj) => obj as T);
 
-  Map<String, dynamic> toJson() => _$CompileStatusMessageToJson(this, (obj) => obj);
+  Map<String, dynamic> toJson() => _$CompileStatusMessageToJson(this, (Object? obj) {
+        if (obj is double || obj is int || obj is String || obj is bool) {
+          return obj;
+        } else {
+          return obj?.toString();
+        }
+      });
 }
 
 /// The status of the compilation.
 enum CompileStatus {
   /// Process has to wait. Payload is a [WaitReason].
+  @JsonValue('waiting')
   waiting,
 
   /// Compilation in progress. Payload is a progress percentage as `Double` value.
+  @JsonValue('compiling')
   compiling,
 
   /// Project is linking. No further payload.
+  @JsonValue('linking')
   linking,
 
   /// Compilation has succeeded. No further payload.
+  @JsonValue('done')
   done,
 
   /// Compilation failed. Payload is a `String` with the error message.
+  @JsonValue('failed')
   failed,
 }
 
