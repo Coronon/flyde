@@ -5,7 +5,7 @@ version: 1.0.0
 homepage: https://github.com/Coronon/flyde
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.13.0 <3.0.0'
 
 dependencies:
   json_annotation: ^4.1.0
@@ -13,6 +13,7 @@ dependencies:
   crypto: ^3.0.1
   cryptography: ^2.0.2
   synchronized: ^3.0.0
+  tuple: ^2.0.0
 
 dev_dependencies:
   lints: ^1.0.1
