@@ -152,8 +152,8 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
   @override
   void didFinishCompilation() {
     updateState(CompileStatusMessage(
-      status: CompileStatus.waiting,
-      payload: WaitReason.awaitingNextPhase,
+      status: CompileStatus.compiling,
+      payload: 1.0,
     ));
   }
 
