@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:flyde/core/networking/protocol/project_build.dart';
 import 'package:flyde/core/networking/protocol/project_update.dart';
@@ -24,10 +26,10 @@ class BuildProvider {
   BuildProvider(this._server);
 
   /// Sets up the server.
-  Future<void> setup() async {
+  Future<void> setup({Directory? cacheDirectory}) async {
     await _server.ready;
 
-    _cache = await Cache.load();
+    _cache = await Cache.load(from: cacheDirectory);
     _server.wsOnMessage = _handleWebSocketMessage;
   }
 
