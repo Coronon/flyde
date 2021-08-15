@@ -3,6 +3,7 @@ import 'dart:isolate';
 import 'package:flyde/core/async/connect.dart';
 import 'package:flyde/core/async/interface.dart';
 import 'package:flyde/core/fs/configs/compiler_config.dart';
+import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:flyde/core/networking/protocol/compile_status.dart';
 import 'package:flyde/features/build_server/cache/project_cache.dart';
 
@@ -13,6 +14,7 @@ class _MessageIdentifiers {
   static const init = 'init';
   static const build = 'build';
   static const update = 'update';
+  static const sync = 'sync';
   static const stateUpdate = 'stateUpdate';
   static const hasCapacity = 'hasCapacity';
 }
@@ -60,7 +62,7 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
       _requiresInit = false;
     }
 
-    //* Do not answer requests if the worker is not initialized.
+    //! Do not answer requests if the worker is not initialized.
     if (_requiresInit) {
       return;
     }
@@ -72,8 +74,13 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
       response.send(isolate.sendPort, isResponse: true);
     }
 
-    //* Respond to update requests.
-    if (message.name == _MessageIdentifiers.update && message.args is List<dynamic>) {
+    //! Do not handle build requests if the worker is bussy.
+    if (!_hasCapacity) {
+      return;
+    }
+
+    //* Respond to sync requests.
+    if (message.name == _MessageIdentifiers.sync && message.args is List<dynamic>) {
       final args = message.args as List<dynamic>;
       final files = args[0] as Map<String, String>;
       final config = args[1] as CompilerConfig;
@@ -82,6 +89,18 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
 
       final response = InterfaceMessage(message.name, await _compiler.outdatedFiles);
       response.send(isolate.sendPort, isResponse: true);
+    }
+
+    //* Handle file update requests.
+    if (message.name == _MessageIdentifiers.update && message.args is SourceFile) {
+      final file = message.args as SourceFile;
+
+      _compiler.insert(file);
+    }
+
+    //* Handle file build requests.
+    if (message.name == _MessageIdentifiers.build) {
+      await build();
     }
   }
 
@@ -199,9 +218,14 @@ class MainInterface extends Interface {
       await call(InterfaceMessage(_MessageIdentifiers.init, [files, config, cache]));
 
   /// Updates the project with the given [config] and [files].
-  Future<List<String>> update(
+  Future<List<String>> sync(
     Map<String, String> files,
     CompilerConfig config,
   ) async =>
-      await expectResponse(InterfaceMessage(_MessageIdentifiers.update, [files, config]));
+      await expectResponse(InterfaceMessage(_MessageIdentifiers.sync, [files, config]));
+
+  Future<void> update(SourceFile file) async =>
+      await call(InterfaceMessage(_MessageIdentifiers.update, file));
+
+  Future<void> build() async => await call(InterfaceMessage(_MessageIdentifiers.build, null));
 }
