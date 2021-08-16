@@ -3,6 +3,7 @@ import 'dart:isolate';
 
 import 'package:flyde/core/async/connect.dart';
 import 'package:tuple/tuple.dart';
+import 'package:uuid/uuid.dart';
 
 /// Message object to be exchanged between two [Isolate]s.
 class InterfaceMessage {
@@ -13,6 +14,8 @@ class InterfaceMessage {
 
   /// The payload of the message.
   Object? args;
+
+  late final String _id = Uuid().v4();
 
   InterfaceMessage(this.name, this.args);
 
@@ -98,7 +101,11 @@ abstract class Interface {
   }
 
   /// Sends the [message] and returns the response if [expectResponse] is `true`.
-  Future<InterfaceMessage?> call(InterfaceMessage message, {bool expectResponse = false}) async {
+  Future<InterfaceMessage?> call(
+    InterfaceMessage message, {
+    bool expectResponse = false,
+    Duration? timeout,
+  }) async {
     await ready.future;
 
     message.send(isolate.sendPort);
@@ -108,6 +115,17 @@ abstract class Interface {
     }
 
     final completer = Completer<InterfaceMessage>();
+
+    if (timeout != null) {
+      Future.delayed(timeout).then((dynamic val) {
+        _expectations.removeWhere((exepc) => exepc.item1._id == message._id);
+        completer.completeError(
+          StateError(
+            'Request "${message.name}" {id: ${message._id}} timed out after ${timeout.toString()}',
+          ),
+        );
+      });
+    }
 
     _expectations.add(Tuple2(message, completer.complete));
 
@@ -121,8 +139,12 @@ abstract class Interface {
   ///
   /// A custom [typeError] can be provided which will be used if the response has a different type than expected.
   /// If not set, a more generic message will be used.
-  Future<T> expectResponse<T>(InterfaceMessage request, {String? typeError}) async {
-    final InterfaceMessage? response = await call(request, expectResponse: true);
+  Future<T> expectResponse<T>(
+    InterfaceMessage request, {
+    String? typeError,
+    Duration? timeout,
+  }) async {
+    final InterfaceMessage? response = await call(request, expectResponse: true, timeout: timeout);
 
     if (response!.args is T) {
       return response.args as T;

@@ -45,4 +45,16 @@ void main() {
 
     expect(response, equals('hello'));
   });
+
+  test('Requests can time out', () async {
+    final main = await _TestInterface.create();
+
+    await expectLater(
+      main.expectResponse(
+        InterfaceMessage('any', null),
+        timeout: Duration(seconds: 1),
+      ),
+      throwsA(isA<StateError>()),
+    );
+  });
 }
