@@ -202,6 +202,7 @@ class MainInterface extends Interface {
   Future<bool> hasCapacity() async => await expectResponse(
         InterfaceMessage(_MessageIdentifiers.hasCapacity, null),
         typeError: '"${_MessageIdentifiers.hasCapacity}" expects a boolean response.',
+        timeout: Duration(seconds: 2),
       );
 
   /// Initializes the worker with the given [config], [files] and [cache].
@@ -217,11 +218,14 @@ class MainInterface extends Interface {
     Map<String, String> files,
     CompilerConfig config,
   ) async =>
-      await expectResponse(InterfaceMessage(_MessageIdentifiers.sync, [files, config]));
+      await expectResponse(
+        InterfaceMessage(_MessageIdentifiers.sync, [files, config]),
+        timeout: Duration(seconds: 10),
+      );
 
   /// Updates the project with the given [file].
   Future<void> update(SourceFile file) async =>
-      await call(InterfaceMessage(_MessageIdentifiers.update, file));
+      await call(InterfaceMessage(_MessageIdentifiers.update, await file.asMemoryData()));
 
   /// Builds the project.
   ///
