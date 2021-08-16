@@ -15,19 +15,20 @@ class InterfaceMessage {
   /// The payload of the message.
   Object? args;
 
-  late final String _id = Uuid().v4();
+  /// Unique id of this message and it's respond.
+  late final String _id;
 
-  InterfaceMessage(this.name, this.args);
+  /// Flag which indicates if this message is a response.
+  bool _isResponse;
+
+  InterfaceMessage(this.name, this.args, [this._isResponse = false, String? id]) {
+    _id = id ?? Uuid().v4();
+  }
 
   /// Creates a [InterfaceMessage] from the received data.
   static InterfaceMessage? from(dynamic message) {
-    if (message is List<dynamic> && message.length == 2) {
-      final dynamic name = message[0];
-      final dynamic args = message[1];
-
-      if (name is String) {
-        return InterfaceMessage(name, args);
-      }
+    if (message is InterfaceMessage) {
+      return message;
     }
 
     return null;
@@ -35,17 +36,18 @@ class InterfaceMessage {
 
   /// Sends the message through the [port].
   void send(SendPort port, {bool isResponse = false}) {
-    port.send([isResponse ? _responseName : name, args]);
+    port.send(this.._isResponse = isResponse);
   }
 
-  /// The identifier of the message if it is an awaited response.
-  String get _responseName => '$name-response';
+  /// Sends a response to this message with given [args].
+  void respond(SendPort port, Object? args) =>
+      InterfaceMessage(name, args, true, _id).send(port, isResponse: true);
 
   /// Checks if the received data is a response to this [InterfaceMessage].
   InterfaceMessage? _match(dynamic message) {
     final response = InterfaceMessage.from(message);
 
-    if (response != null && response.name == _responseName) {
+    if (response != null && response._isResponse && response._id == _id) {
       return response;
     }
 
