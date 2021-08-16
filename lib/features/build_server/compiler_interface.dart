@@ -60,6 +60,7 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
       _compiler = Compiler(config, files, cache);
       _compiler.delegate = this;
       _requiresInit = false;
+      message.respond(isolate.sendPort, null);
     }
 
     //! Do not answer requests if the worker is not initialized.
@@ -69,9 +70,7 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
 
     //* Respond to capacity requests.
     if (message.name == _MessageIdentifiers.hasCapacity) {
-      final response = InterfaceMessage(message.name, _hasCapacity);
-
-      response.send(isolate.sendPort, isResponse: true);
+      message.respond(isolate.sendPort, _hasCapacity);
     }
 
     //! Do not handle build requests if the worker is bussy.
@@ -86,16 +85,15 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
       final config = args[1] as CompilerConfig;
 
       _compiler.update(config, files);
-
-      final response = InterfaceMessage(message.name, await _compiler.outdatedFiles);
-      response.send(isolate.sendPort, isResponse: true);
+      message.respond(isolate.sendPort, await _compiler.outdatedFiles);
     }
 
     //* Handle file update requests.
     if (message.name == _MessageIdentifiers.update && message.args is SourceFile) {
       final file = message.args as SourceFile;
 
-      _compiler.insert(file);
+      await _compiler.insert(file);
+      message.respond(isolate.sendPort, null);
     }
 
     //* Handle file build requests.
@@ -211,7 +209,10 @@ class MainInterface extends Interface {
     CompilerConfig config,
     ProjectCache? cache,
   ) async =>
-      await call(InterfaceMessage(_MessageIdentifiers.init, [files, config, cache]));
+      await expectResponse(
+        InterfaceMessage(_MessageIdentifiers.init, [files, config, cache]),
+        timeout: Duration(seconds: 10),
+      );
 
   /// Updates the project with the given [config] and [files].
   Future<List<String>> sync(
@@ -224,8 +225,10 @@ class MainInterface extends Interface {
       );
 
   /// Updates the project with the given [file].
-  Future<void> update(SourceFile file) async =>
-      await call(InterfaceMessage(_MessageIdentifiers.update, await file.asMemoryData()));
+  Future<void> update(SourceFile file) async => await expectResponse(
+        InterfaceMessage(_MessageIdentifiers.update, await file.asMemoryData()),
+        timeout: Duration(seconds: 2),
+      );
 
   /// Builds the project.
   ///
