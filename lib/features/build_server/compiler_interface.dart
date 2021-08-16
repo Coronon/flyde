@@ -219,8 +219,12 @@ class MainInterface extends Interface {
   ) async =>
       await expectResponse(InterfaceMessage(_MessageIdentifiers.sync, [files, config]));
 
+  /// Updates the project with the given [file].
   Future<void> update(SourceFile file) async =>
       await call(InterfaceMessage(_MessageIdentifiers.update, file));
 
+  /// Builds the project.
+  ///
+  /// Use [onStateUpdate] to get the compilation state.
   Future<void> build() async => await call(InterfaceMessage(_MessageIdentifiers.build, null));
 }
