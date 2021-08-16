@@ -43,7 +43,7 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
 
     _instance = _WorkerInterface(
       SpawnedIsolate(Isolate.current, receivePort)..sendPort = sendPort,
-    );
+    )..ready.complete();
   }
 
   @override

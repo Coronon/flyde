@@ -58,6 +58,12 @@ abstract class Interface {
   /// ports to the partner isolate.
   SpawnedIsolate isolate;
 
+  /// Completes when the send port is connected.
+  ///
+  /// [ready] is set when a sent port is received on the receive port.
+  /// When setting the send port manually, ensure to `complete` [ready].
+  final Completer<void> ready = Completer();
+
   /// A list of expected [InterfaceMessage]s and a callback when the message is received.
   final List<_Expectation> _expectations = [];
 
@@ -68,6 +74,7 @@ abstract class Interface {
       //* Store `SendPort`s when received.
       if (message is SendPort) {
         isolate.sendPort = message;
+        ready.complete();
         return;
       }
 
@@ -92,6 +99,8 @@ abstract class Interface {
 
   /// Sends the [message] and returns the response if [expectResponse] is `true`.
   Future<InterfaceMessage?> call(InterfaceMessage message, {bool expectResponse = false}) async {
+    await ready.future;
+
     message.send(isolate.sendPort);
 
     if (!expectResponse) {
