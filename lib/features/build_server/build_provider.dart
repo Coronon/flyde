@@ -55,7 +55,7 @@ class BuildProvider {
     }
   }
 
-  /// Returns the interfacve with the given [id] or throws an exception.
+  /// Returns the interface with the given [id] or throws an exception.
   MainInterface _getInterface(String id) {
     if (_isolates.containsKey(id)) {
       return _isolates[id]!;
