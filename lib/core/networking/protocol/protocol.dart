@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flyde/core/networking/protocol/process_completion.dart';
+
 import 'authentication.dart';
 import 'compile_status.dart';
 import 'project_update.dart';
@@ -15,6 +17,10 @@ typedef Deserialize<T> = T Function(Map<String, dynamic>);
 class ProtocolDelegate {
   /// A dictionary of all protocol elements and their coresponding deserializers
   static final Map<String, Deserialize> elements = {
+    //* General
+    'ProcessCompletionMessage': (Map<String, dynamic> json) =>
+        ProcessCompletionMessage.fromJson(json),
+
     //* Authentication
     'AuthRequest': (Map<String, dynamic> json) => AuthRequest.fromJson(json),
     'AuthResponse': (Map<String, dynamic> json) => AuthResponse.fromJson(json),

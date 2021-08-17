@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flyde/core/fs/wrapper/source_file.dart';
+import 'package:flyde/core/networking/protocol/process_completion.dart';
 import 'package:flyde/core/networking/protocol/project_build.dart';
 import 'package:flyde/core/networking/protocol/project_update.dart';
 import 'package:flyde/core/networking/protocol/project_init.dart';
@@ -84,6 +85,13 @@ class BuildProvider {
     _isolates[message.id] = await MainInterface.launch();
     session.storage['id'] = message.id;
     _isolates[message.id]?.onStateUpdate = session.send;
+
+    session.send(
+      ProcessCompletionMessage(
+        process: CompletableProcess.projectInit,
+        description: '',
+      ),
+    );
   }
 
   /// Handles a new project update request.
@@ -101,6 +109,7 @@ class BuildProvider {
     }
 
     _getInterface(id).init(message.files, message.config, cache);
+
     session.send(
       ProjectUpdateResponse(
         files: await _getInterface(id).sync(
@@ -126,5 +135,12 @@ class BuildProvider {
     );
 
     await _getInterface(id).update(file);
+
+    session.send(
+      ProcessCompletionMessage(
+        process: CompletableProcess.fileUpdate,
+        description: file.id,
+      ),
+    );
   }
 }
