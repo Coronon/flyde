@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:flyde/core/networking/protocol/process_completion.dart';
@@ -19,7 +20,9 @@ class BuildProvider {
   final WebServer _server;
 
   /// The list of interfaces to isolates which handle compilation.
-  final Map<String, MainInterface> _isolates = {};
+  final Map<String, MainInterface> _interfaces = {};
+
+  final Map<String, String> _availableProjects = {};
 
   /// The cache that is used to store the compiled code.
   late final Cache _cache;
@@ -32,6 +35,41 @@ class BuildProvider {
 
     _cache = await Cache.load(from: cacheDirectory);
     _server.wsOnMessage = _handleWebSocketMessage;
+  }
+
+  /// Kills all project isolates and shuts down the server.
+  Future<void> terminate() async {
+    _availableProjects.keys.forEach(kill);
+    _availableProjects.clear();
+    _interfaces.clear();
+    await _server.close();
+  }
+
+  /// Terminates the isolate which hosts the project with the id [projectId].
+  void kill(String projectId) {
+    final MainInterface? interface = _interfaces[projectId];
+
+    if (interface != null) {
+      interface.isolate.isolate.kill(priority: Isolate.immediate);
+    }
+  }
+
+  /// Returns a list of all projects which have an active connection.
+  List<String> get projectIds {
+    return _availableProjects.keys.toList();
+  }
+
+  /// Returns the name of the project with the [projectId].
+  ///
+  /// If the project is not available, an argument error is thrown.
+  String projectName(String projectId) {
+    final String? name = _availableProjects[projectId];
+
+    if (name != null) {
+      return name;
+    }
+
+    throw ArgumentError('Project with id $projectId does not exists');
   }
 
   /// Handles a new websocket message.
@@ -58,8 +96,8 @@ class BuildProvider {
 
   /// Returns the interface with the given [id] or throws an exception.
   MainInterface _getInterface(String id) {
-    if (_isolates.containsKey(id)) {
-      return _isolates[id]!;
+    if (_interfaces.containsKey(id)) {
+      return _interfaces[id]!;
     }
 
     throw StateError('Interface with id $id has not been created yet.');
@@ -78,13 +116,14 @@ class BuildProvider {
 
   /// Handles a new project initialization request.
   Future<void> _handleProjectInit(ServerSession session, ProjectInitRequest message) async {
-    if (_isolates.containsKey(message.id)) {
+    if (_interfaces.containsKey(message.id)) {
       return;
     }
 
-    _isolates[message.id] = await MainInterface.launch();
+    _interfaces[message.id] = await MainInterface.launch();
+    _availableProjects[message.id] = message.name;
     session.storage['id'] = message.id;
-    _isolates[message.id]?.onStateUpdate = session.send;
+    _interfaces[message.id]?.onStateUpdate = session.send;
 
     session.send(
       ProcessCompletionMessage(
