@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flyde/core/networking/protocol/process_completion.dart';
+import 'package:flyde/core/networking/protocol/project_build.dart';
 
 import 'authentication.dart';
 import 'compile_status.dart';
@@ -30,6 +31,7 @@ class ProtocolDelegate {
     'ProjectUpdateResponse': (Map<String, dynamic> json) => ProjectUpdateResponse.fromJson(json),
     'ProjectInitRequest': (Map<String, dynamic> json) => ProjectInitRequest.fromJson(json),
     'FileUpdate': (Map<String, dynamic> json) => FileUpdate.fromJson(json),
+    'BinaryResponse': (Map<String, dynamic> json) => BinaryResponse.fromJson(json),
     'CompileStatusMessage<dynamic>': (Map<String, dynamic> json) =>
         CompileStatusMessage.fromJson(json),
   };
