@@ -11,7 +11,7 @@ abstract class Session<T> {
   /// Awaitable to ensure ready for use
   late final Future<void> ready;
 
-  /// Individial storage attached to each session for ephemeral data
+  /// Individual storage attached to each session for ephemeral data
   Map<dynamic, dynamic> storage = <dynamic, dynamic>{};
 
   /// Handler for received messages
