@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-08-16 11:48:57</td>
+            <td class="headerValue">2021-08-21 11:16:23</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -86,7 +86,7 @@
 <a name="24"><span class="lineNum">      24 </span>            :   /// The receive port to the parent isolate.</a>
 <a name="25"><span class="lineNum">      25 </span>            :   final ReceivePort receivePort;</a>
 <a name="26"><span class="lineNum">      26 </span>            : </a>
-<a name="27"><span class="lineNum">      27 </span><span class="lineCov">          2 :   SpawnedIsolate(this.isolate, this.receivePort);</span></a>
+<a name="27"><span class="lineNum">      27 </span><span class="lineCov">          4 :   SpawnedIsolate(this.isolate, this.receivePort);</span></a>
 <a name="28"><span class="lineNum">      28 </span>            : }</a>
 <a name="29"><span class="lineNum">      29 </span>            : </a>
 <a name="30"><span class="lineNum">      30 </span>            : /// Function which should be invoked to spawn the new [Isolate].</a>
@@ -114,13 +114,13 @@
 <a name="52"><span class="lineNum">      52 </span>            : /// be stored.</a>
 <a name="53"><span class="lineNum">      53 </span>            : ///</a>
 <a name="54"><span class="lineNum">      54 </span>            : /// [spawnFunc] must be a static or top level function.</a>
-<a name="55"><span class="lineNum">      55 </span><span class="lineCov">          2 : Future&lt;SpawnedIsolate&gt; connect(ReceivePort mainReceive, SpawnFunc spawnFunc) async {</span></a>
-<a name="56"><span class="lineNum">      56 </span><span class="lineCov">          4 :   final isolate = await Isolate.spawn&lt;List&lt;dynamic&gt;&gt;(</span></a>
+<a name="55"><span class="lineNum">      55 </span><span class="lineCov">          4 : Future&lt;SpawnedIsolate&gt; connect(ReceivePort mainReceive, SpawnFunc spawnFunc) async {</span></a>
+<a name="56"><span class="lineNum">      56 </span><span class="lineCov">          8 :   final isolate = await Isolate.spawn&lt;List&lt;dynamic&gt;&gt;(</span></a>
 <a name="57"><span class="lineNum">      57 </span>            :     _spawn,</a>
-<a name="58"><span class="lineNum">      58 </span><span class="lineCov">          4 :     [mainReceive.sendPort, spawnFunc],</span></a>
+<a name="58"><span class="lineNum">      58 </span><span class="lineCov">          8 :     [mainReceive.sendPort, spawnFunc],</span></a>
 <a name="59"><span class="lineNum">      59 </span>            :   );</a>
 <a name="60"><span class="lineNum">      60 </span>            : </a>
-<a name="61"><span class="lineNum">      61 </span><span class="lineCov">          2 :   return SpawnedIsolate(isolate, mainReceive);</span></a>
+<a name="61"><span class="lineNum">      61 </span><span class="lineCov">          4 :   return SpawnedIsolate(isolate, mainReceive);</span></a>
 <a name="62"><span class="lineNum">      62 </span>            : }</a>
 </pre>
       </td>

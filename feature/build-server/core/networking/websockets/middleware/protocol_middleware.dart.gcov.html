@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-08-16 11:48:57</td>
+            <td class="headerValue">2021-08-21 11:16:23</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -65,27 +65,27 @@
 <a name="3"><span class="lineNum">       3 </span>            : import 'middleware_types.dart';</a>
 <a name="4"><span class="lineNum">       4 </span>            : </a>
 <a name="5"><span class="lineNum">       5 </span>            : /// A middleware that handles serialization and deserialization of messages.</a>
-<a name="6"><span class="lineNum">       6 </span><span class="lineCov">          1 : Future&lt;dynamic&gt; protocolMiddleware(</span></a>
+<a name="6"><span class="lineNum">       6 </span><span class="lineCov">          2 : Future&lt;dynamic&gt; protocolMiddleware(</span></a>
 <a name="7"><span class="lineNum">       7 </span>            :   dynamic session,</a>
 <a name="8"><span class="lineNum">       8 </span>            :   dynamic message,</a>
 <a name="9"><span class="lineNum">       9 </span>            :   MiddlewareAction action,</a>
 <a name="10"><span class="lineNum">      10 </span>            :   Future&lt;dynamic&gt; Function(dynamic) next,</a>
 <a name="11"><span class="lineNum">      11 </span>            : ) async {</a>
-<a name="12"><span class="lineNum">      12 </span><span class="lineCov">          1 :   if (action == MiddlewareAction.receive) {</span></a>
+<a name="12"><span class="lineNum">      12 </span><span class="lineCov">          2 :   if (action == MiddlewareAction.receive) {</span></a>
 <a name="13"><span class="lineNum">      13 </span>            :     // Instantly deserialize the message so other middleware can work with it</a>
 <a name="14"><span class="lineNum">      14 </span>            :     dynamic msg;</a>
 <a name="15"><span class="lineNum">      15 </span>            :     // We catch all errors here as we can't trust the incoming data</a>
 <a name="16"><span class="lineNum">      16 </span>            :     try {</a>
-<a name="17"><span class="lineNum">      17 </span><span class="lineCov">          1 :       msg = ProtocolDelegate.deserialize(message);</span></a>
+<a name="17"><span class="lineNum">      17 </span><span class="lineCov">          2 :       msg = ProtocolDelegate.deserialize(message);</span></a>
 <a name="18"><span class="lineNum">      18 </span>            :     } catch (e) {</a>
 <a name="19"><span class="lineNum">      19 </span><span class="lineCov">          1 :       session.raise(e);</span></a>
 <a name="20"><span class="lineNum">      20 </span>            :       return null;</a>
 <a name="21"><span class="lineNum">      21 </span>            :     }</a>
 <a name="22"><span class="lineNum">      22 </span>            : </a>
-<a name="23"><span class="lineNum">      23 </span><span class="lineCov">          2 :     return await next(msg);</span></a>
+<a name="23"><span class="lineNum">      23 </span><span class="lineCov">          4 :     return await next(msg);</span></a>
 <a name="24"><span class="lineNum">      24 </span>            :   } else {</a>
 <a name="25"><span class="lineNum">      25 </span>            :     // Let other middleware work with the message, finally serialize it</a>
-<a name="26"><span class="lineNum">      26 </span><span class="lineCov">          3 :     return ProtocolDelegate.serialize(await next(message));</span></a>
+<a name="26"><span class="lineNum">      26 </span><span class="lineCov">          6 :     return ProtocolDelegate.serialize(await next(message));</span></a>
 <a name="27"><span class="lineNum">      27 </span>            :   }</a>
 <a name="28"><span class="lineNum">      28 </span>            : }</a>
 </pre>
