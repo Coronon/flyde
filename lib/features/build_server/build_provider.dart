@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:typed_data';
 
 import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:flyde/core/networking/protocol/process_completion.dart';
@@ -92,6 +93,10 @@ class BuildProvider {
     if (message == projectBuildRequest) {
       await _getInterface(id).build();
     }
+
+    if (message == getBinaryRequest) {
+      await _handleBinaryRequest(session, message, id);
+    }
   }
 
   /// Returns the interface with the given [id] or throws an exception.
@@ -181,5 +186,15 @@ class BuildProvider {
         description: file.id,
       ),
     );
+  }
+
+  /// Handles a binary request.
+  Future<void> _handleBinaryRequest(
+    ServerSession session,
+    dynamic message,
+    String id,
+  ) async {
+    final Uint8List? data = await _getInterface(id).binary;
+    session.send(BinaryResponse(binary: data));
   }
 }

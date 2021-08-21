@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:isolate';
+import 'dart:typed_data';
 
 import 'package:flyde/core/async/connect.dart';
 import 'package:flyde/core/async/interface.dart';
@@ -17,6 +19,7 @@ class _MessageIdentifiers {
   static const sync = 'sync';
   static const stateUpdate = 'stateUpdate';
   static const hasCapacity = 'hasCapacity';
+  static const getBinary = 'getBinary';
 }
 
 /// Interface for the compiler running in a seperate [Isolate].
@@ -99,6 +102,14 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
     //* Handle file build requests.
     if (message.name == _MessageIdentifiers.build) {
       await build();
+    }
+
+    //* Handle binary requests.
+    if (message.name == _MessageIdentifiers.getBinary) {
+      final File? bin = await _compiler.lastExecutable;
+      final Uint8List? data = await bin?.readAsBytes();
+
+      message.respond(isolate.sendPort, data);
     }
   }
 
@@ -234,4 +245,15 @@ class MainInterface extends Interface {
   ///
   /// Use [onStateUpdate] to get the compilation state.
   Future<void> build() async => await call(InterfaceMessage(_MessageIdentifiers.build, null));
+
+  /// The latest available binary for the project.
+  Future<Uint8List?> get binary async {
+    return await expectResponse(
+      InterfaceMessage(
+        _MessageIdentifiers.getBinary,
+        null,
+      ),
+      timeout: Duration(seconds: 2),
+    );
+  }
 }
