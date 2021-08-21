@@ -89,6 +89,7 @@ abstract class Interface {
 
         if (response != null) {
           expectation.item2.call(response);
+          _expectations.removeWhere((exepc) => exepc.item1._id == message._id);
           return;
         }
       }
@@ -120,12 +121,14 @@ abstract class Interface {
 
     if (timeout != null) {
       Future.delayed(timeout).then((dynamic val) {
-        _expectations.removeWhere((exepc) => exepc.item1._id == message._id);
-        completer.completeError(
-          StateError(
-            'Request "${message.name}" {id: ${message._id}} timed out after ${timeout.toString()}',
-          ),
-        );
+        if (!completer.isCompleted) {
+          _expectations.removeWhere((exepc) => exepc.item1._id == message._id);
+          completer.completeError(
+            StateError(
+              'Request "${message.name}" {id: ${message._id}} timed out after ${timeout.toString()}',
+            ),
+          );
+        }
       });
     }
 
