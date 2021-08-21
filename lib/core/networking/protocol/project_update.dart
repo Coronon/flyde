@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flyde/core/fs/configs/compiler_config.dart';
+import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'project_update.g.dart';
@@ -69,6 +70,28 @@ class FileUpdate {
   factory FileUpdate.fromJson(Map<String, dynamic> json) => _$FileUpdateFromJson(json);
 
   Map<String, dynamic> toJson() => _$FileUpdateToJson(this);
+
+  /// Converts the [SourceFile] object to a [FileUpdate] object.
+  static Future<FileUpdate> fromSourceFile(SourceFile file) async {
+    return FileUpdate(
+      name: file.name,
+      extension: file.extension,
+      entry: file.entry,
+      data: await file.data,
+      path: file.path,
+    );
+  }
+
+  /// Converts this [FileUpdate] object to a [SourceFile] object.
+  Future<SourceFile> toSourceFile(FileUpdate file) async {
+    return SourceFile(
+      entry,
+      path,
+      name,
+      extension,
+      data: data,
+    );
+  }
 }
 
 /// `Uint8List` -> List<int>
