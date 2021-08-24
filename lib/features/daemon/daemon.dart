@@ -5,7 +5,7 @@ import '../../core/networking/protocol/authentication.dart';
 import '../../core/networking/websockets/middleware.dart';
 
 import 'cli_server.dart';
-import 'project/session_handler_wrapper.dart';
+import 'project/project_session.dart';
 
 /// Middleware that is applied to all connections
 const List<MiddlewareFunc> basicMiddleware = [
