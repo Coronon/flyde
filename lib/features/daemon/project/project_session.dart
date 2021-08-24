@@ -1,10 +1,10 @@
 import 'package:flyde/core/networking/websockets/session.dart';
 
 /// Wraps a [ClientSession] for routing and isolate management
-class SessionHandlerWrapper {
+class ProjectSession {
   final ClientSession session;
 
-  SessionHandlerWrapper(this.session);
+  ProjectSession(this.session);
 
   /// Handle a request made by a CLI client (treated as authenticated)
   ///

@@ -5,7 +5,7 @@ import '../../core/networking/protocol/authentication.dart';
 import '../../core/networking/websockets/middleware.dart';
 
 import 'cli_server.dart';
-import 'handler/session_handler_wrapper.dart';
+import 'project/session_handler_wrapper.dart';
 
 /// Middleware that is applied to all connections
 const List<MiddlewareFunc> basicMiddleware = [
@@ -22,14 +22,14 @@ class Daemon {
 
   /// Map of all projects to their corresponding build-server connections
   ///
-  /// Project(ID) -> [SessionHandlerWrapper]
-  final Map<String, SessionHandlerWrapper> _projects = {};
+  /// Project(ID) -> [ProjectSession]
+  final Map<String, ProjectSession> _projects = {};
 
   //TODO Constructor
 
   //* Message passing
 
-  /// Attempt to forward message from CLI to [SessionHandlerWrapper]
+  /// Attempt to forward message from CLI to [ProjectSession]
   ///
   /// This will throw a [StateError] if project was not found.
   /// The returned Future will resolve with an optional response.
@@ -51,7 +51,7 @@ class Daemon {
   /// This is a noop if the [project] is already connected to the [url].
   /// If the [url] is different, the old connection will be closed and
   /// one to the new [url] established.
-  Future<SessionHandlerWrapper> connectToServer(
+  Future<ProjectSession> connectToServer(
     String project,
     String url,
     AuthRequest? credentials,
@@ -78,7 +78,7 @@ class Daemon {
     }
 
     // Store connection
-    final wrapper = SessionHandlerWrapper(connection);
+    final wrapper = ProjectSession(connection);
     _projects[project] = wrapper;
 
     return wrapper;
