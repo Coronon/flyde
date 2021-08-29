@@ -2,6 +2,23 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'project_init.g.dart';
 
+/// Request to reserve a space in the queue for a project.
+const reserveBuildRequest = 'reserve_build_request';
+
+/// Response that tells a client that it can send build
+/// requests now.
+const isActiveSessionResponse = 'is_active_session_response';
+
+/// Response that tells a client that it has to wait until
+/// it can send build requests.
+const isInactiveSessionResponse = 'is_inactive_session_response';
+
+/// Frees the reservation for the project and allows other clients to make
+/// requests.
+///
+/// No more build requests can be sent afterwards.
+const unsubscribeRequest = 'unsubscribe_request';
+
 /// Requests to initialize the project.
 @JsonSerializable()
 class ProjectInitRequest {
