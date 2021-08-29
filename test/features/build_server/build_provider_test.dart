@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flyde/core/async/event_synchronizer.dart';
 import 'package:flyde/core/fs/compiler/installed_compiler.dart';
 import 'package:flyde/core/fs/configs/compiler_config.dart';
 import 'package:flyde/core/fs/file_extension.dart';
@@ -37,59 +38,49 @@ Future<Uint8List> _requestAndDownloadProject(
   List<SourceFile> files,
   CompilerConfig config,
 ) async {
-  List<String> requiredFiles = [];
-  final isDone = VHook<bool?>(null);
-  final hasBinary = VHook<bool?>(null);
-  Uint8List? bin;
+  final sync = EventSynchronizer(clientSession.send);
 
   clientSession.onMessage = (session, message) async {
-    if (message is ProjectUpdateResponse) {
-      requiredFiles = message.files;
-
-      final id = requiredFiles.removeLast();
-      final file = files.singleWhere((f) => f.id == id);
-
-      await session.send(FileUpdate.fromSourceFile(file));
-    }
-
-    if (message is CompileStatusMessage) {
-      if (message.status == CompileStatus.done) {
-        isDone.set(true);
-      }
-    }
-
-    if (message is ProcessCompletionMessage) {
-      if (message.process == CompletableProcess.projectInit) {
-        await clientSession.send(ProjectUpdateRequest(config: config, files: fileMap));
-      }
-
-      if (message.process == CompletableProcess.fileUpdate) {
-        if (requiredFiles.isNotEmpty) {
-          final id = requiredFiles.removeLast();
-          final file = files.singleWhere((f) => f.id == id);
-
-          await session.send(FileUpdate.fromSourceFile(file));
-        } else {
-          await session.send(projectBuildRequest);
-        }
-      }
-    }
-
-    if (message is BinaryResponse) {
-      hasBinary.set(message.binary != null);
-      bin = message.binary;
-    }
+    await sync.handleMessage(message);
   };
 
-  await clientSession.send(ProjectInitRequest(id: projectName, name: projectName));
+  await sync.request(ProjectInitRequest(id: projectName, name: projectName));
+  await sync.expect(
+    ProcessCompletionMessage,
+    (ProcessCompletionMessage msg) => msg.process == CompletableProcess.projectInit,
+  );
+  await sync.request(ProjectUpdateRequest(config: config, files: fileMap));
 
-  await isDone.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-  isDone.expect(equals(true));
+  final List<String> fileIds = await sync.expect(
+    ProjectUpdateResponse,
+    (ProjectUpdateResponse resp) => resp.files,
+  );
 
-  await clientSession.send(getBinaryRequest);
-  await hasBinary.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-  hasBinary.expect(equals(true));
+  await sync
+      .exchange(
+        Stream.fromFutures(fileIds
+            .map((id) => files.singleWhere((f) => f.id == id))
+            .map((f) => FileUpdate.fromSourceFile(f))),
+        ProcessCompletionMessage,
+        (FileUpdate update, ProcessCompletionMessage comp) =>
+            comp.process == CompletableProcess.fileUpdate,
+      )
+      .drain();
 
+  await sync.request(projectBuildRequest);
+  await sync.expect(CompileStatusMessage, (CompileStatusMessage msg) {
+    if (msg.status == CompileStatus.done) {
+      return true;
+    }
+  }, keepAlive: true);
+  await sync.request(getBinaryRequest);
+
+  final bin = await sync.expect(
+    BinaryResponse,
+    (BinaryResponse resp) => resp.binary,
+  );
+
+  expect(bin, isNotNull);
   return bin!;
 }
 
