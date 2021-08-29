@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
@@ -28,6 +30,10 @@ class BuildProvider {
   /// The cache that is used to store the compiled code.
   late final Cache _cache;
 
+  /// A queue for each project that manages which client can
+  /// access a project and which have to wait.
+  final Map<String, Queue<ServerSession>> _projectCapacityQueues = {};
+
   BuildProvider(this._server);
 
   /// Sets up the server.
@@ -36,6 +42,13 @@ class BuildProvider {
 
     _cache = await Cache.load(from: cacheDirectory);
     _server.wsOnMessage = _handleWebSocketMessage;
+    _server.wsOnDone = (ServerSession session) {
+      final String? id = session.storage['id'];
+
+      if (id != null) {
+        _activateNextSession(id, removing: session);
+      }
+    };
   }
 
   /// Kills all project isolates and shuts down the server.
@@ -82,6 +95,24 @@ class BuildProvider {
 
     final String id = _ensureId(session);
 
+    if (message == reserveBuildRequest) {
+      _projectCapacityQueues[id]!.addLast(session);
+
+      if (_isFirstInQueue(session, id)) {
+        await _activateSession(session, id);
+      }
+    }
+
+    if (message == unsubscribeRequest) {
+      await _activateNextSession(id, removing: session);
+      return;
+    }
+
+    if (!_isFirstInQueue(session, id)) {
+      session.send(isInactiveSessionResponse);
+      return;
+    }
+
     if (message is ProjectUpdateRequest) {
       await _handleProjectUpdate(session, message, id);
     }
@@ -97,6 +128,31 @@ class BuildProvider {
     if (message == getBinaryRequest) {
       await _handleBinaryRequest(session, message, id);
     }
+  }
+
+  /// Checks if the [session] is the first in the queue for
+  /// the project with the id [id].
+  bool _isFirstInQueue(ServerSession session, String id) {
+    return identical(_projectCapacityQueues[id]?.first, session);
+  }
+
+  /// Activates the first session in the queue for the project with the id [id].
+  ///
+  /// If [removing] is not null, the session is removed from the queue.
+  Future<void> _activateNextSession(String id, {ServerSession? removing}) async {
+    if (removing != null) {
+      _projectCapacityQueues[id]?.remove(removing);
+    }
+
+    if (_projectCapacityQueues[id]?.isNotEmpty == true) {
+      _activateSession(_projectCapacityQueues[id]!.first, id);
+    }
+  }
+
+  /// Activates the [session] for the project with the id [id].
+  Future<void> _activateSession(ServerSession session, String id) async {
+    _interfaces[id]?.onStateUpdate = session.send;
+    session.send(isActiveSessionResponse);
   }
 
   /// Returns the interface with the given [id] or throws an exception.
@@ -129,6 +185,7 @@ class BuildProvider {
     _availableProjects[message.id] = message.name;
     session.storage['id'] = message.id;
     _interfaces[message.id]?.onStateUpdate = session.send;
+    _projectCapacityQueues[message.id] = Queue<ServerSession>();
 
     session.send(
       ProcessCompletionMessage(
