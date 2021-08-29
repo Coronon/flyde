@@ -55,10 +55,19 @@ class EventSynchronizer {
   /// UUID generator.
   final _uuid = Uuid();
 
-  EventSynchronizer(this._sender);
+  /// A time offset required if the I/O responses might be faster than the code which attaches
+  /// a listener ([expect]) for them.
+  ///
+  /// The duration is a minimum time which is required for each [handleMessage] call.
+  /// Use with caution!
+  final Duration messageOffset;
+
+  EventSynchronizer(this._sender, [this.messageOffset = Duration.zero]);
 
   /// Message handler which should be called for each incoming [message] without pre-filtering.
   Future<void> handleMessage(dynamic message) async {
+    await Future.delayed(messageOffset);
+
     List<String> toKeep = [];
 
     for (final entry in _subscriptions.entries) {
