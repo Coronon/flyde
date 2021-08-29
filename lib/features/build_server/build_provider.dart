@@ -133,7 +133,11 @@ class BuildProvider {
   /// Checks if the [session] is the first in the queue for
   /// the project with the id [id].
   bool _isFirstInQueue(ServerSession session, String id) {
-    return identical(_projectCapacityQueues[id]?.first, session);
+    if (_projectCapacityQueues[id]?.isNotEmpty == true) {
+      return identical(_projectCapacityQueues[id]?.first, session);
+    }
+
+    return false;
   }
 
   /// Activates the first session in the queue for the project with the id [id].
