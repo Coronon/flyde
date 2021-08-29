@@ -49,6 +49,8 @@ Future<Uint8List> _requestAndDownloadProject(
     ProcessCompletionMessage,
     (ProcessCompletionMessage msg) => msg.process == CompletableProcess.projectInit,
   );
+  await sync.request(reserveBuildRequest);
+  await sync.expect(String, (String resp) => resp == isActiveSessionResponse, keepAlive: true);
   await sync.request(ProjectUpdateRequest(config: config, files: fileMap));
 
   final List<String> fileIds = await sync.expect(
@@ -79,6 +81,8 @@ Future<Uint8List> _requestAndDownloadProject(
     BinaryResponse,
     (BinaryResponse resp) => resp.binary,
   );
+
+  await sync.request(unsubscribeRequest);
 
   expect(bin, isNotNull);
   return bin!;
@@ -182,6 +186,7 @@ void main() async {
     // instead of an absolute time intervall.
     await Future.delayed(Duration(milliseconds: 500));
 
+    clientSession.send(reserveBuildRequest);
     clientSession.send(ProjectUpdateRequest(config: config1, files: fileMap));
 
     await completer.awaitValue(Duration(seconds: 2));
@@ -208,6 +213,7 @@ void main() async {
     await completer.awaitValue(Duration(seconds: 10), raiseOnTimeout: true);
     completer.expect(equals(true));
 
+    clientSession.send(reserveBuildRequest);
     clientSession.send(ProjectUpdateRequest(config: config1, files: fileMap));
 
     //? Wait for 500ms to ensure no errors have been thrown.
@@ -241,6 +247,33 @@ void main() async {
       ),
       _requestAndDownloadProject(
         'test1',
+        secondSession,
+        fileMap,
+        files,
+        config2,
+      ),
+    ]);
+
+    await _runBinary(bins[0], 'test', 'HELLO');
+    await _runBinary(bins[1], 'test1', 'BYE');
+
+    secondSession.close();
+  });
+
+  test('Can handle multiple clients for the same project', () async {
+    final secondSession = ClientSession(getUri(server, 'ws').toString())
+      ..middleware.add(protocolMiddleware);
+
+    final List<Uint8List> bins = await Future.wait([
+      _requestAndDownloadProject(
+        'test',
+        clientSession,
+        fileMap,
+        files,
+        config1,
+      ),
+      _requestAndDownloadProject(
+        'test',
         secondSession,
         fileMap,
         files,
