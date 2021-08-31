@@ -38,7 +38,7 @@ Future<Uint8List> _requestAndDownloadProject(
   List<SourceFile> files,
   CompilerConfig config,
 ) async {
-  final sync = EventSynchronizer(clientSession.send);
+  final sync = EventSynchronizer(clientSession.send, Duration(milliseconds: 10));
 
   clientSession.onMessage = (session, message) async {
     await sync.handleMessage(message);
