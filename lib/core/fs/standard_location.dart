@@ -1,9 +1,11 @@
 import 'dart:io';
 
-import 'package:path/path.dart';
-
 /// An enumeration of the most common directories to store application data.
-enum StandardLocation { tmp, library, applicationLibrary }
+enum StandardLocation {
+  tmp,
+  library,
+  applicationLibrary,
+}
 
 /// An extension on `StandardLocation` that provides a `Directory` object for each location.
 extension StandardLocationImpl on StandardLocation {
@@ -19,7 +21,13 @@ extension StandardLocationImpl on StandardLocation {
           return Directory(Platform.environment['FLYDE_APPLIBRARY'] as String);
         }
 
-        return Directory(join(StandardLocation.library.directory.path, 'flyde'));
+        final dir = Directory('${Platform.environment['HOME']}/.flyde');
+
+        if (!dir.existsSync()) {
+          dir.createSync();
+        }
+
+        return dir;
     }
   }
 }
