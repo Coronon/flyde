@@ -31,13 +31,13 @@
             <td class="headerValue">lcov.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">6</td>
             <td class="headerCovTableEntry">7</td>
-            <td class="headerCovTableEntryMed">85.7 %</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-08-31 16:03:11</td>
+            <td class="headerValue">2021-08-31 16:18:59</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -66,15 +66,15 @@
 <a name="4"><span class="lineNum">       4 </span>            : </a>
 <a name="5"><span class="lineNum">       5 </span>            : /// Reads a [file] as bytes and replaces all DOS line feeds (`\r\n`)</a>
 <a name="6"><span class="lineNum">       6 </span>            : /// with Posix line feeds (`\n`).</a>
-<a name="7"><span class="lineNum">       7 </span><span class="lineCov">          7 : Future&lt;Uint8List&gt; readAsPosixFile(File file) async {</span></a>
-<a name="8"><span class="lineNum">       8 </span><span class="lineCov">         14 :   if (!await file.exists()) {</span></a>
-<a name="9"><span class="lineNum">       9 </span><span class="lineNoCov">          0 :     throw ArgumentError('The file at path &quot;${file.path}&quot; does not exist.');</span></a>
+<a name="7"><span class="lineNum">       7 </span><span class="lineCov">          8 : Future&lt;Uint8List&gt; readAsPosixFile(File file) async {</span></a>
+<a name="8"><span class="lineNum">       8 </span><span class="lineCov">         16 :   if (!await file.exists()) {</span></a>
+<a name="9"><span class="lineNum">       9 </span><span class="lineCov">          3 :     throw ArgumentError('The file at path &quot;${file.path}&quot; does not exist.');</span></a>
 <a name="10"><span class="lineNum">      10 </span>            :   }</a>
 <a name="11"><span class="lineNum">      11 </span>            : </a>
-<a name="12"><span class="lineNum">      12 </span><span class="lineCov">         14 :   final content = await file.readAsString();</span></a>
-<a name="13"><span class="lineNum">      13 </span><span class="lineCov">          7 :   final normalized = content.replaceAll('\r\n', '\n');</span></a>
+<a name="12"><span class="lineNum">      12 </span><span class="lineCov">         16 :   final content = await file.readAsString();</span></a>
+<a name="13"><span class="lineNum">      13 </span><span class="lineCov">          8 :   final normalized = content.replaceAll('\r\n', '\n');</span></a>
 <a name="14"><span class="lineNum">      14 </span>            : </a>
-<a name="15"><span class="lineNum">      15 </span><span class="lineCov">         14 :   return Uint8List.fromList(utf8.encode(normalized));</span></a>
+<a name="15"><span class="lineNum">      15 </span><span class="lineCov">         16 :   return Uint8List.fromList(utf8.encode(normalized));</span></a>
 <a name="16"><span class="lineNum">      16 </span>            : }</a>
 <a name="17"><span class="lineNum">      17 </span>            : </a>
 <a name="18"><span class="lineNum">      18 </span>            : /// Extension on [File] which provides a method to read it as Posix file.</a>
