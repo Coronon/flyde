@@ -31,13 +31,13 @@
             <td class="headerValue">lcov.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntry">14</td>
             <td class="headerCovTableEntry">17</td>
-            <td class="headerCovTableEntryMed">76.5 %</td>
+            <td class="headerCovTableEntryMed">82.4 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-08-29 14:40:04</td>
+            <td class="headerValue">2021-08-31 10:01:26</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -82,9 +82,9 @@
 <a name="20"><span class="lineNum">      20 </span>            :   /// The path to the in cache stored file copy.</a>
 <a name="21"><span class="lineNum">      21 </span>            :   final String path;</a>
 <a name="22"><span class="lineNum">      22 </span>            : </a>
-<a name="23"><span class="lineNum">      23 </span><span class="lineCov">          3 :   SourceFileState({required this.id, required this.hash, required this.path});</span></a>
+<a name="23"><span class="lineNum">      23 </span><span class="lineCov">          4 :   SourceFileState({required this.id, required this.hash, required this.path});</span></a>
 <a name="24"><span class="lineNum">      24 </span>            : </a>
-<a name="25"><span class="lineNum">      25 </span><span class="lineNoCov">          0 :   factory SourceFileState.fromJson(Map&lt;String, dynamic&gt; json) =&gt; _$SourceFileStateFromJson(json);</span></a>
+<a name="25"><span class="lineNum">      25 </span><span class="lineCov">          2 :   factory SourceFileState.fromJson(Map&lt;String, dynamic&gt; json) =&gt; _$SourceFileStateFromJson(json);</span></a>
 <a name="26"><span class="lineNum">      26 </span>            : </a>
 <a name="27"><span class="lineNum">      27 </span><span class="lineCov">          2 :   Map&lt;String, dynamic&gt; toJson() =&gt; _$SourceFileStateToJson(this);</span></a>
 <a name="28"><span class="lineNum">      28 </span>            : </a>
@@ -117,9 +117,9 @@
 <a name="55"><span class="lineNum">      55 </span><span class="lineNoCov">          0 :     return id == other.id &amp;&amp; path == other.path;</span></a>
 <a name="56"><span class="lineNum">      56 </span>            :   }</a>
 <a name="57"><span class="lineNum">      57 </span>            : </a>
-<a name="58"><span class="lineNum">      58 </span><span class="lineCov">          2 :   @override</span></a>
+<a name="58"><span class="lineNum">      58 </span><span class="lineCov">          3 :   @override</span></a>
 <a name="59"><span class="lineNum">      59 </span>            :   int get hashCode {</a>
-<a name="60"><span class="lineNum">      60 </span><span class="lineCov">         10 :     return id.hashCode ^ path.hashCode;</span></a>
+<a name="60"><span class="lineNum">      60 </span><span class="lineCov">         15 :     return id.hashCode ^ path.hashCode;</span></a>
 <a name="61"><span class="lineNum">      61 </span>            :   }</a>
 <a name="62"><span class="lineNum">      62 </span>            : }</a>
 </pre>

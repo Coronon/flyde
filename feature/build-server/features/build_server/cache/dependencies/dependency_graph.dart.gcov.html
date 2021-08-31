@@ -31,13 +31,13 @@
             <td class="headerValue">lcov.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">43</td>
+            <td class="headerCovTableEntry">45</td>
             <td class="headerCovTableEntry">49</td>
-            <td class="headerCovTableEntryMed">87.8 %</td>
+            <td class="headerCovTableEntryHi">91.8 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-08-29 14:40:04</td>
+            <td class="headerValue">2021-08-31 10:01:26</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -84,12 +84,12 @@
 <a name="22"><span class="lineNum">      22 </span>            :   /// Do not access from outside the class.</a>
 <a name="23"><span class="lineNum">      23 </span>            :   final Set&lt;_DependencyNode&gt; nodes;</a>
 <a name="24"><span class="lineNum">      24 </span>            : </a>
-<a name="25"><span class="lineNum">      25 </span><span class="lineCov">          2 :   DependencyGraph({required this.nodes});</span></a>
+<a name="25"><span class="lineNum">      25 </span><span class="lineCov">          3 :   DependencyGraph({required this.nodes});</span></a>
 <a name="26"><span class="lineNum">      26 </span>            : </a>
 <a name="27"><span class="lineNum">      27 </span>            :   /// Creatrs a new graph from a set of available ids.</a>
 <a name="28"><span class="lineNum">      28 </span><span class="lineCov">          2 :   DependencyGraph.fromIds(Set&lt;String&gt; availableIds) : nodes = _convert(availableIds);</span></a>
 <a name="29"><span class="lineNum">      29 </span>            : </a>
-<a name="30"><span class="lineNum">      30 </span><span class="lineNoCov">          0 :   factory DependencyGraph.fromJson(Map&lt;String, dynamic&gt; json) =&gt; _$DependencyGraphFromJson(json);</span></a>
+<a name="30"><span class="lineNum">      30 </span><span class="lineCov">          2 :   factory DependencyGraph.fromJson(Map&lt;String, dynamic&gt; json) =&gt; _$DependencyGraphFromJson(json);</span></a>
 <a name="31"><span class="lineNum">      31 </span>            : </a>
 <a name="32"><span class="lineNum">      32 </span><span class="lineCov">          2 :   Map&lt;String, dynamic&gt; toJson() =&gt; _$DependencyGraphToJson(this);</span></a>
 <a name="33"><span class="lineNum">      33 </span>            : </a>
@@ -215,13 +215,13 @@
 <a name="153"><span class="lineNum">     153 </span>            :   /// The set of dependents of the node.</a>
 <a name="154"><span class="lineNum">     154 </span>            :   Set&lt;String&gt; dependents;</a>
 <a name="155"><span class="lineNum">     155 </span>            : </a>
-<a name="156"><span class="lineNum">     156 </span><span class="lineCov">          3 :   _DependencyNode({</span></a>
+<a name="156"><span class="lineNum">     156 </span><span class="lineCov">          4 :   _DependencyNode({</span></a>
 <a name="157"><span class="lineNum">     157 </span>            :     required this.id,</a>
 <a name="158"><span class="lineNum">     158 </span>            :     required this.dependencies,</a>
 <a name="159"><span class="lineNum">     159 </span>            :     required this.dependents,</a>
 <a name="160"><span class="lineNum">     160 </span>            :   });</a>
 <a name="161"><span class="lineNum">     161 </span>            : </a>
-<a name="162"><span class="lineNum">     162 </span><span class="lineNoCov">          0 :   factory _DependencyNode.fromJson(Map&lt;String, dynamic&gt; json) =&gt; _$DependencyNodeFromJson(json);</span></a>
+<a name="162"><span class="lineNum">     162 </span><span class="lineCov">          2 :   factory _DependencyNode.fromJson(Map&lt;String, dynamic&gt; json) =&gt; _$DependencyNodeFromJson(json);</span></a>
 <a name="163"><span class="lineNum">     163 </span>            : </a>
 <a name="164"><span class="lineNum">     164 </span><span class="lineCov">          2 :   Map&lt;String, dynamic&gt; toJson() =&gt; _$DependencyNodeToJson(this);</span></a>
 <a name="165"><span class="lineNum">     165 </span>            : </a>
@@ -230,8 +230,8 @@
 <a name="168"><span class="lineNum">     168 </span><span class="lineCov">          3 :   @override</span></a>
 <a name="169"><span class="lineNum">     169 </span><span class="lineCov">         12 :   bool operator ==(Object other) =&gt; other is _DependencyNode ? other.id == id : false;</span></a>
 <a name="170"><span class="lineNum">     170 </span>            : </a>
-<a name="171"><span class="lineNum">     171 </span><span class="lineCov">          3 :   @override</span></a>
-<a name="172"><span class="lineNum">     172 </span><span class="lineCov">          6 :   int get hashCode =&gt; id.hashCode;</span></a>
+<a name="171"><span class="lineNum">     171 </span><span class="lineCov">          4 :   @override</span></a>
+<a name="172"><span class="lineNum">     172 </span><span class="lineCov">          8 :   int get hashCode =&gt; id.hashCode;</span></a>
 <a name="173"><span class="lineNum">     173 </span>            : }</a>
 </pre>
       </td>
