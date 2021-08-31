@@ -26,6 +26,10 @@ class _TestInterface extends Interface {
     if (message.name == 'echo') {
       message.send(isolate.sendPort, isResponse: true);
     }
+
+    if (message.name == 'respond-with-true') {
+      message.respond(isolate.sendPort, true);
+    }
   }
 }
 
@@ -55,6 +59,24 @@ void main() {
         timeout: Duration(seconds: 1),
       ),
       throwsA(isA<StateError>()),
+    );
+  });
+
+  test('Throws an error when response has unexpected type', () async {
+    final main = await _TestInterface.create();
+
+    await expectLater(
+      main.expectResponse<String>(InterfaceMessage('echo', 5)),
+      throwsA(isA<InvalidMessageError>()),
+    );
+  });
+
+  test('Can respond to messages using the "respond" method', () async {
+    final main = await _TestInterface.create();
+
+    await expectLater(
+      main.expectResponse(InterfaceMessage('respond-with-true', null)),
+      completion(equals(true)),
     );
   });
 }
