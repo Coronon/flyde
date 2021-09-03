@@ -286,4 +286,38 @@ void main() async {
 
     secondSession.close();
   });
+
+  test('Can manage active projects', () async {
+    final initCompleter1 = Completer<void>();
+    final initCompleter2 = Completer<void>();
+    final secondSession = ClientSession(getUri(server, 'ws').toString())
+      ..middleware.add(protocolMiddleware);
+
+    clientSession.onMessage = (session, message) async {
+      if (message is ProcessCompletionMessage) {
+        initCompleter1.complete();
+      }
+    };
+
+    secondSession.onMessage = (session, message) async {
+      if (message is ProcessCompletionMessage) {
+        initCompleter2.complete();
+      }
+    };
+
+    clientSession.send(ProjectInitRequest(id: 'test_id', name: 'test_name'));
+    secondSession.send(ProjectInitRequest(id: 'test_id_2', name: 'test_name_2'));
+
+    await initCompleter1.future;
+    await initCompleter2.future;
+
+    expect(provider.projectIds, unorderedEquals(['test_id', 'test_id_2']));
+    expect(provider.projectName('test_id'), equals('test_name'));
+    expect(provider.projectName('test_id_2'), equals('test_name_2'));
+
+    provider.kill('test_id');
+
+    expect(provider.projectIds, unorderedEquals(['test_id_2']));
+    expect(() => provider.projectName('test_id'), throwsArgumentError);
+  });
 }
