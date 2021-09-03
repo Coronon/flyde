@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-09-03 20:34:38</td>
+            <td class="headerValue">2021-09-03 20:56:13</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -237,10 +237,10 @@
 <a name="175"><span class="lineNum">     175 </span>            : </a>
 <a name="176"><span class="lineNum">     176 </span><span class="lineCov">          6 :     await _server.close();</span></a>
 <a name="177"><span class="lineNum">     177 </span>            : </a>
-<a name="178"><span class="lineNum">     178 </span><span class="lineCov">          3 :     for (final ServerSession sess in _wsSessions) {</span></a>
+<a name="178"><span class="lineNum">     178 </span><span class="lineCov">          4 :     for (final ServerSession sess in _wsSessions) {</span></a>
 <a name="179"><span class="lineNum">     179 </span>            :       // Remove wrapped done handler, as we will clear the sessions afterwards</a>
-<a name="180"><span class="lineNum">     180 </span><span class="lineCov">          2 :       sess.onDone = wsOnDone;</span></a>
-<a name="181"><span class="lineNum">     181 </span><span class="lineCov">          2 :       await sess.close();</span></a>
+<a name="180"><span class="lineNum">     180 </span><span class="lineCov">          4 :       sess.onDone = wsOnDone;</span></a>
+<a name="181"><span class="lineNum">     181 </span><span class="lineCov">          4 :       await sess.close();</span></a>
 <a name="182"><span class="lineNum">     182 </span>            :     }</a>
 <a name="183"><span class="lineNum">     183 </span>            : </a>
 <a name="184"><span class="lineNum">     184 </span><span class="lineCov">          4 :     _wsSessions.clear();</span></a>
