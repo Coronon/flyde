@@ -31,13 +31,13 @@
             <td class="headerValue">lcov.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">39</td>
             <td class="headerCovTableEntry">41</td>
-            <td class="headerCovTableEntryHi">95.1 %</td>
+            <td class="headerCovTableEntry">41</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-08-31 16:36:51</td>
+            <td class="headerValue">2021-09-03 10:04:39</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -102,8 +102,8 @@
 <a name="40"><span class="lineNum">      40 </span>            :   }</a>
 <a name="41"><span class="lineNum">      41 </span>            : </a>
 <a name="42"><span class="lineNum">      42 </span>            :   /// Sends a response to this message with given [args].</a>
-<a name="43"><span class="lineNum">      43 </span><span class="lineNoCov">          0 :   void respond(SendPort port, Object? args) =&gt;</span></a>
-<a name="44"><span class="lineNum">      44 </span><span class="lineNoCov">          0 :       InterfaceMessage(name, args, true, _id).send(port, isResponse: true);</span></a>
+<a name="43"><span class="lineNum">      43 </span><span class="lineCov">          1 :   void respond(SendPort port, Object? args) =&gt;</span></a>
+<a name="44"><span class="lineNum">      44 </span><span class="lineCov">          4 :       InterfaceMessage(name, args, true, _id).send(port, isResponse: true);</span></a>
 <a name="45"><span class="lineNum">      45 </span>            : </a>
 <a name="46"><span class="lineNum">      46 </span>            :   /// Checks if the received data is a response to this [InterfaceMessage].</a>
 <a name="47"><span class="lineNum">      47 </span><span class="lineCov">          3 :   InterfaceMessage? _match(dynamic message) {</span></a>

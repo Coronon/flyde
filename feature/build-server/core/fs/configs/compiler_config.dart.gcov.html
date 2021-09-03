@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-08-31 16:36:51</td>
+            <td class="headerValue">2021-09-03 10:04:39</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -102,17 +102,17 @@
 <a name="40"><span class="lineNum">      40 </span><span class="lineCov">          2 :   Map&lt;String, dynamic&gt; toJson() =&gt; _$CompilerConfigToJson(this);</span></a>
 <a name="41"><span class="lineNum">      41 </span>            : </a>
 <a name="42"><span class="lineNum">      42 </span>            :   /// A hash which is unique for each compiler + linker configuration.</a>
-<a name="43"><span class="lineNum">      43 </span><span class="lineCov">          3 :   String get hash {</span></a>
-<a name="44"><span class="lineNum">      44 </span><span class="lineCov">          3 :     final output = AccumulatorSink&lt;Digest&gt;();</span></a>
-<a name="45"><span class="lineNum">      45 </span><span class="lineCov">          3 :     final input = sha256.startChunkedConversion(output);</span></a>
+<a name="43"><span class="lineNum">      43 </span><span class="lineCov">          4 :   String get hash {</span></a>
+<a name="44"><span class="lineNum">      44 </span><span class="lineCov">          4 :     final output = AccumulatorSink&lt;Digest&gt;();</span></a>
+<a name="45"><span class="lineNum">      45 </span><span class="lineCov">          4 :     final input = sha256.startChunkedConversion(output);</span></a>
 <a name="46"><span class="lineNum">      46 </span>            : </a>
-<a name="47"><span class="lineNum">      47 </span><span class="lineCov">         12 :     input.add(utf8.encode(compiler.toString()));</span></a>
-<a name="48"><span class="lineNum">      48 </span><span class="lineCov">         18 :     input.add(compilerFlags.expand((flag) =&gt; utf8.encode(flag)).toList());</span></a>
-<a name="49"><span class="lineNum">      49 </span><span class="lineCov">          6 :     input.add(utf8.encode('-- linker --'));</span></a>
-<a name="50"><span class="lineNum">      50 </span><span class="lineCov">         18 :     input.add(linkerFlags.expand((flag) =&gt; utf8.encode(flag)).toList());</span></a>
-<a name="51"><span class="lineNum">      51 </span><span class="lineCov">          3 :     input.close();</span></a>
+<a name="47"><span class="lineNum">      47 </span><span class="lineCov">         16 :     input.add(utf8.encode(compiler.toString()));</span></a>
+<a name="48"><span class="lineNum">      48 </span><span class="lineCov">         24 :     input.add(compilerFlags.expand((flag) =&gt; utf8.encode(flag)).toList());</span></a>
+<a name="49"><span class="lineNum">      49 </span><span class="lineCov">          8 :     input.add(utf8.encode('-- linker --'));</span></a>
+<a name="50"><span class="lineNum">      50 </span><span class="lineCov">         24 :     input.add(linkerFlags.expand((flag) =&gt; utf8.encode(flag)).toList());</span></a>
+<a name="51"><span class="lineNum">      51 </span><span class="lineCov">          4 :     input.close();</span></a>
 <a name="52"><span class="lineNum">      52 </span>            : </a>
-<a name="53"><span class="lineNum">      53 </span><span class="lineCov">          9 :     return output.events.single.toString();</span></a>
+<a name="53"><span class="lineNum">      53 </span><span class="lineCov">         12 :     return output.events.single.toString();</span></a>
 <a name="54"><span class="lineNum">      54 </span>            :   }</a>
 <a name="55"><span class="lineNum">      55 </span>            : </a>
 <a name="56"><span class="lineNum">      56 </span>            :   /// Validates the input and throws an exception if it is invalid.</a>
