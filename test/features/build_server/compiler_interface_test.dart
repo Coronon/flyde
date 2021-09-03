@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 
+import 'package:flyde/core/async/connect.dart';
+import 'package:flyde/core/async/interface.dart';
 import 'package:flyde/core/fs/compiler/installed_compiler.dart';
 import 'package:flyde/core/fs/configs/compiler_config.dart';
 import 'package:flyde/core/fs/file_extension.dart';
@@ -14,6 +17,7 @@ import 'package:test/test.dart';
 
 import '../../helpers/clear_test_cache_directory.dart';
 import '../../helpers/create_dummy_project_cache.dart';
+import '../../helpers/value_hook.dart';
 
 Future<List<CompileStatusMessage>> _buildProject(
   MainInterface interface,
@@ -156,5 +160,160 @@ Future<void> main() async {
       ),
       throwsStateError,
     );
+  });
+
+  group('Worker', () {
+    setUp(() {
+      WorkerInterface.instance = null;
+    });
+
+    test('can be started exactly once', () {
+      final receivePort = ReceivePort();
+      final sendPort = receivePort.sendPort;
+
+      expect(() => WorkerInterface.start(sendPort, receivePort), returnsNormally);
+      expect(() => WorkerInterface.start(sendPort, receivePort), throwsStateError);
+    });
+
+    test('forwards delegation calls', () async {
+      final testReceive = ReceivePort();
+      final receivePort = ReceivePort();
+      final sendPort = testReceive.sendPort;
+
+      WorkerInterface.start(sendPort, receivePort);
+
+      final worker = WorkerInterface.instance!;
+      final compiling = VHook(0);
+      final linking = VHook(0);
+      final waiting = VHook(0);
+      final done = VHook<bool?>(null);
+
+      testReceive.listen((message) {
+        if (message is InterfaceMessage && message.name == 'stateUpdate') {
+          final msg = message.args as CompileStatusMessage;
+          switch (msg.status) {
+            case CompileStatus.compiling:
+              compiling.set(compiling.value + 1);
+              break;
+            case CompileStatus.linking:
+              linking.set(linking.value + 1);
+              break;
+            case CompileStatus.waiting:
+              waiting.set(waiting.value + 1);
+              break;
+            case CompileStatus.done:
+              done.set(true);
+              break;
+            case CompileStatus.failed:
+              break;
+          }
+        }
+      });
+
+      worker.didStartCompilation();
+      worker.isCompiling(0);
+      worker.isCompiling(0.5);
+      worker.isCompiling(1);
+      worker.didFinishCompilation();
+      worker.didStartLinking();
+      worker.didFinishLinking();
+      worker.done();
+
+      await done.awaitValue(Duration(milliseconds: 100));
+
+      done.expect(isTrue);
+      compiling.expect(equals(5));
+      linking.expect(equals(1));
+      waiting.expect(equals(1));
+    });
+
+    test('can be initiated once', () async {
+      final testReceive = ReceivePort();
+      final receivePort = ReceivePort();
+      final sendPort = testReceive.sendPort;
+      final testSend = receivePort.sendPort;
+
+      WorkerInterface.start(sendPort, receivePort);
+
+      int responses = 0;
+
+      testReceive.listen((message) {
+        if (message is InterfaceMessage && message.name == 'init') {
+          responses += 1;
+        }
+      });
+
+      testSend.send(InterfaceMessage('init', [fileMap, config1, cache]));
+      testSend.send(InterfaceMessage('init', [fileMap, config1, cache]));
+
+      await Future.delayed(Duration(milliseconds: 100));
+
+      expect(responses, equals(1));
+    });
+
+    test('requires init as first call', () async {
+      final testReceive = ReceivePort();
+      final receivePort = ReceivePort();
+      final sendPort = testReceive.sendPort;
+      final testSend = receivePort.sendPort;
+
+      WorkerInterface.start(sendPort, receivePort);
+
+      bool hasAnswer = false;
+
+      testReceive.listen((message) {
+        if (message is InterfaceMessage) {
+          hasAnswer = true;
+        }
+      });
+
+      testSend.send(InterfaceMessage('hasCapacity', null));
+
+      await Future.delayed(Duration(milliseconds: 100));
+
+      expect(hasAnswer, isFalse);
+    });
+
+    test('responds to all build requests', () async {
+      final testReceive = ReceivePort();
+      final receivePort = ReceivePort();
+      final sendPort = testReceive.sendPort;
+      final testSend = receivePort.sendPort;
+      final buildCompleter = Completer<void>();
+
+      WorkerInterface.start(sendPort, receivePort);
+
+      final mainInterface = MainInterface(
+        SpawnedIsolate(Isolate.current, testReceive),
+      );
+
+      //? The send port must be send to testReceive to simulate the
+      //? behaviour of `connect` on which `Interface` relies.
+      sendPort.send(testSend);
+
+      mainInterface.onStateUpdate = (msg) {
+        if (msg.status == CompileStatus.done) {
+          buildCompleter.complete();
+        }
+
+        if (msg.status == CompileStatus.failed) {
+          buildCompleter.completeError(StateError('Build failed with exception'));
+        }
+      };
+
+      await mainInterface.init(fileMap, config1, cache);
+
+      expect(await mainInterface.hasCapacity(), isTrue);
+      expect(await mainInterface.sync(fileMap, config1), isNotEmpty);
+
+      for (final file in files) {
+        await mainInterface.update(file);
+      }
+
+      await mainInterface.build();
+      await buildCompleter.future;
+
+      expect(await mainInterface.binary, isNotNull);
+    });
   });
 }
