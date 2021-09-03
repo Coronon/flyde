@@ -23,9 +23,9 @@ class _MessageIdentifiers {
 }
 
 /// Interface for the compiler running in a seperate [Isolate].
-class _WorkerInterface extends Interface with CompilerStatusDelegate {
+class WorkerInterface extends Interface with CompilerStatusDelegate {
   // ignore: unused_field
-  static _WorkerInterface? _instance;
+  static WorkerInterface? instance;
 
   /// Flag to store if the worker needs to be ininitalized.
   bool _requiresInit = true;
@@ -36,15 +36,15 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
   /// The internal `Compiler` instance.
   late Compiler _compiler;
 
-  _WorkerInterface(SpawnedIsolate isolate) : super(isolate);
+  WorkerInterface(SpawnedIsolate isolate) : super(isolate);
 
   /// Starts a new worker or throws an error if already running.
   static void start(SendPort sendPort, ReceivePort receivePort) {
-    if (_instance != null) {
+    if (instance != null) {
       throw StateError('A worker instance is already running in this isolate.');
     }
 
-    _instance = _WorkerInterface(
+    instance = WorkerInterface(
       SpawnedIsolate(Isolate.current, receivePort)..sendPort = sendPort,
     )..ready.complete();
   }
@@ -101,7 +101,7 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
 
     //* Handle file build requests.
     if (message.name == _MessageIdentifiers.build) {
-      await build();
+      await _build();
     }
 
     //* Handle binary requests.
@@ -116,13 +116,13 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
   /// Builds the project.
   ///
   /// If the compilation fails an error message will be sent to the [MainInterface].
-  Future<void> build() async {
+  Future<void> _build() async {
     _hasCapacity = false;
 
     try {
       await _compiler.compile();
     } catch (e) {
-      await updateState(CompileStatusMessage(
+      await _updateState(CompileStatusMessage(
         status: CompileStatus.failed,
         payload: e.toString(),
       ));
@@ -132,14 +132,14 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
   }
 
   /// Sends an state update [message] to the [MainInterface].
-  Future<void> updateState(CompileStatusMessage message) async =>
+  Future<void> _updateState(CompileStatusMessage message) async =>
       await call(InterfaceMessage(_MessageIdentifiers.stateUpdate, message));
 
   //* Delegate Implementation
 
   @override
   void didStartCompilation() {
-    updateState(CompileStatusMessage(
+    _updateState(CompileStatusMessage(
       status: CompileStatus.compiling,
       payload: 0.0,
     ));
@@ -147,7 +147,7 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
 
   @override
   void isCompiling(double progress) {
-    updateState(CompileStatusMessage(
+    _updateState(CompileStatusMessage(
       status: CompileStatus.compiling,
       payload: progress,
     ));
@@ -155,7 +155,7 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
 
   @override
   void didFinishCompilation() {
-    updateState(CompileStatusMessage(
+    _updateState(CompileStatusMessage(
       status: CompileStatus.compiling,
       payload: 1.0,
     ));
@@ -163,7 +163,7 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
 
   @override
   void didStartLinking() {
-    updateState(CompileStatusMessage(
+    _updateState(CompileStatusMessage(
       status: CompileStatus.linking,
       payload: null,
     ));
@@ -171,7 +171,7 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
 
   @override
   void didFinishLinking() {
-    updateState(CompileStatusMessage(
+    _updateState(CompileStatusMessage(
       status: CompileStatus.waiting,
       payload: WaitReason.finishing,
     ));
@@ -179,7 +179,7 @@ class _WorkerInterface extends Interface with CompilerStatusDelegate {
 
   @override
   void done() {
-    updateState(CompileStatusMessage(
+    _updateState(CompileStatusMessage(
       status: CompileStatus.done,
       payload: null,
     ));
@@ -191,12 +191,16 @@ class MainInterface extends Interface {
   /// Callback to be used when the compilation state updates.
   void Function(CompileStatusMessage)? onStateUpdate;
 
-  MainInterface._(SpawnedIsolate isolate) : super(isolate);
+  /// Constrcutor which should not be called unless for testing.
+  /// Use [launch] to start the main interface.
+  /// Otherwise the corresponding worker interface will not be invoked
+  /// automatically.
+  MainInterface(SpawnedIsolate isolate) : super(isolate);
 
   /// Launches the [MainInterface] by spawning a worker isolate and setting up the connection.
   static Future<MainInterface> launch() async {
-    return MainInterface._(
-      await connect(ReceivePort(), _WorkerInterface.start),
+    return MainInterface(
+      await connect(ReceivePort(), WorkerInterface.start),
     );
   }
 
