@@ -53,7 +53,7 @@ class BuildProvider {
 
   /// Kills all project isolates and shuts down the server.
   Future<void> terminate() async {
-    _availableProjects.keys.forEach(kill);
+    _availableProjects.keys.toList().forEach(kill);
     _availableProjects.clear();
     _interfaces.clear();
     await _server.close();
@@ -65,6 +65,10 @@ class BuildProvider {
 
     if (interface != null) {
       interface.isolate.isolate.kill(priority: Isolate.immediate);
+    }
+
+    if (_availableProjects.containsKey(projectId)) {
+      _availableProjects.remove(projectId);
     }
   }
 
