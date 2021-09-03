@@ -15,6 +15,7 @@ dependencies:
   synchronized: ^3.0.0
   tuple: ^2.0.0
   uuid: ^3.0.4
+  meta: ^1.7.0
 
 dev_dependencies:
   lints: ^1.0.1

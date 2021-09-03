@@ -8,6 +8,7 @@ import 'package:flyde/core/fs/configs/compiler_config.dart';
 import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:flyde/core/networking/protocol/compile_status.dart';
 import 'package:flyde/features/build_server/cache/project_cache.dart';
+import 'package:meta/meta.dart';
 
 import 'compiler.dart';
 
@@ -23,8 +24,10 @@ class _MessageIdentifiers {
 }
 
 /// Interface for the compiler running in a seperate [Isolate].
+@visibleForTesting
 class WorkerInterface extends Interface with CompilerStatusDelegate {
   // ignore: unused_field
+  @visibleForTesting
   static WorkerInterface? instance;
 
   /// Flag to store if the worker needs to be ininitalized.
@@ -36,9 +39,11 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
   /// The internal `Compiler` instance.
   late Compiler _compiler;
 
+  @visibleForTesting
   WorkerInterface(SpawnedIsolate isolate) : super(isolate);
 
   /// Starts a new worker or throws an error if already running.
+  @visibleForTesting
   static void start(SendPort sendPort, ReceivePort receivePort) {
     if (instance != null) {
       throw StateError('A worker instance is already running in this isolate.');
@@ -49,6 +54,7 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
     )..ready.complete();
   }
 
+  @visibleForTesting
   @override
   Future<void> onMessage(InterfaceMessage message) async {
     //* Respond to init requests.
@@ -195,6 +201,7 @@ class MainInterface extends Interface {
   /// Use [launch] to start the main interface.
   /// Otherwise the corresponding worker interface will not be invoked
   /// automatically.
+  @visibleForTesting
   MainInterface(SpawnedIsolate isolate) : super(isolate);
 
   /// Launches the [MainInterface] by spawning a worker isolate and setting up the connection.
