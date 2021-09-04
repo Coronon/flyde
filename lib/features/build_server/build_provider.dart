@@ -94,13 +94,20 @@ class BuildProvider {
 
   /// Handles a new websocket message.
   Future<void> _handleWebSocketMessage(ServerSession session, dynamic message) async {
+    //* Registration
+
+    //? Each client has to register first using an init request
     if (message is ProjectInitRequest) {
       await _handleProjectInit(session, message);
       return;
     }
 
+    //? All following messages require that the client is registered
     final String id = _ensureId(session);
 
+    //* Resource Management
+
+    //? A client reserves a place in the queue for a project
     if (message == reserveBuildRequest) {
       _projectCapacityQueues[id]!.addLast(session);
 
@@ -109,28 +116,39 @@ class BuildProvider {
       }
     }
 
+    //? When unsubscribing a client gives it place in the
+    //? queue to the next client waiting
     if (message == unsubscribeRequest) {
       await _activateNextSession(id, removing: session);
       return;
     }
 
+    //? Only the first client in the queue for it's project
+    //? is eligable to send build requests
     if (!_isFirstInQueue(session, id)) {
       session.send(isInactiveSessionResponse);
       return;
     }
 
-    if (message is ProjectUpdateRequest) {
-      await _handleProjectUpdate(session, message, id);
-    }
+    //* Compile Workflow
 
-    if (message is FileUpdate) {
-      await _handleFileUpdate(session, message, id);
-    }
-
+    //? Request to compile the project
     if (message == projectBuildRequest) {
       await _getInterface(id).build();
     }
 
+    //? Updates the project state with a new
+    //? source file list and configuration
+    if (message is ProjectUpdateRequest) {
+      await _handleProjectUpdate(session, message, id);
+    }
+
+    //? Update a specific file
+    if (message is FileUpdate) {
+      await _handleFileUpdate(session, message, id);
+    }
+
+    //? Download the latest binary
     if (message == getBinaryRequest) {
       await _handleBinaryRequest(session, message, id);
     }
