@@ -56,7 +56,7 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
 
   @visibleForTesting
   @override
-  Future<void> onMessage(InterfaceMessage message) async {
+  void onMessage(InterfaceMessage message) async {
     //* Respond to init requests.
     if (message.name == _MessageIdentifiers.init &&
         _requiresInit &&
@@ -212,7 +212,7 @@ class MainInterface extends Interface {
   }
 
   @override
-  Future<void> onMessage(InterfaceMessage message) async {
+  void onMessage(InterfaceMessage message) async {
     if (message.name == _MessageIdentifiers.stateUpdate && message.args is CompileStatusMessage) {
       onStateUpdate?.call(message.args as CompileStatusMessage);
     }

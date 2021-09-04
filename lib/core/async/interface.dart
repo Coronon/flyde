@@ -142,7 +142,7 @@ abstract class Interface {
   }
 
   /// Handler which is called on every message which is not a response.
-  Future<void> onMessage(InterfaceMessage message);
+  void onMessage(InterfaceMessage message);
 
   /// Handler which can be used to await the response to [request].
   ///

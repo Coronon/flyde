@@ -22,7 +22,7 @@ class _TestInterface extends Interface {
   }
 
   @override
-  Future<void> onMessage(InterfaceMessage message) async {
+  void onMessage(InterfaceMessage message) {
     if (message.name == 'echo') {
       message.send(isolate.sendPort, isResponse: true);
     }
