@@ -77,9 +77,11 @@ abstract class Interface {
     //? If another listener is attached a runtime error will occure.
     isolate.receivePort.listen((dynamic message) {
       //* Store `SendPort`s when received.
-      if (message is SendPort && !ready.isCompleted) {
-        isolate.sendPort = message;
-        ready.complete();
+      if (message is SendPort) {
+        if (!ready.isCompleted) {
+          isolate.sendPort = message;
+          ready.complete();
+        }
         return;
       }
 

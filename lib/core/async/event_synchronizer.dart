@@ -111,7 +111,7 @@ class EventSynchronizer {
       if (message.runtimeType == responseType) {
         final res = handler(message);
 
-        if ((keepAlive && res != null && res != false) || !keepAlive) {
+        if ((keepAlive && res == true) || !keepAlive) {
           completer.complete(res);
         } else {
           return true;
