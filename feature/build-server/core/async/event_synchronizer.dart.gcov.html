@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-09-04 10:05:30</td>
+            <td class="headerValue">2021-09-04 11:52:09</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -173,7 +173,7 @@
 <a name="111"><span class="lineNum">     111 </span><span class="lineCov">          4 :       if (message.runtimeType == responseType) {</span></a>
 <a name="112"><span class="lineNum">     112 </span><span class="lineCov">          2 :         final res = handler(message);</span></a>
 <a name="113"><span class="lineNum">     113 </span>            : </a>
-<a name="114"><span class="lineNum">     114 </span><span class="lineCov">          2 :         if ((keepAlive &amp;&amp; res != null &amp;&amp; res != false) || !keepAlive) {</span></a>
+<a name="114"><span class="lineNum">     114 </span><span class="lineCov">          2 :         if ((keepAlive &amp;&amp; res == true) || !keepAlive) {</span></a>
 <a name="115"><span class="lineNum">     115 </span><span class="lineCov">          2 :           completer.complete(res);</span></a>
 <a name="116"><span class="lineNum">     116 </span>            :         } else {</a>
 <a name="117"><span class="lineNum">     117 </span>            :           return true;</a>
