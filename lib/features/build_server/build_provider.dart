@@ -187,15 +187,14 @@ class BuildProvider {
 
   /// Handles a new project initialization request.
   Future<void> _handleProjectInit(ServerSession session, ProjectInitRequest message) async {
-    if (_interfaces.containsKey(message.id)) {
-      return;
-    }
-
-    _interfaces[message.id] = await MainInterface.launch();
-    _availableProjects[message.id] = message.name;
     session.storage['id'] = message.id;
-    _interfaces[message.id]?.onStateUpdate = session.send;
-    _projectCapacityQueues[message.id] = Queue<ServerSession>();
+
+    if (!_interfaces.containsKey(message.id)) {
+      _interfaces[message.id] = await MainInterface.launch();
+      _availableProjects[message.id] = message.name;
+      _interfaces[message.id]?.onStateUpdate = session.send;
+      _projectCapacityQueues[message.id] = Queue<ServerSession>();
+    }
 
     session.send(
       ProcessCompletionMessage(
