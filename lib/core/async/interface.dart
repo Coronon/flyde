@@ -157,20 +157,20 @@ abstract class Interface {
       return response.args as T;
     }
 
-    throw InvalidMessageError(
+    throw InvalidMessageException(
       response,
       typeError ?? '"${request.name}" expects a response with different args.',
     );
   }
 }
 
-/// An error to be thrown if a received message does not match the expectations.
-class InvalidMessageError extends Error {
+/// An exception to be thrown if a received message does not match the expectations.
+class InvalidMessageException implements Exception {
   /// The faulty message.
   InterfaceMessage receivedMessage;
 
   /// Reason of termination.
   String description;
 
-  InvalidMessageError(this.receivedMessage, this.description);
+  InvalidMessageException(this.receivedMessage, this.description);
 }

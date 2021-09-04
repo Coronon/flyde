@@ -67,7 +67,7 @@ void main() {
 
     await expectLater(
       main.expectResponse<String>(InterfaceMessage('echo', 5)),
-      throwsA(isA<InvalidMessageError>()),
+      throwsA(isA<InvalidMessageException>()),
     );
   });
 
