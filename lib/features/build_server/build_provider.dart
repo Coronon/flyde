@@ -237,13 +237,7 @@ class BuildProvider {
     FileUpdate message,
     String id,
   ) async {
-    final file = SourceFile(
-      message.entry,
-      message.path,
-      message.name,
-      message.extension,
-      data: message.data,
-    );
+    final SourceFile file = await message.toSourceFile();
 
     await _getInterface(id).update(file);
 
