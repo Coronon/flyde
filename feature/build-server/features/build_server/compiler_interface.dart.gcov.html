@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-09-03 20:56:13</td>
+            <td class="headerValue">2021-09-04 09:07:08</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -64,14 +64,14 @@
 <a name="2"><span class="lineNum">       2 </span>            : import 'dart:isolate';</a>
 <a name="3"><span class="lineNum">       3 </span>            : import 'dart:typed_data';</a>
 <a name="4"><span class="lineNum">       4 </span>            : </a>
-<a name="5"><span class="lineNum">       5 </span>            : import 'package:flyde/core/async/connect.dart';</a>
-<a name="6"><span class="lineNum">       6 </span>            : import 'package:flyde/core/async/interface.dart';</a>
-<a name="7"><span class="lineNum">       7 </span>            : import 'package:flyde/core/fs/configs/compiler_config.dart';</a>
-<a name="8"><span class="lineNum">       8 </span>            : import 'package:flyde/core/fs/wrapper/source_file.dart';</a>
-<a name="9"><span class="lineNum">       9 </span>            : import 'package:flyde/core/networking/protocol/compile_status.dart';</a>
-<a name="10"><span class="lineNum">      10 </span>            : import 'package:flyde/features/build_server/cache/project_cache.dart';</a>
-<a name="11"><span class="lineNum">      11 </span>            : import 'package:meta/meta.dart';</a>
-<a name="12"><span class="lineNum">      12 </span>            : </a>
+<a name="5"><span class="lineNum">       5 </span>            : import 'package:meta/meta.dart';</a>
+<a name="6"><span class="lineNum">       6 </span>            : </a>
+<a name="7"><span class="lineNum">       7 </span>            : import '../../core/async/connect.dart';</a>
+<a name="8"><span class="lineNum">       8 </span>            : import '../../core/async/interface.dart';</a>
+<a name="9"><span class="lineNum">       9 </span>            : import '../../core/fs/configs/compiler_config.dart';</a>
+<a name="10"><span class="lineNum">      10 </span>            : import '../../core/fs/wrapper/source_file.dart';</a>
+<a name="11"><span class="lineNum">      11 </span>            : import '../../core/networking/protocol/compile_status.dart';</a>
+<a name="12"><span class="lineNum">      12 </span>            : import 'cache/project_cache.dart';</a>
 <a name="13"><span class="lineNum">      13 </span>            : import 'compiler.dart';</a>
 <a name="14"><span class="lineNum">      14 </span>            : </a>
 <a name="15"><span class="lineNum">      15 </span>            : /// List of constant message ids to be used in inter-isolate communication.</a>
@@ -88,7 +88,7 @@
 <a name="26"><span class="lineNum">      26 </span>            : /// Interface for the compiler running in a seperate [Isolate].</a>
 <a name="27"><span class="lineNum">      27 </span>            : @visibleForTesting</a>
 <a name="28"><span class="lineNum">      28 </span>            : class WorkerInterface extends Interface with CompilerStatusDelegate {</a>
-<a name="29"><span class="lineNum">      29 </span>            :   // ignore: unused_field</a>
+<a name="29"><span class="lineNum">      29 </span>            :   /// Singleton instance to keep the [WorkerInterface] alive.</a>
 <a name="30"><span class="lineNum">      30 </span>            :   @visibleForTesting</a>
 <a name="31"><span class="lineNum">      31 </span>            :   static WorkerInterface? instance;</a>
 <a name="32"><span class="lineNum">      32 </span>            : </a>

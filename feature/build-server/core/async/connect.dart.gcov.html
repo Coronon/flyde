@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-09-03 20:56:13</td>
+            <td class="headerValue">2021-09-04 09:07:08</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -103,25 +103,30 @@
 <a name="41"><span class="lineNum">      41 </span><span class="lineNoCov">          0 :   final sendPort = args[0] as SendPort;</span></a>
 <a name="42"><span class="lineNum">      42 </span><span class="lineNoCov">          0 :   final spawnFunc = args[1] as SpawnFunc;</span></a>
 <a name="43"><span class="lineNum">      43 </span>            : </a>
-<a name="44"><span class="lineNum">      44 </span><span class="lineNoCov">          0 :   sendPort.send(isolateReceive.sendPort);</span></a>
-<a name="45"><span class="lineNum">      45 </span><span class="lineNoCov">          0 :   spawnFunc(sendPort, isolateReceive);</span></a>
-<a name="46"><span class="lineNum">      46 </span>            : }</a>
-<a name="47"><span class="lineNum">      47 </span>            : </a>
-<a name="48"><span class="lineNum">      48 </span>            : /// Function which connects two isolates by their send and receive ports.</a>
-<a name="49"><span class="lineNum">      49 </span>            : ///</a>
-<a name="50"><span class="lineNum">      50 </span>            : /// The function spawns a new [Isolate] and returns an object containing the spawned [Isolate]</a>
-<a name="51"><span class="lineNum">      51 </span>            : /// and the receive port. The send port will be transmitted to the receive port and should</a>
-<a name="52"><span class="lineNum">      52 </span>            : /// be stored.</a>
-<a name="53"><span class="lineNum">      53 </span>            : ///</a>
-<a name="54"><span class="lineNum">      54 </span>            : /// [spawnFunc] must be a static or top level function.</a>
-<a name="55"><span class="lineNum">      55 </span><span class="lineCov">          4 : Future&lt;SpawnedIsolate&gt; connect(ReceivePort mainReceive, SpawnFunc spawnFunc) async {</span></a>
-<a name="56"><span class="lineNum">      56 </span><span class="lineCov">          8 :   final isolate = await Isolate.spawn&lt;List&lt;dynamic&gt;&gt;(</span></a>
-<a name="57"><span class="lineNum">      57 </span>            :     _spawn,</a>
-<a name="58"><span class="lineNum">      58 </span><span class="lineCov">          8 :     [mainReceive.sendPort, spawnFunc],</span></a>
-<a name="59"><span class="lineNum">      59 </span>            :   );</a>
-<a name="60"><span class="lineNum">      60 </span>            : </a>
-<a name="61"><span class="lineNum">      61 </span><span class="lineCov">          4 :   return SpawnedIsolate(isolate, mainReceive);</span></a>
-<a name="62"><span class="lineNum">      62 </span>            : }</a>
+<a name="44"><span class="lineNum">      44 </span>            :   //? Send the SendPort of the spawned isolate to the</a>
+<a name="45"><span class="lineNum">      45 </span>            :   //? main isolate to allow the main isolate to</a>
+<a name="46"><span class="lineNum">      46 </span>            :   //? send messages to the newly spawned isolate.</a>
+<a name="47"><span class="lineNum">      47 </span>            :   //? This way two-way communication is created.</a>
+<a name="48"><span class="lineNum">      48 </span><span class="lineNoCov">          0 :   sendPort.send(isolateReceive.sendPort);</span></a>
+<a name="49"><span class="lineNum">      49 </span>            : </a>
+<a name="50"><span class="lineNum">      50 </span><span class="lineNoCov">          0 :   spawnFunc(sendPort, isolateReceive);</span></a>
+<a name="51"><span class="lineNum">      51 </span>            : }</a>
+<a name="52"><span class="lineNum">      52 </span>            : </a>
+<a name="53"><span class="lineNum">      53 </span>            : /// Function which connects two isolates by their send and receive ports.</a>
+<a name="54"><span class="lineNum">      54 </span>            : ///</a>
+<a name="55"><span class="lineNum">      55 </span>            : /// The function spawns a new [Isolate] and returns an object containing the spawned [Isolate]</a>
+<a name="56"><span class="lineNum">      56 </span>            : /// and the receive port. The send port will be transmitted to the receive port and should</a>
+<a name="57"><span class="lineNum">      57 </span>            : /// be stored.</a>
+<a name="58"><span class="lineNum">      58 </span>            : ///</a>
+<a name="59"><span class="lineNum">      59 </span>            : /// [spawnFunc] must be a static or top level function.</a>
+<a name="60"><span class="lineNum">      60 </span><span class="lineCov">          4 : Future&lt;SpawnedIsolate&gt; connect(ReceivePort mainReceive, SpawnFunc spawnFunc) async {</span></a>
+<a name="61"><span class="lineNum">      61 </span><span class="lineCov">          8 :   final isolate = await Isolate.spawn&lt;List&lt;dynamic&gt;&gt;(</span></a>
+<a name="62"><span class="lineNum">      62 </span>            :     _spawn,</a>
+<a name="63"><span class="lineNum">      63 </span><span class="lineCov">          8 :     [mainReceive.sendPort, spawnFunc],</span></a>
+<a name="64"><span class="lineNum">      64 </span>            :   );</a>
+<a name="65"><span class="lineNum">      65 </span>            : </a>
+<a name="66"><span class="lineNum">      66 </span><span class="lineCov">          4 :   return SpawnedIsolate(isolate, mainReceive);</span></a>
+<a name="67"><span class="lineNum">      67 </span>            : }</a>
 </pre>
       </td>
     </tr>
