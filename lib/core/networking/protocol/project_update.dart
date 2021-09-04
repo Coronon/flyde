@@ -44,19 +44,19 @@ class ProjectUpdateResponse {
 /// A file update message used to transfer files from the user to the server.
 @JsonSerializable()
 class FileUpdate {
-  /// Mirror of `SourceFile->name`
+  /// `SourceFile->name`
   final String name;
 
-  /// Mirror of `SourceFile->extension`
+  /// `SourceFile->extension`
   final String extension;
 
-  /// Mirror of `SourceFile->entry`
+  /// `SourceFile->entry`
   final int entry;
 
-  /// Mirror of `SourceFile->path`
+  /// `SourceFile->path`
   final List<String> path;
 
-  /// Mirror of `SourceFile->data`
+  /// `SourceFile->data`
   @JsonKey(toJson: _uint8List2intList, fromJson: _intList2uint8List)
   final Uint8List data;
 
