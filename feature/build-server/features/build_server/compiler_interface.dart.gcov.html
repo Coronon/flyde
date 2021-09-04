@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-09-04 12:03:23</td>
+            <td class="headerValue">2021-09-04 15:46:43</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -118,7 +118,7 @@
 <a name="56"><span class="lineNum">      56 </span>            : </a>
 <a name="57"><span class="lineNum">      57 </span>            :   @visibleForTesting</a>
 <a name="58"><span class="lineNum">      58 </span>            :   @override</a>
-<a name="59"><span class="lineNum">      59 </span><span class="lineCov">          1 :   Future&lt;void&gt; onMessage(InterfaceMessage message) async {</span></a>
+<a name="59"><span class="lineNum">      59 </span><span class="lineCov">          1 :   void onMessage(InterfaceMessage message) async {</span></a>
 <a name="60"><span class="lineNum">      60 </span>            :     //* Respond to init requests.</a>
 <a name="61"><span class="lineNum">      61 </span><span class="lineCov">          2 :     if (message.name == _MessageIdentifiers.init &amp;&amp;</span></a>
 <a name="62"><span class="lineNum">      62 </span><span class="lineCov">          1 :         _requiresInit &amp;&amp;</span></a>
@@ -274,7 +274,7 @@
 <a name="212"><span class="lineNum">     212 </span>            :   }</a>
 <a name="213"><span class="lineNum">     213 </span>            : </a>
 <a name="214"><span class="lineNum">     214 </span>            :   @override</a>
-<a name="215"><span class="lineNum">     215 </span><span class="lineCov">          2 :   Future&lt;void&gt; onMessage(InterfaceMessage message) async {</span></a>
+<a name="215"><span class="lineNum">     215 </span><span class="lineCov">          2 :   void onMessage(InterfaceMessage message) async {</span></a>
 <a name="216"><span class="lineNum">     216 </span><span class="lineCov">          8 :     if (message.name == _MessageIdentifiers.stateUpdate &amp;&amp; message.args is CompileStatusMessage) {</span></a>
 <a name="217"><span class="lineNum">     217 </span><span class="lineCov">          6 :       onStateUpdate?.call(message.args as CompileStatusMessage);</span></a>
 <a name="218"><span class="lineNum">     218 </span>            :     }</a>
