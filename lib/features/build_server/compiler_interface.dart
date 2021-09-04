@@ -249,7 +249,7 @@ class MainInterface extends Interface {
   /// Updates the project with the given [file].
   Future<void> update(SourceFile file) async => await expectResponse(
         InterfaceMessage(_MessageIdentifiers.update, await file.asMemoryData()),
-        timeout: Duration(seconds: 2),
+        timeout: Duration(seconds: 10),
       );
 
   /// Builds the project.
