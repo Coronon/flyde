@@ -60,7 +60,7 @@ abstract class Session<T> {
         final dynamic response = await onMessage!(this as T, message);
         if (response != null) send(response);
       } catch (e) {
-        _onError(e);
+        raise(e);
         rethrow;
       }
     }
