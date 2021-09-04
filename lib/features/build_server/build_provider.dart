@@ -89,7 +89,7 @@ class BuildProvider {
       return name;
     }
 
-    throw ArgumentError('Project with id $projectId does not exists');
+    throw StateError('Project with id $projectId does not exists');
   }
 
   /// Handles a new websocket message.

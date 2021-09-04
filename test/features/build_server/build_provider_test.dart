@@ -318,6 +318,6 @@ void main() async {
     provider.kill('test_id');
 
     expect(provider.activeProjectIds, unorderedEquals(['test_id_2']));
-    expect(() => provider.projectName('test_id'), throwsArgumentError);
+    expect(() => provider.projectName('test_id'), throwsStateError);
   });
 }
