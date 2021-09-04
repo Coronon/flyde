@@ -264,7 +264,7 @@ class MainInterface extends Interface {
         _MessageIdentifiers.getBinary,
         null,
       ),
-      timeout: Duration(seconds: 2),
+      timeout: Duration(seconds: 10),
     );
   }
 }
