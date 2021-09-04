@@ -8,8 +8,7 @@ typedef Sender = Future<void> Function(dynamic);
 /// A subscriber is a function that receives messages from [handleMessage] and acts on them.
 ///
 /// A subscriber is short lived and is killed after the first call.
-/// An exception is when the subscriber returns `true`. In this case
-/// the subsciber is kept alive and will be called on upcoming messages until
+/// When the subscriber returns `true`, it's kept alive and will be called on upcoming messages until
 /// it returns `null` or `false`.
 typedef _Subscriber = Future<bool?> Function(dynamic);
 
@@ -34,12 +33,12 @@ typedef _Subscriber = Future<bool?> Function(dynamic);
 /// // We can receive the String response directly using an identity function.
 /// final String response = await synchronizer.expect(String, (String resp) => resp);
 ///
-/// // If we are witing for a specific response and can ignore other messages, we can use keepAlive.
+/// // If we are waiting for a specific response and can ignore other messages, we can use keepAlive.
 /// // It will wait with completion until we receive "THAT'S IT".
 /// // The return value in this case is `true`.
 /// await synchronizer.expect(String, (String resp) => resp == "THAT'S IT", keepAlive: true);
 ///
-/// // Using exhange, we can reallize a ping-pong communication.
+/// // Using exchange, we can realize a ping-pong communication.
 /// // Use drain to await the stream completion.
 /// synchronizer.exchange(someStream, String, (String req, String resp) => resp).listen((String resp) {
 ///  print(resp);

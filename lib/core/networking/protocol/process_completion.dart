@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'process_completion.g.dart';
 
-/// Enum of possible processes which completion should be reported.
+/// Enum of possible processes for which completion should be reported.
 enum CompletableProcess {
   /// Project has been initialized.
   projectInit,
@@ -11,7 +11,7 @@ enum CompletableProcess {
   fileUpdate,
 }
 
-/// Message which tells about the completion of a server side process.
+/// Message which informs about the completion of a server side process.
 @JsonSerializable()
 class ProcessCompletionMessage {
   /// The process which has been completed.

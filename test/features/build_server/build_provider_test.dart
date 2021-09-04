@@ -311,13 +311,13 @@ void main() async {
     await initCompleter1.future;
     await initCompleter2.future;
 
-    expect(provider.projectIds, unorderedEquals(['test_id', 'test_id_2']));
+    expect(provider.activeProjectIds, unorderedEquals(['test_id', 'test_id_2']));
     expect(provider.projectName('test_id'), equals('test_name'));
     expect(provider.projectName('test_id_2'), equals('test_name_2'));
 
     provider.kill('test_id');
 
-    expect(provider.projectIds, unorderedEquals(['test_id_2']));
+    expect(provider.activeProjectIds, unorderedEquals(['test_id_2']));
     expect(() => provider.projectName('test_id'), throwsArgumentError);
   });
 }

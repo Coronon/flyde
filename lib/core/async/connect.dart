@@ -41,7 +41,12 @@ void _spawn(List<dynamic> args) {
   final sendPort = args[0] as SendPort;
   final spawnFunc = args[1] as SpawnFunc;
 
+  //? Send the SendPort of the spawned isolate to the
+  //? main isolate to allow the main isolate to
+  //? send messages to the newly spawned isolate.
+  //? This way two-way communication is created.
   sendPort.send(isolateReceive.sendPort);
+
   spawnFunc(sendPort, isolateReceive);
 }
 

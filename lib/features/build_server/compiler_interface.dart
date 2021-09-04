@@ -2,14 +2,14 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
 
-import 'package:flyde/core/async/connect.dart';
-import 'package:flyde/core/async/interface.dart';
-import 'package:flyde/core/fs/configs/compiler_config.dart';
-import 'package:flyde/core/fs/wrapper/source_file.dart';
-import 'package:flyde/core/networking/protocol/compile_status.dart';
-import 'package:flyde/features/build_server/cache/project_cache.dart';
 import 'package:meta/meta.dart';
 
+import '../../core/async/connect.dart';
+import '../../core/async/interface.dart';
+import '../../core/fs/configs/compiler_config.dart';
+import '../../core/fs/wrapper/source_file.dart';
+import '../../core/networking/protocol/compile_status.dart';
+import 'cache/project_cache.dart';
 import 'compiler.dart';
 
 /// List of constant message ids to be used in inter-isolate communication.
@@ -26,7 +26,7 @@ class _MessageIdentifiers {
 /// Interface for the compiler running in a seperate [Isolate].
 @visibleForTesting
 class WorkerInterface extends Interface with CompilerStatusDelegate {
-  // ignore: unused_field
+  /// Singleton instance to keep the [WorkerInterface] alive.
   @visibleForTesting
   static WorkerInterface? instance;
 

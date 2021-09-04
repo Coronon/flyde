@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:flyde/core/fs/configs/compiler_config.dart';
-import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import '../../fs/configs/compiler_config.dart';
+import '../../fs/wrapper/source_file.dart';
 
 part 'project_update.g.dart';
 
@@ -29,7 +30,7 @@ class ProjectUpdateRequest {
 /// The response to a [ProjectUpdateRequest].
 @JsonSerializable()
 class ProjectUpdateResponse {
-  /// List of files which need to be updated.
+  /// List of files (id) which need to be updated.
   final List<String> files;
 
   ProjectUpdateResponse({required this.files});

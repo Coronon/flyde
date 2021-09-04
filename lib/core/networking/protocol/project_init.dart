@@ -5,11 +5,11 @@ part 'project_init.g.dart';
 /// Request to reserve a space in the queue for a project.
 const reserveBuildRequest = 'reserve_build_request';
 
-/// Response that tells a client that it can send build
-/// requests now.
+/// Response that informs a client that it can now send
+/// build requests.
 const isActiveSessionResponse = 'is_active_session_response';
 
-/// Response that tells a client that it has to wait until
+/// Response that informs a client that it has to wait until
 /// it can send build requests.
 const isInactiveSessionResponse = 'is_inactive_session_response';
 

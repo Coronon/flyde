@@ -18,13 +18,16 @@ class CompileStatusMessage<T> {
   factory CompileStatusMessage.fromJson(Map<String, dynamic> json) =>
       _$CompileStatusMessageFromJson(json, (obj) => obj as T);
 
-  Map<String, dynamic> toJson() => _$CompileStatusMessageToJson(this, (Object? obj) {
-        if (obj is double || obj is int || obj is String || obj is bool) {
-          return obj;
-        } else {
-          return obj?.toString();
-        }
-      });
+  Map<String, dynamic> toJson() => _$CompileStatusMessageToJson(
+        this,
+        (Object? obj) {
+          if (obj is double || obj is int || obj is String || obj is bool) {
+            return obj;
+          } else {
+            return obj?.toString();
+          }
+        },
+      );
 }
 
 /// The status of the compilation.

@@ -4,16 +4,16 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
 
-import 'package:flyde/core/fs/wrapper/source_file.dart';
-import 'package:flyde/core/networking/protocol/process_completion.dart';
-import 'package:flyde/core/networking/protocol/project_build.dart';
-import 'package:flyde/core/networking/protocol/project_update.dart';
-import 'package:flyde/core/networking/protocol/project_init.dart';
-import 'package:flyde/core/networking/server.dart';
-import 'package:flyde/core/networking/websockets/session.dart';
-import 'package:flyde/features/build_server/cache/cache.dart';
-import 'package:flyde/features/build_server/cache/project_cache.dart';
-import 'package:flyde/features/build_server/compiler_interface.dart';
+import '../../core/fs/wrapper/source_file.dart';
+import '../../core/networking/protocol/process_completion.dart';
+import '../../core/networking/protocol/project_build.dart';
+import '../../core/networking/protocol/project_update.dart';
+import '../../core/networking/protocol/project_init.dart';
+import '../../core/networking/server.dart';
+import '../../core/networking/websockets/session.dart';
+import 'cache/cache.dart';
+import 'cache/project_cache.dart';
+import 'compiler_interface.dart';
 
 /// Provides the build service on the local network.
 ///
@@ -25,6 +25,10 @@ class BuildProvider {
   /// The list of interfaces to isolates which handle compilation.
   final Map<String, MainInterface> _interfaces = {};
 
+  /// List of all projects which have a spawned worker isolate
+  /// and can therefore accept build request.
+  ///
+  /// The projects are mapped as `id: name`
   final Map<String, String> _availableProjects = {};
 
   /// The cache that is used to store the compiled code.
@@ -73,9 +77,7 @@ class BuildProvider {
   }
 
   /// Returns a list of all projects which have an active connection.
-  List<String> get projectIds {
-    return _availableProjects.keys.toList();
-  }
+  List<String> get activeProjectIds => _availableProjects.keys.toList();
 
   /// Returns the name of the project with the [projectId].
   ///

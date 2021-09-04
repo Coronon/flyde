@@ -1,8 +1,7 @@
 import 'dart:convert';
 
-import 'package:flyde/core/networking/protocol/process_completion.dart';
-import 'package:flyde/core/networking/protocol/project_build.dart';
-
+import 'process_completion.dart';
+import 'project_build.dart';
 import 'authentication.dart';
 import 'compile_status.dart';
 import 'project_update.dart';
@@ -53,7 +52,7 @@ class ProtocolDelegate {
     }
     final String type = data['type'];
 
-    //* Filter primitives
+    //* Return primitive strings
     if (type == 'String' && data['data'] is String) {
       return data['data'];
     }

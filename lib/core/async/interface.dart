@@ -1,21 +1,22 @@
 import 'dart:async';
 import 'dart:isolate';
 
-import 'package:flyde/core/async/connect.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
+
+import 'connect.dart';
 
 /// Message object to be exchanged between two [Isolate]s.
 class InterfaceMessage {
   /// The name of the message.
   ///
-  /// Required to identifiable and to be able to send responses.
+  /// Required to be identifiable and able to send responses.
   String name;
 
   /// The payload of the message.
   Object? args;
 
-  /// Unique id of this message and it's respond.
+  /// Unique id of this message and it's response.
   late final String _id;
 
   /// Flag which indicates if this message is a response.
@@ -25,7 +26,7 @@ class InterfaceMessage {
     _id = id ?? Uuid().v4();
   }
 
-  /// Creates a [InterfaceMessage] from the received data.
+  /// Attempts to cast received data to an [InterfaceMessage].
   static InterfaceMessage? from(dynamic message) {
     if (message is InterfaceMessage) {
       return message;
@@ -35,9 +36,7 @@ class InterfaceMessage {
   }
 
   /// Sends the message through the [port].
-  void send(SendPort port, {bool isResponse = false}) {
-    port.send(this.._isResponse = isResponse);
-  }
+  void send(SendPort port, {bool isResponse = false}) => port.send(this.._isResponse = isResponse);
 
   /// Sends a response to this message with given [args].
   void respond(SendPort port, Object? args) =>
@@ -69,11 +68,12 @@ abstract class Interface {
   /// When setting the send port manually, ensure to `complete` [ready].
   final Completer<void> ready = Completer();
 
-  /// A list of expected [InterfaceMessage]s and a callback when the message is received.
+  /// A list of expected [InterfaceMessage]s and a callback to be executed
+  /// when the message is received.
   final List<_Expectation> _expectations = [];
 
   Interface(this.isolate) {
-    // Sole listener to the receive port.
+    // Sole listener on the receive port.
     //? If another listener is attached a runtime error will occure.
     isolate.receivePort.listen((dynamic message) {
       //* Store `SendPort`s when received.
@@ -120,16 +120,18 @@ abstract class Interface {
     final completer = Completer<InterfaceMessage>();
 
     if (timeout != null) {
-      Future.delayed(timeout).then((dynamic val) {
-        if (!completer.isCompleted) {
-          _expectations.removeWhere((exepc) => exepc.item1._id == message._id);
-          completer.completeError(
-            StateError(
-              'Request "${message.name}" {id: ${message._id}} timed out after ${timeout.toString()}',
-            ),
-          );
-        }
-      });
+      Future.delayed(timeout).then(
+        (dynamic val) {
+          if (!completer.isCompleted) {
+            _expectations.removeWhere((exepc) => exepc.item1._id == message._id);
+            completer.completeError(
+              StateError(
+                'Request "${message.name}" {id: ${message._id}} timed out after ${timeout.toString()}',
+              ),
+            );
+          }
+        },
+      );
     }
 
     _expectations.add(Tuple2(message, completer.complete));
