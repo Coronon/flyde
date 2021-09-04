@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-09-04 09:51:08</td>
+            <td class="headerValue">2021-09-04 10:03:03</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -139,7 +139,7 @@
 <a name="77"><span class="lineNum">      77 </span>            :     //? If another listener is attached a runtime error will occure.</a>
 <a name="78"><span class="lineNum">      78 </span><span class="lineCov">         12 :     isolate.receivePort.listen((dynamic message) {</span></a>
 <a name="79"><span class="lineNum">      79 </span>            :       //* Store `SendPort`s when received.</a>
-<a name="80"><span class="lineNum">      80 </span><span class="lineCov">          3 :       if (message is SendPort) {</span></a>
+<a name="80"><span class="lineNum">      80 </span><span class="lineCov">          9 :       if (message is SendPort &amp;&amp; !ready.isCompleted) {</span></a>
 <a name="81"><span class="lineNum">      81 </span><span class="lineCov">          6 :         isolate.sendPort = message;</span></a>
 <a name="82"><span class="lineNum">      82 </span><span class="lineCov">          6 :         ready.complete();</span></a>
 <a name="83"><span class="lineNum">      83 </span>            :         return;</a>
@@ -219,22 +219,22 @@
 <a name="157"><span class="lineNum">     157 </span><span class="lineCov">          3 :       return response.args as T;</span></a>
 <a name="158"><span class="lineNum">     158 </span>            :     }</a>
 <a name="159"><span class="lineNum">     159 </span>            : </a>
-<a name="160"><span class="lineNum">     160 </span><span class="lineCov">          1 :     throw InvalidMessageError(</span></a>
+<a name="160"><span class="lineNum">     160 </span><span class="lineCov">          1 :     throw InvalidMessageException(</span></a>
 <a name="161"><span class="lineNum">     161 </span>            :       response,</a>
 <a name="162"><span class="lineNum">     162 </span><span class="lineCov">          2 :       typeError ?? '&quot;${request.name}&quot; expects a response with different args.',</span></a>
 <a name="163"><span class="lineNum">     163 </span>            :     );</a>
 <a name="164"><span class="lineNum">     164 </span>            :   }</a>
 <a name="165"><span class="lineNum">     165 </span>            : }</a>
 <a name="166"><span class="lineNum">     166 </span>            : </a>
-<a name="167"><span class="lineNum">     167 </span>            : /// An error to be thrown if a received message does not match the expectations.</a>
-<a name="168"><span class="lineNum">     168 </span>            : class InvalidMessageError extends Error {</a>
+<a name="167"><span class="lineNum">     167 </span>            : /// An exception to be thrown if a received message does not match the expectations.</a>
+<a name="168"><span class="lineNum">     168 </span>            : class InvalidMessageException implements Exception {</a>
 <a name="169"><span class="lineNum">     169 </span>            :   /// The faulty message.</a>
 <a name="170"><span class="lineNum">     170 </span>            :   InterfaceMessage receivedMessage;</a>
 <a name="171"><span class="lineNum">     171 </span>            : </a>
 <a name="172"><span class="lineNum">     172 </span>            :   /// Reason of termination.</a>
 <a name="173"><span class="lineNum">     173 </span>            :   String description;</a>
 <a name="174"><span class="lineNum">     174 </span>            : </a>
-<a name="175"><span class="lineNum">     175 </span><span class="lineCov">          1 :   InvalidMessageError(this.receivedMessage, this.description);</span></a>
+<a name="175"><span class="lineNum">     175 </span><span class="lineCov">          1 :   InvalidMessageException(this.receivedMessage, this.description);</span></a>
 <a name="176"><span class="lineNum">     176 </span>            : }</a>
 </pre>
       </td>
