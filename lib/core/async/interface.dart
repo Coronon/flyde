@@ -68,9 +68,12 @@ abstract class Interface {
   /// When setting the send port manually, ensure to `complete` [ready].
   final Completer<void> ready = Completer();
 
-  /// A list of expected [InterfaceMessage]s and a callback to be executed
+  /// A map of expected [InterfaceMessage]s and a callback to be executed
   /// when the message is received.
-  final List<_Expectation> _expectations = [];
+  ///
+  /// Each expected message is accessible by its key, which is the
+  /// same as the one of the message of which the response is expected.
+  final Map<String, _Expectation> _expectations = {};
 
   Interface(this.isolate) {
     // Sole listener on the receive port.
@@ -85,23 +88,27 @@ abstract class Interface {
         return;
       }
 
+      //* Try casting the message to an InterfaceMessage.
+      final interfaceMessage = InterfaceMessage.from(message);
+
+      if (interfaceMessage == null) {
+        return;
+      }
+
       //* Check if the received message is a response to an expected message.
-      for (final expectation in _expectations) {
+      if (_expectations.containsKey(interfaceMessage._id)) {
+        final expectation = _expectations[interfaceMessage._id]!;
         final InterfaceMessage? response = expectation.item1._match(message);
 
         if (response != null) {
           expectation.item2.call(response);
-          _expectations.removeWhere((exepc) => exepc.item1._id == message._id);
+          _expectations.removeWhere((key, value) => key == message._id);
           return;
         }
       }
 
-      //* If the message is not a response, it is a request.
-      final request = InterfaceMessage.from(message);
-
-      if (request != null) {
-        onMessage(request);
-      }
+      //* If the message is no response, treat it as request
+      onMessage(interfaceMessage);
     });
   }
 
@@ -125,7 +132,7 @@ abstract class Interface {
       Future.delayed(timeout).then(
         (dynamic val) {
           if (!completer.isCompleted) {
-            _expectations.removeWhere((exepc) => exepc.item1._id == message._id);
+            _expectations.removeWhere((key, value) => key == message._id);
             completer.completeError(
               StateError(
                 'Request "${message.name}" {id: ${message._id}} timed out after ${timeout.toString()}',
@@ -136,7 +143,7 @@ abstract class Interface {
       );
     }
 
-    _expectations.add(Tuple2(message, completer.complete));
+    _expectations[message._id] = _Expectation(message, completer.complete);
 
     return completer.future;
   }
