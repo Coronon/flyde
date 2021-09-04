@@ -84,7 +84,7 @@ class FileUpdate {
   }
 
   /// Converts this [FileUpdate] object to a [SourceFile] object.
-  Future<SourceFile> toSourceFile(FileUpdate file) async {
+  Future<SourceFile> toSourceFile() async {
     return SourceFile(
       entry,
       path,
