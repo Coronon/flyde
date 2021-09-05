@@ -25,7 +25,7 @@ typedef _Subscriber = Future<bool?> Function(dynamic);
 /// final synchronizer = EventSynchronizer(client.send);
 ///
 /// // We need to pass each message from the client to the synchronizer.
-/// client.onMessage = (dynamic message) => synchronizer.handleMessage(message);
+/// client.onMessage = synchronizer.handleMessage;
 ///
 /// // Simple messages are sent using the request function.
 /// await synchronizer.request('ANYTHING');
