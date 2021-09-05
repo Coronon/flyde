@@ -30,17 +30,17 @@ typedef _Subscriber = Future<bool?> Function(dynamic);
 /// // Simple messages are sent using the request function.
 /// await synchronizer.request('ANYTHING');
 ///
-/// // We can receive the String response directly using an identity function.
-/// final String response = await synchronizer.expect(String, (String resp) => resp);
+/// // We can receive the String response directly but have to explicitly type the response.
+/// final String response = await synchronizer.expect(String);
 ///
 /// // If we are waiting for a specific response and can ignore other messages, we can use keepAlive.
 /// // It will wait with completion until we receive "THAT'S IT".
-/// // The return value in this case is `true`.
-/// await synchronizer.expect(String, (String resp) => resp == "THAT'S IT", keepAlive: true);
+/// // The return value in this case is `String`.
+/// await synchronizer.expect(String, validator: (String resp) => resp == "THAT'S IT", keepAlive: true);
 ///
 /// // Using exchange, we can realize a ping-pong communication.
 /// // Use drain to await the stream completion.
-/// synchronizer.exchange(someStream, String, (String req, String resp) => resp).listen((String resp) {
+/// synchronizer.exchange(someStream, String).listen((String resp) {
 ///  print(resp);
 /// });
 /// ```
@@ -95,13 +95,14 @@ class EventSynchronizer {
   }
 
   /// Waits for an incoming message of type [responseType] and transforms it using
-  /// [handler].
+  /// [handler]. If [validator] returns `false` the returned [Future] completes with an error.
   ///
   /// If the incoming message has not the expected type an [ArgumenError] will be thrown.
-  /// Use [keepAlive] to call [handler] on every incoming message until [handler] returns `true`.
+  /// Use [keepAlive] to call [handler] and [validator] on every incoming message until [validator] returns `true`.
   Future<R> expect<T, R>(
-    Type responseType,
-    R Function(T) handler, {
+    Type responseType, {
+    R Function(T)? handler,
+    bool Function(T)? validator,
     bool keepAlive = false,
   }) async {
     final String id = _uuid.v4();
@@ -109,12 +110,17 @@ class EventSynchronizer {
 
     _subscriptions[id] = (dynamic message) async {
       if (message.runtimeType == responseType) {
-        final res = handler(message);
+        final isValid = validator?.call(message) ?? true;
 
-        if ((keepAlive && res == true) || !keepAlive) {
-          completer.complete(res);
-        } else {
+        if (!isValid && keepAlive) {
           return true;
+        }
+
+        if (!isValid) {
+          completer.completeError(ArgumentError('Message is invalid'));
+        } else {
+          final res = handler?.call(message) ?? message as R;
+          completer.complete(res);
         }
       } else {
         completer.completeError(ArgumentError(
@@ -130,15 +136,26 @@ class EventSynchronizer {
   /// of type [responseType] before sending the next one.
   ///
   /// The returned value is itself a [Stream] which will emit the results of [handler]
-  /// on each response.
+  /// on each response. If [handler] is ommited the received items will be emited as is.
+  ///
+  /// If [validator] fails on any of the received items the whole function will fail.
   Stream<R> exchange<T, U, R>(
     Stream<T> items,
-    Type responseType,
-    R Function(T, U) handler,
-  ) async* {
+    Type responseType, {
+    R Function(T, U)? handler,
+    bool Function(T, U)? validator,
+  }) async* {
     await for (final item in items) {
+      final wrappedValidator = validator == null ? null : (U res) => validator(item, res);
+      final wrappedHandler = handler == null ? null : (U res) => handler(item, res);
+
       await request(item);
-      yield await expect(responseType, (U res) => handler(item, res));
+
+      yield await expect(
+        responseType,
+        handler: wrappedHandler,
+        validator: wrappedValidator,
+      );
     }
   }
 }

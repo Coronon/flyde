@@ -47,15 +47,19 @@ Future<Uint8List> _requestAndDownloadProject(
   await sync.request(ProjectInitRequest(id: projectName, name: projectName));
   await sync.expect(
     ProcessCompletionMessage,
-    (ProcessCompletionMessage msg) => msg.process == CompletableProcess.projectInit,
+    validator: (ProcessCompletionMessage msg) => msg.process == CompletableProcess.projectInit,
   );
   await sync.request(reserveBuildRequest);
-  await sync.expect(String, (String resp) => resp == isActiveSessionResponse, keepAlive: true);
+  await sync.expect(
+    String,
+    validator: (String resp) => resp == isActiveSessionResponse,
+    keepAlive: true,
+  );
   await sync.request(ProjectUpdateRequest(config: config, files: fileMap));
 
   final List<String> fileIds = await sync.expect(
     ProjectUpdateResponse,
-    (ProjectUpdateResponse resp) => resp.files,
+    handler: (ProjectUpdateResponse resp) => resp.files,
   );
 
   await sync
@@ -64,22 +68,22 @@ Future<Uint8List> _requestAndDownloadProject(
             .map((id) => files.singleWhere((f) => f.id == id))
             .map((f) => FileUpdate.fromSourceFile(f))),
         ProcessCompletionMessage,
-        (FileUpdate update, ProcessCompletionMessage comp) =>
+        validator: (FileUpdate update, ProcessCompletionMessage comp) =>
             comp.process == CompletableProcess.fileUpdate,
       )
       .drain();
 
   await sync.request(projectBuildRequest);
-  await sync.expect(CompileStatusMessage, (CompileStatusMessage msg) {
-    if (msg.status == CompileStatus.done) {
-      return true;
-    }
-  }, keepAlive: true);
+  await sync.expect(
+    CompileStatusMessage,
+    validator: (CompileStatusMessage msg) => msg.status == CompileStatus.done,
+    keepAlive: true,
+  );
   await sync.request(getBinaryRequest);
 
   final bin = await sync.expect(
     BinaryResponse,
-    (BinaryResponse resp) => resp.binary,
+    handler: (BinaryResponse resp) => resp.binary,
   );
 
   await sync.request(unsubscribeRequest);

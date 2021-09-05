@@ -47,15 +47,46 @@ void main() {
 
   test('Can send and expect the echo', () async {
     await sync.request('echo');
-    await sync.expect(String, (String resp) => expect(resp, equals('echo')));
+    await sync.expect(String, handler: (String resp) => expect(resp, equals('echo')));
   });
 
   test('Fails if the wrong type is received', () async {
     await sync.request('echo');
 
     await expectLater(
-      sync.expect(int, (int resp) => resp),
+      sync.expect(int),
       throwsArgumentError,
+    );
+  });
+
+  test('Can validate responses', () async {
+    await sync.request('echo');
+
+    await expectLater(
+      sync.expect(String, validator: (String resp) => resp != 'echo'),
+      throwsArgumentError,
+    );
+  });
+
+  test('Can transform responses', () async {
+    await sync.request('echo');
+
+    await expectLater(
+      sync.expect(String, handler: (String resp) => resp == 'echo' ? 1 : 2),
+      completion(equals(1)),
+    );
+  });
+
+  test('Can transform and validate responses', () async {
+    await sync.request('echo');
+
+    await expectLater(
+      sync.expect(
+        String,
+        handler: (String resp) => resp == 'echo' ? 1 : 2,
+        validator: (String resp) => resp == 'echo',
+      ),
+      completion(equals(1)),
     );
   });
 
@@ -93,7 +124,7 @@ void main() {
     final List<int> results = await sync.exchange(
       streamCreator(),
       int,
-      (String item, int resp) {
+      handler: (String item, int resp) {
         if (item == 'echo 1') {
           expect(resp, equals(1));
         } else if (item == 'echo 2') {
@@ -107,16 +138,36 @@ void main() {
     expect(results, orderedEquals([1, 2]));
   });
 
+  test('Can validate each stream item', () async {
+    Stream<String> streamCreator() async* {
+      yield 'echo 1';
+      yield 'echo 2';
+    }
+
+    await expectLater(
+      sync
+          .exchange(
+            streamCreator(),
+            int,
+            validator: (String item, int resp) => resp != 2,
+          )
+          .toList(),
+      throwsArgumentError,
+    );
+  });
+
   test('Can ignore messages until the right one is received', () async {
     final receivedHook = VHook<bool?>(null);
     await sync.request('echo many');
     await sync.expect(
       String,
-      (String resp) {
+      validator: (String resp) {
         if (resp == 'right') {
           receivedHook.set(true);
           return true;
         }
+
+        return false;
       },
       keepAlive: true,
     );
