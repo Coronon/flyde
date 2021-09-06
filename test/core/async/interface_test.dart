@@ -1,37 +1,8 @@
 import 'dart:isolate';
 
+import 'package:test/test.dart';
 import 'package:flyde/core/async/connect.dart';
 import 'package:flyde/core/async/interface.dart';
-import 'package:test/test.dart';
-
-/// An implementation of [Interface] for testing.
-class _TestInterface extends Interface {
-  /// Static [_TestInterface] object, which is used in the spawned isolate.
-  static _TestInterface? instance;
-
-  _TestInterface(SpawnedIsolate isolate) : super(isolate);
-
-  /// Creates the interface on the main thread.
-  static Future<_TestInterface> create() async {
-    return _TestInterface(await connect(ReceivePort(), spawn));
-  }
-
-  /// Creates the interface on the child thread.
-  static void spawn(SendPort sendPort, ReceivePort receivePort) {
-    instance = _TestInterface(SpawnedIsolate(Isolate.current, receivePort)..sendPort = sendPort);
-  }
-
-  @override
-  void onMessage(InterfaceMessage message) {
-    if (message.name == 'echo') {
-      message.send(isolate.sendPort, isResponse: true);
-    }
-
-    if (message.name == 'respond-with-true') {
-      message.respond(isolate.sendPort, true);
-    }
-  }
-}
 
 void main() {
   test('"instance" is not changed in main isolate.', () async {
@@ -79,4 +50,33 @@ void main() {
       completion(equals(true)),
     );
   });
+}
+
+/// An implementation of [Interface] for testing.
+class _TestInterface extends Interface {
+  /// Static [_TestInterface] object, which is used in the spawned isolate.
+  static _TestInterface? instance;
+
+  _TestInterface(SpawnedIsolate isolate) : super(isolate);
+
+  /// Creates the interface on the main thread.
+  static Future<_TestInterface> create() async {
+    return _TestInterface(await connect(ReceivePort(), spawn));
+  }
+
+  /// Creates the interface on the child thread.
+  static void spawn(SendPort sendPort, ReceivePort receivePort) {
+    instance = _TestInterface(SpawnedIsolate(Isolate.current, receivePort)..sendPort = sendPort);
+  }
+
+  @override
+  void onMessage(InterfaceMessage message) {
+    if (message.name == 'echo') {
+      message.send(isolate.sendPort, isResponse: true);
+    }
+
+    if (message.name == 'respond-with-true') {
+      message.respond(isolate.sendPort, true);
+    }
+  }
 }

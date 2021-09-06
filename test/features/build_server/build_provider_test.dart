@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:path/path.dart' as p;
+import 'package:test/test.dart';
 import 'package:flyde/core/async/event_synchronizer.dart';
 import 'package:flyde/core/fs/compiler/installed_compiler.dart';
 import 'package:flyde/core/fs/configs/compiler_config.dart';
@@ -17,8 +19,6 @@ import 'package:flyde/core/networking/server.dart';
 import 'package:flyde/core/networking/websockets/middleware.dart';
 import 'package:flyde/core/networking/websockets/session.dart';
 import 'package:flyde/features/build_server/build_provider.dart';
-import 'package:path/path.dart' as p;
-import 'package:test/test.dart';
 
 import '../../helpers/clear_test_cache_directory.dart';
 import '../../helpers/get_uri.dart';
@@ -27,7 +27,7 @@ import '../../helpers/value_hook.dart';
 /// Name of the temporary file storage
 const tmpDirName = 'flyde-test-lib-build_provider_test_binary';
 
-/// Verifies that a prject can be built and the binary can be downloaded using the 'test' package.
+/// Attempts to build the project and download the compiled binary.
 ///
 /// The downloaded binary is returned if the build was successful.
 /// Otherwise the tests will fail.
@@ -38,57 +38,79 @@ Future<Uint8List> _requestAndDownloadProject(
   List<SourceFile> files,
   CompilerConfig config,
 ) async {
+  // Synchronizer for more readable and typesafe communication
   final sync = EventSynchronizer(clientSession.send, Duration(milliseconds: 100));
 
+  // Pass all messages received by 'clientSession' to the synchronizer
   clientSession.onMessage = (session, message) async {
     await sync.handleMessage(message);
   };
 
+  // Request project initialization and expect verification
   await sync.request(ProjectInitRequest(id: projectName, name: projectName));
   await sync.expect(
     ProcessCompletionMessage,
     validator: (ProcessCompletionMessage msg) => msg.process == CompletableProcess.projectInit,
   );
+
+  // Request the permission to use the compiler
   await sync.request(reserveBuildRequest);
+
+  // Wait until permission is granted
   await sync.expect(
     String,
     validator: (String resp) => resp == isActiveSessionResponse,
     keepAlive: true,
   );
+
+  // Sync the example project with the compiler
   await sync.request(ProjectUpdateRequest(config: config, files: fileMap));
 
+  // Expect a response which contains the ids of all files which
+  // need to be sent to the compiler
   final List<String> fileIds = await sync.expect(
     ProjectUpdateResponse,
     handler: (ProjectUpdateResponse resp) => resp.files,
   );
 
+  // Exchange the requested files with the compiler.
+  // Expect a `ProcessCompletionMessage` after each file is has been sent.
   await sync
       .exchange(
-        Stream.fromFutures(fileIds
-            .map((id) => files.singleWhere((f) => f.id == id))
-            .map((f) => FileUpdate.fromSourceFile(f))),
+        Stream.fromFutures(
+          fileIds
+              .map((id) => files.singleWhere((f) => f.id == id))
+              .map((f) => FileUpdate.fromSourceFile(f)),
+        ),
         ProcessCompletionMessage,
         validator: (FileUpdate update, ProcessCompletionMessage comp) =>
             comp.process == CompletableProcess.fileUpdate,
       )
       .drain();
 
+  // Request to build the newly synced project.
   await sync.request(projectBuildRequest);
+
+  // Expect state updates and wait until compilation is done.
   await sync.expect(
     CompileStatusMessage,
     validator: (CompileStatusMessage msg) => msg.status == CompileStatus.done,
     keepAlive: true,
   );
-  await sync.request(getBinaryRequest);
 
+  // Request the produced binary file
+  await sync.request(getBinaryRequest);
   final bin = await sync.expect(
     BinaryResponse,
     handler: (BinaryResponse resp) => resp.binary,
   );
 
+  // Unsubscribe from the compiler to allow other clients
+  // to access the same project
   await sync.request(unsubscribeRequest);
 
   expect(bin, isNotNull);
+
   return bin!;
 }
 

@@ -92,7 +92,7 @@ void main() {
     );
   });
 
-  test('Wraps value options in parenthesis', () {
+  test('Wraps value options in parentheses', () {
     expect(
       config4.compilerFlags,
       orderedEquals(['-O2', '-std', '"c++17"']),

@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:test/test.dart';
 import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:flyde/core/fs/read_as_posix_file.dart';
-import 'package:test/test.dart';
 
 void main() {
   test('Can be created from file', () async {

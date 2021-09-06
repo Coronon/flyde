@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flyde/core/fs/read_as_posix_file.dart';
 import 'package:test/test.dart';
+import 'package:flyde/core/fs/read_as_posix_file.dart';
 
 void main() {
   late File file;

@@ -2,8 +2,8 @@
 
 import 'dart:io';
 
-import 'package:flyde/core/fs/standard_location.dart';
 import 'package:test/test.dart';
+import 'package:flyde/core/fs/standard_location.dart';
 
 void main() {
   test('Directory can be created', () {

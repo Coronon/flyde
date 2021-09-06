@@ -1,45 +1,16 @@
-import 'package:flyde/core/async/event_synchronizer.dart';
 import 'package:test/test.dart';
 
+import 'package:flyde/core/async/event_synchronizer.dart';
+
+import '../../helpers/mocks/mock_io_client.dart';
 import '../../helpers/value_hook.dart';
 
-/// Class used to mock I/O communication.
-class _MockIOCLient {
-  Future<void> Function(dynamic)? onMessage;
-  void Function(dynamic)? onSent;
-
-  Future<void> send(dynamic message) async {
-    onSent?.call(message);
-
-    if (message == 'echo') {
-      onMessage?.call('echo');
-    }
-
-    if (message == 'echo 1') {
-      onMessage?.call(1);
-    }
-
-    if (message == 'echo 2') {
-      onMessage?.call(2);
-    }
-
-    if (message == 'echo many') {
-      onMessage?.call('wrong 1');
-      onMessage?.call('wrong 2');
-      onMessage?.call('wrong 3');
-      onMessage?.call('wrong 4');
-      onMessage?.call('wrong 5');
-      onMessage?.call('right');
-    }
-  }
-}
-
 void main() {
-  late _MockIOCLient client;
+  late MockIOCLient client;
   late EventSynchronizer sync;
 
   setUp(() {
-    client = _MockIOCLient();
+    client = MockIOCLient();
     sync = EventSynchronizer(client.send, Duration(milliseconds: 1));
 
     client.onMessage = sync.handleMessage;

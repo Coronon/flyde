@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:test/test.dart';
 import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:flyde/features/build_server/cache/state/source_file_state.dart';
-import 'package:test/test.dart';
 
 void main() {
   test('Can be converted back to SourceFile', () async {

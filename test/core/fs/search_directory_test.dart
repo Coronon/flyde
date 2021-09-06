@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:flyde/core/fs/search_directory.dart';
 import 'package:test/test.dart';
+import 'package:flyde/core/fs/search_directory.dart';
 
 void main() {
   test('Can list all files', () async {

@@ -1,5 +1,5 @@
-import 'package:flyde/features/build_server/cache/dependencies/dependency_graph.dart';
 import 'package:test/test.dart';
+import 'package:flyde/features/build_server/cache/dependencies/dependency_graph.dart';
 
 void main() {
   test('Dependencies are mapped correctly', () {

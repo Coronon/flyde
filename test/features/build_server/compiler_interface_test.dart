@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:path/path.dart' as p;
+import 'package:test/test.dart';
 import 'package:flyde/core/async/connect.dart';
 import 'package:flyde/core/async/interface.dart';
 import 'package:flyde/core/fs/compiler/installed_compiler.dart';
@@ -12,13 +14,12 @@ import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:flyde/core/networking/protocol/compile_status.dart';
 import 'package:flyde/features/build_server/cache/project_cache.dart';
 import 'package:flyde/features/build_server/compiler_interface.dart';
-import 'package:path/path.dart' as p;
-import 'package:test/test.dart';
 
 import '../../helpers/clear_test_cache_directory.dart';
 import '../../helpers/create_dummy_project_cache.dart';
 import '../../helpers/value_hook.dart';
 
+/// Attempts to build the project using the [interface].
 Future<List<CompileStatusMessage>> _buildProject(
   MainInterface interface,
   List<SourceFile> files,
@@ -227,7 +228,7 @@ Future<void> main() async {
       waiting.expect(equals(1));
     });
 
-    test('can be initiated once', () async {
+    test('only initializes once', () async {
       final testReceive = ReceivePort();
       final receivePort = ReceivePort();
       final sendPort = testReceive.sendPort;
@@ -287,7 +288,7 @@ Future<void> main() async {
         SpawnedIsolate(Isolate.current, testReceive),
       );
 
-      //? The send port must be send to testReceive to simulate the
+      //? The [SendPort] must be sent to testReceive to simulate the
       //? behaviour of `connect` on which `Interface` relies.
       sendPort.send(testSend);
 

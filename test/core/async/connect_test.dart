@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:isolate';
 
-import 'package:flyde/core/async/connect.dart';
 import 'package:test/test.dart';
+import 'package:flyde/core/async/connect.dart';
 
 /// [SpawnFunc] which sends the isolate's debug name.
 void _sendIsolateName(SendPort send, ReceivePort receive) async {
