@@ -11,7 +11,7 @@ void main() {
 
   setUp(() {
     client = MockIOCLient();
-    sync = EventSynchronizer(client.send, Duration(milliseconds: 1));
+    sync = EventSynchronizer(client.send);
 
     client.onMessage = sync.handleMessage;
   });
