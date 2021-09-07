@@ -185,7 +185,7 @@ void main() async {
     await provider.setup(cacheDirectory: cacheDir);
 
     clientSession = ClientSession(getUri(server, 'ws').toString());
-    clientSession.middleware.add(protocolMiddleware);
+    clientSession.middleware = const [protocolMiddleware];
   });
 
   tearDown(() async {
