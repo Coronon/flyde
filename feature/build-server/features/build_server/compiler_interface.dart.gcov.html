@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-09-07 12:00:15</td>
+            <td class="headerValue">2021-09-07 12:03:22</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -183,7 +183,7 @@
 <a name="121"><span class="lineNum">     121 </span>            : </a>
 <a name="122"><span class="lineNum">     122 </span>            :   /// Builds the project.</a>
 <a name="123"><span class="lineNum">     123 </span>            :   ///</a>
-<a name="124"><span class="lineNum">     124 </span>            :   /// If the compilation fails an error message will be sent to the [MainInterface].</a>
+<a name="124"><span class="lineNum">     124 </span>            :   /// If the compilation fails an error message will be sent to the [ProjectInterface].</a>
 <a name="125"><span class="lineNum">     125 </span><span class="lineCov">          1 :   Future&lt;void&gt; _build() async {</span></a>
 <a name="126"><span class="lineNum">     126 </span><span class="lineCov">          1 :     _hasCapacity = false;</span></a>
 <a name="127"><span class="lineNum">     127 </span>            : </a>
@@ -199,7 +199,7 @@
 <a name="137"><span class="lineNum">     137 </span><span class="lineCov">          1 :     _hasCapacity = true;</span></a>
 <a name="138"><span class="lineNum">     138 </span>            :   }</a>
 <a name="139"><span class="lineNum">     139 </span>            : </a>
-<a name="140"><span class="lineNum">     140 </span>            :   /// Sends an state update [message] to the [MainInterface].</a>
+<a name="140"><span class="lineNum">     140 </span>            :   /// Sends an state update [message] to the [ProjectInterface].</a>
 <a name="141"><span class="lineNum">     141 </span><span class="lineCov">          1 :   Future&lt;void&gt; _updateState(CompileStatusMessage message) async =&gt;</span></a>
 <a name="142"><span class="lineNum">     142 </span><span class="lineCov">          3 :       await call(InterfaceMessage(_MessageIdentifiers.stateUpdate, message));</span></a>
 <a name="143"><span class="lineNum">     143 </span>            : </a>
@@ -255,7 +255,7 @@
 <a name="193"><span class="lineNum">     193 </span>            : }</a>
 <a name="194"><span class="lineNum">     194 </span>            : </a>
 <a name="195"><span class="lineNum">     195 </span>            : /// The interface to an isolate which manages a single project.</a>
-<a name="196"><span class="lineNum">     196 </span>            : class MainInterface extends Interface {</a>
+<a name="196"><span class="lineNum">     196 </span>            : class ProjectInterface extends Interface {</a>
 <a name="197"><span class="lineNum">     197 </span>            :   /// Callback to be used when the compilation state updates.</a>
 <a name="198"><span class="lineNum">     198 </span>            :   void Function(CompileStatusMessage)? onStateUpdate;</a>
 <a name="199"><span class="lineNum">     199 </span>            : </a>
@@ -264,11 +264,11 @@
 <a name="202"><span class="lineNum">     202 </span>            :   /// Otherwise the corresponding worker interface will not be invoked</a>
 <a name="203"><span class="lineNum">     203 </span>            :   /// automatically.</a>
 <a name="204"><span class="lineNum">     204 </span><span class="lineCov">          2 :   @visibleForTesting</span></a>
-<a name="205"><span class="lineNum">     205 </span><span class="lineCov">          2 :   MainInterface(SpawnedIsolate isolate) : super(isolate);</span></a>
+<a name="205"><span class="lineNum">     205 </span><span class="lineCov">          2 :   ProjectInterface(SpawnedIsolate isolate) : super(isolate);</span></a>
 <a name="206"><span class="lineNum">     206 </span>            : </a>
-<a name="207"><span class="lineNum">     207 </span>            :   /// Launches the [MainInterface] by spawning a worker isolate and setting up the connection.</a>
-<a name="208"><span class="lineNum">     208 </span><span class="lineCov">          2 :   static Future&lt;MainInterface&gt; launch() async {</span></a>
-<a name="209"><span class="lineNum">     209 </span><span class="lineCov">          2 :     return MainInterface(</span></a>
+<a name="207"><span class="lineNum">     207 </span>            :   /// Launches the [ProjectInterface] by spawning a worker isolate and setting up the connection.</a>
+<a name="208"><span class="lineNum">     208 </span><span class="lineCov">          2 :   static Future&lt;ProjectInterface&gt; launch() async {</span></a>
+<a name="209"><span class="lineNum">     209 </span><span class="lineCov">          2 :     return ProjectInterface(</span></a>
 <a name="210"><span class="lineNum">     210 </span><span class="lineCov">          6 :       await connect(ReceivePort(), WorkerInterface.start),</span></a>
 <a name="211"><span class="lineNum">     211 </span>            :     );</a>
 <a name="212"><span class="lineNum">     212 </span>            :   }</a>

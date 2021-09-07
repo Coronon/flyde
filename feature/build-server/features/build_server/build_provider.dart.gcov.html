@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-09-07 12:00:15</td>
+            <td class="headerValue">2021-09-07 12:03:22</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -85,7 +85,7 @@
 <a name="23"><span class="lineNum">      23 </span>            :   final WebServer _server;</a>
 <a name="24"><span class="lineNum">      24 </span>            : </a>
 <a name="25"><span class="lineNum">      25 </span>            :   /// The list of interfaces to isolates which handle compilation.</a>
-<a name="26"><span class="lineNum">      26 </span>            :   final Map&lt;String, MainInterface&gt; _interfaces = {};</a>
+<a name="26"><span class="lineNum">      26 </span>            :   final Map&lt;String, ProjectInterface&gt; _interfaces = {};</a>
 <a name="27"><span class="lineNum">      27 </span>            : </a>
 <a name="28"><span class="lineNum">      28 </span>            :   /// List of all projects which have a spawned worker isolate</a>
 <a name="29"><span class="lineNum">      29 </span>            :   /// and can therefore accept build request.</a>
@@ -127,7 +127,7 @@
 <a name="65"><span class="lineNum">      65 </span>            : </a>
 <a name="66"><span class="lineNum">      66 </span>            :   /// Terminates the isolate which hosts the project with the id [projectId].</a>
 <a name="67"><span class="lineNum">      67 </span><span class="lineCov">          1 :   void kill(String projectId) {</span></a>
-<a name="68"><span class="lineNum">      68 </span><span class="lineCov">          2 :     final MainInterface? interface = _interfaces[projectId];</span></a>
+<a name="68"><span class="lineNum">      68 </span><span class="lineCov">          2 :     final ProjectInterface? interface = _interfaces[projectId];</span></a>
 <a name="69"><span class="lineNum">      69 </span>            : </a>
 <a name="70"><span class="lineNum">      70 </span>            :     if (interface != null) {</a>
 <a name="71"><span class="lineNum">      71 </span><span class="lineCov">          3 :       interface.isolate.isolate.kill(priority: Isolate.immediate);</span></a>
@@ -246,7 +246,7 @@
 <a name="184"><span class="lineNum">     184 </span>            :   }</a>
 <a name="185"><span class="lineNum">     185 </span>            : </a>
 <a name="186"><span class="lineNum">     186 </span>            :   /// Returns the interface with the given [id] or throws an exception.</a>
-<a name="187"><span class="lineNum">     187 </span><span class="lineCov">          1 :   MainInterface _getInterface(String id) {</span></a>
+<a name="187"><span class="lineNum">     187 </span><span class="lineCov">          1 :   ProjectInterface _getInterface(String id) {</span></a>
 <a name="188"><span class="lineNum">     188 </span><span class="lineCov">          2 :     if (_interfaces.containsKey(id)) {</span></a>
 <a name="189"><span class="lineNum">     189 </span><span class="lineCov">          2 :       return _interfaces[id]!;</span></a>
 <a name="190"><span class="lineNum">     190 </span>            :     }</a>
@@ -270,7 +270,7 @@
 <a name="208"><span class="lineNum">     208 </span><span class="lineCov">          3 :     session.storage['id'] = message.id;</span></a>
 <a name="209"><span class="lineNum">     209 </span>            : </a>
 <a name="210"><span class="lineNum">     210 </span><span class="lineCov">          3 :     if (!_interfaces.containsKey(message.id)) {</span></a>
-<a name="211"><span class="lineNum">     211 </span><span class="lineCov">          5 :       _interfaces[message.id] = await MainInterface.launch();</span></a>
+<a name="211"><span class="lineNum">     211 </span><span class="lineCov">          5 :       _interfaces[message.id] = await ProjectInterface.launch();</span></a>
 <a name="212"><span class="lineNum">     212 </span><span class="lineCov">          4 :       _availableProjects[message.id] = message.name;</span></a>
 <a name="213"><span class="lineNum">     213 </span><span class="lineCov">          5 :       _interfaces[message.id]?.onStateUpdate = session.send;</span></a>
 <a name="214"><span class="lineNum">     214 </span><span class="lineCov">          4 :       _projectCapacityQueues[message.id] = Queue&lt;ServerSession&gt;();</span></a>
