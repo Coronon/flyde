@@ -182,12 +182,12 @@ void main() async {
   });
 
   test('Responds with list of required files', () async {
-    final completer = VHook<List<String>?>(null);
+    final filesHook = VHook<List<String>?>(null);
     final initHook = VHook<bool?>(null);
 
     clientSession.onMessage = (session, message) async {
       if (message is ProjectUpdateResponse) {
-        completer.set(message.files);
+        filesHook.set(message.files);
       }
 
       if (message is ProcessCompletionMessage) {
@@ -202,18 +202,18 @@ void main() async {
     clientSession.send(reserveBuildRequest);
     clientSession.send(ProjectUpdateRequest(config: config1, files: fileMap));
 
-    await completer.awaitValue(Duration(seconds: 2));
+    await filesHook.awaitValue(Duration(seconds: 2));
 
-    expect(completer.value, unorderedEquals(files.map((f) => f.id)));
+    expect(filesHook.value, unorderedEquals(files.map((f) => f.id)));
   });
 
   test('Verifies that initialization has been completed and accepts build requests', () async {
-    final completer = VHook<bool?>(null);
+    final initHook = VHook<bool?>(null);
     final hadError = VHook<bool?>(null);
 
     clientSession.onMessage = (session, message) async {
       if (message is ProcessCompletionMessage) {
-        completer.set(message.process == CompletableProcess.projectInit);
+        initHook.set(message.process == CompletableProcess.projectInit);
       }
     };
 
@@ -223,8 +223,8 @@ void main() async {
 
     clientSession.send(ProjectInitRequest(id: 'test', name: 'test'));
 
-    await completer.awaitValue(Duration(seconds: 10), raiseOnTimeout: true);
-    completer.expect(equals(true));
+    await initHook.awaitValue(Duration(seconds: 10), raiseOnTimeout: true);
+    initHook.expect(equals(true));
 
     clientSession.send(reserveBuildRequest);
     clientSession.send(ProjectUpdateRequest(config: config1, files: fileMap));
