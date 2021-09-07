@@ -1,15 +1,12 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:isolate';
 
-import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 import 'package:flyde/core/async/connect.dart';
 import 'package:flyde/core/async/interface.dart';
 import 'package:flyde/core/fs/compiler/installed_compiler.dart';
 import 'package:flyde/core/fs/configs/compiler_config.dart';
 import 'package:flyde/core/fs/file_extension.dart';
-import 'package:flyde/core/fs/search_directory.dart';
 import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:flyde/core/networking/protocol/compile_status.dart';
 import 'package:flyde/features/build_server/cache/project_cache.dart';
@@ -23,7 +20,7 @@ import '../../helpers/value_hook.dart';
 
 /// Attempts to build the project using the [interface].
 Future<List<CompileStatusMessage>> _buildProject(
-  MainInterface interface,
+  ProjectInterface interface,
   List<SourceFile> files,
   Map<String, String> fileMap,
   CompilerConfig config,
@@ -60,7 +57,7 @@ Future<List<CompileStatusMessage>> _buildProject(
 }
 
 Future<void> main() async {
-  late MainInterface interface;
+  late ProjectInterface interface;
   late ProjectCache cache;
 
   final config1 = CompilerConfig(
@@ -77,7 +74,7 @@ Future<void> main() async {
   setUp(() async {
     await clearTestCacheDirectory(id: 'compiler_interface_test');
 
-    interface = await MainInterface.launch();
+    interface = await ProjectInterface.launch();
     cache = await createDummyProjectCache(id: 'compiler_interface_test');
   });
 
@@ -274,7 +271,7 @@ Future<void> main() async {
 
       WorkerInterface.start(sendPort, receivePort);
 
-      final mainInterface = MainInterface(
+      final mainInterface = ProjectInterface(
         SpawnedIsolate(Isolate.current, testReceive),
       );
 

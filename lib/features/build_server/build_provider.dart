@@ -23,7 +23,7 @@ class BuildProvider {
   final WebServer _server;
 
   /// The list of interfaces to isolates which handle compilation.
-  final Map<String, MainInterface> _interfaces = {};
+  final Map<String, ProjectInterface> _interfaces = {};
 
   /// List of all projects which have a spawned worker isolate
   /// and can therefore accept build request.
@@ -65,7 +65,7 @@ class BuildProvider {
 
   /// Terminates the isolate which hosts the project with the id [projectId].
   void kill(String projectId) {
-    final MainInterface? interface = _interfaces[projectId];
+    final ProjectInterface? interface = _interfaces[projectId];
 
     if (interface != null) {
       interface.isolate.isolate.kill(priority: Isolate.immediate);
@@ -184,7 +184,7 @@ class BuildProvider {
   }
 
   /// Returns the interface with the given [id] or throws an exception.
-  MainInterface _getInterface(String id) {
+  ProjectInterface _getInterface(String id) {
     if (_interfaces.containsKey(id)) {
       return _interfaces[id]!;
     }
@@ -208,7 +208,7 @@ class BuildProvider {
     session.storage['id'] = message.id;
 
     if (!_interfaces.containsKey(message.id)) {
-      _interfaces[message.id] = await MainInterface.launch();
+      _interfaces[message.id] = await ProjectInterface.launch();
       _availableProjects[message.id] = message.name;
       _interfaces[message.id]?.onStateUpdate = session.send;
       _projectCapacityQueues[message.id] = Queue<ServerSession>();

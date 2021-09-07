@@ -121,7 +121,7 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
 
   /// Builds the project.
   ///
-  /// If the compilation fails an error message will be sent to the [MainInterface].
+  /// If the compilation fails an error message will be sent to the [ProjectInterface].
   Future<void> _build() async {
     _hasCapacity = false;
 
@@ -137,7 +137,7 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
     _hasCapacity = true;
   }
 
-  /// Sends an state update [message] to the [MainInterface].
+  /// Sends an state update [message] to the [ProjectInterface].
   Future<void> _updateState(CompileStatusMessage message) async =>
       await call(InterfaceMessage(_MessageIdentifiers.stateUpdate, message));
 
@@ -193,7 +193,7 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
 }
 
 /// The interface to an isolate which manages a single project.
-class MainInterface extends Interface {
+class ProjectInterface extends Interface {
   /// Callback to be used when the compilation state updates.
   void Function(CompileStatusMessage)? onStateUpdate;
 
@@ -202,11 +202,11 @@ class MainInterface extends Interface {
   /// Otherwise the corresponding worker interface will not be invoked
   /// automatically.
   @visibleForTesting
-  MainInterface(SpawnedIsolate isolate) : super(isolate);
+  ProjectInterface(SpawnedIsolate isolate) : super(isolate);
 
-  /// Launches the [MainInterface] by spawning a worker isolate and setting up the connection.
-  static Future<MainInterface> launch() async {
-    return MainInterface(
+  /// Launches the [ProjectInterface] by spawning a worker isolate and setting up the connection.
+  static Future<ProjectInterface> launch() async {
+    return ProjectInterface(
       await connect(ReceivePort(), WorkerInterface.start),
     );
   }
