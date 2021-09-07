@@ -244,7 +244,7 @@ void main() async {
 
     //? Wait for 500ms to ensure no errors have been thrown.
     await hadError.awaitValue(Duration(milliseconds: 500));
-    hadError.expect(isNot(equals(true)));
+    hadError.expect(isNull);
   });
 
   test('Receives correct binary after successfull build', () async {
