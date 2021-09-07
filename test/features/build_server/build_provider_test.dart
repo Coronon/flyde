@@ -120,8 +120,7 @@ Future<void> _runBinary(Uint8List binary, String fileName, String expectedOutput
   final file = File('./$tmpDirName/$fileName.out');
 
   // Create and write binary to disk
-  await dir.create();
-  await file.create();
+  await file.create(recursive: true);
   await file.writeAsBytes(binary.toList());
 
   // Make the binary runable
@@ -132,8 +131,7 @@ Future<void> _runBinary(Uint8List binary, String fileName, String expectedOutput
   expect(proc.stdout.trim(), equals(expectedOutput));
 
   // Clean up
-  await file.delete();
-  await dir.delete();
+  await dir.delete(recursive: true);
 }
 
 void main() async {
