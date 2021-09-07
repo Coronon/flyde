@@ -60,8 +60,8 @@ Future<List<CompileStatusMessage>> _buildProject(
 }
 
 Future<void> main() async {
-  MainInterface? interface;
-  ProjectCache? cache;
+  late MainInterface interface;
+  late ProjectCache cache;
 
   final config1 = CompilerConfig(
     compiler: InstalledCompiler.gpp,
@@ -85,38 +85,38 @@ Future<void> main() async {
 
   test('Requires "init" call before answering other requests', () async {
     await expectLater(
-      interface!.hasCapacity(),
+      interface.hasCapacity(),
       throwsStateError,
     );
 
-    await interface!.init(fileMap, config1, cache);
+    await interface.init(fileMap, config1, cache);
 
     await expectLater(
-      interface!.hasCapacity(),
+      interface.hasCapacity(),
       completion(equals(true)),
     );
   });
 
   test('Can sychronize and update a project', () async {
-    await expectLater(() async => await interface!.init(fileMap, config1, cache), returnsNormally);
+    await expectLater(() async => await interface.init(fileMap, config1, cache), returnsNormally);
 
-    final requiredFiles = await interface!.sync(fileMap, config1);
+    final requiredFiles = await interface.sync(fileMap, config1);
 
     expect(requiredFiles, unorderedEquals(fileMap.keys));
 
     for (final file in requiredFiles) {
       final srcFile = files.singleWhere((element) => element.id == file);
       await expectLater(
-        () async => await interface!.update(srcFile),
+        () async => await interface.update(srcFile),
         returnsNormally,
       );
     }
 
-    await expectLater(() async => await interface!.build(), returnsNormally);
+    await expectLater(() async => await interface.build(), returnsNormally);
   });
 
   test('Informs about the compilation state', () async {
-    final messages = await _buildProject(interface!, files, fileMap, config1, cache!);
+    final messages = await _buildProject(interface, files, fileMap, config1, cache);
 
     final compiledSourceFiles = files.where(
       (f) => FileExtension.sources.contains('.${f.extension}'),
@@ -142,11 +142,11 @@ Future<void> main() async {
   test('Emits a state error when not all files are updated', () async {
     await expectLater(
       _buildProject(
-        interface!,
+        interface,
         files,
         fileMap,
         config1,
-        cache!,
+        cache,
         skipUpdateFiles: true,
       ),
       throwsStateError,
