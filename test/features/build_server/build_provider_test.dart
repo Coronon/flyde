@@ -196,19 +196,21 @@ void main() async {
 
   test('Responds with list of required files', () async {
     final completer = VHook<List<String>?>(null);
+    final initHook = VHook<bool?>(null);
 
     clientSession.onMessage = (session, message) async {
       if (message is ProjectUpdateResponse) {
         completer.set(message.files);
       }
+
+      if (message is ProcessCompletionMessage) {
+        initHook.set(message.process == CompletableProcess.projectInit);
+      }
     };
 
     clientSession.send(ProjectInitRequest(id: 'test', name: 'test'));
 
-    //? Wait for the server to handle the init request.
-    // In productive code the [ProcessCompletionMessage] would be awaited
-    // instead of an absolute time intervall.
-    await Future.delayed(Duration(milliseconds: 500));
+    await initHook.awaitValue(Duration(milliseconds: 500));
 
     clientSession.send(reserveBuildRequest);
     clientSession.send(ProjectUpdateRequest(config: config1, files: fileMap));
