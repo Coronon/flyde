@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 import 'package:flyde/core/fs/standard_location.dart';
 
 void main() {
-  test('Directory can be created', () {
+  test('Can create valid directory path', () {
     expect(
       StandardLocation.tmp.directory.path,
       equals(Directory.systemTemp.path),
