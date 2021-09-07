@@ -301,28 +301,28 @@ void main() async {
   });
 
   test('Can manage active projects', () async {
-    final initCompleter1 = Completer<void>();
-    final initCompleter2 = Completer<void>();
+    final initHook1 = VHook<bool?>(null);
+    final initHook2 = VHook<bool?>(null);
     final secondSession = ClientSession(getUri(server, 'ws').toString())
       ..middleware.add(protocolMiddleware);
 
     clientSession.onMessage = (session, message) async {
       if (message is ProcessCompletionMessage) {
-        initCompleter1.complete();
+        initHook1.set(true);
       }
     };
 
     secondSession.onMessage = (session, message) async {
       if (message is ProcessCompletionMessage) {
-        initCompleter2.complete();
+        initHook2.set(true);
       }
     };
 
     clientSession.send(ProjectInitRequest(id: 'test_id', name: 'test_name'));
     secondSession.send(ProjectInitRequest(id: 'test_id_2', name: 'test_name_2'));
 
-    await initCompleter1.future;
-    await initCompleter2.future;
+    await initHook1.awaitValue(Duration(milliseconds: 100));
+    await initHook2.awaitValue(Duration(milliseconds: 100));
 
     expect(provider.activeProjectIds, unorderedEquals(['test_id', 'test_id_2']));
     expect(provider.projectName('test_id'), equals('test_name'));

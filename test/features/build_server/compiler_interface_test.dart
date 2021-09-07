@@ -244,22 +244,21 @@ Future<void> main() async {
       final receivePort = ReceivePort();
       final sendPort = testReceive.sendPort;
       final testSend = receivePort.sendPort;
+      final capacityResponseHook = VHook<bool?>(null);
 
       WorkerInterface.start(sendPort, receivePort);
 
-      bool hasAnswer = false;
-
       testReceive.listen((message) {
         if (message is InterfaceMessage) {
-          hasAnswer = true;
+          capacityResponseHook.set(true);
         }
       });
 
       testSend.send(InterfaceMessage('hasCapacity', null));
 
-      await Future.delayed(Duration(milliseconds: 100));
+      await capacityResponseHook.awaitValue(Duration(milliseconds: 100));
 
-      expect(hasAnswer, isFalse);
+      expect(capacityResponseHook.value, isNull);
     });
 
     test('responds to all build requests', () async {

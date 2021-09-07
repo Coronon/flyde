@@ -4,6 +4,8 @@ import 'dart:isolate';
 import 'package:test/test.dart';
 import 'package:flyde/core/async/connect.dart';
 
+import '../../helpers/value_hook.dart';
+
 /// [SpawnFunc] which sends the isolate's debug name.
 void _sendIsolateName(SendPort send, ReceivePort receive) async {
   send.send(Isolate.current.debugName);
@@ -15,40 +17,43 @@ void _echo(SendPort send, ReceivePort receive) async => receive.listen(send.send
 void main() {
   test('Spawn function is called in new isolate', () async {
     final isolate = await connect(ReceivePort(), _sendIsolateName);
-    final completer = Completer<String>();
+    final messageHook = VHook<String?>(null);
 
     isolate.receivePort.listen((dynamic message) {
       if (message is String) {
-        completer.complete(message);
+        messageHook.set(message);
       }
     });
 
+    await messageHook.awaitValue(Duration(milliseconds: 100));
+
     expect(
-      await completer.future,
+      messageHook.value,
       isNot(equals(Isolate.current.debugName)),
     );
   });
 
   test('Isolates can communicate in both directions', () async {
     final isolate = await connect(ReceivePort(), _echo);
-    final sendPortCompleter = Completer<void>();
-    final messageCompleter = Completer<String>();
+    final sendPortHook = VHook<bool?>(null);
+    final messageHook = VHook<String?>(null);
     const testMessage = 'test';
 
     isolate.receivePort.listen((dynamic message) {
       if (message is SendPort) {
         isolate.sendPort = message;
-        sendPortCompleter.complete();
+        sendPortHook.set(true);
       }
 
       if (message is String) {
-        messageCompleter.complete(message);
+        messageHook.set(message);
       }
     });
 
-    await sendPortCompleter.future;
+    await sendPortHook.awaitValue(Duration(milliseconds: 100));
     isolate.sendPort.send(testMessage);
+    await messageHook.awaitValue(Duration(milliseconds: 100));
 
-    expect(await messageCompleter.future, equals(testMessage));
+    expect(messageHook.value, equals(testMessage));
   });
 }
