@@ -210,7 +210,7 @@ Future<void> main() async {
       worker.didFinishLinking();
       worker.done();
 
-      await done.awaitValue(Duration(milliseconds: 100));
+      await done.awaitValue(Duration(seconds: 1));
 
       done.expect(isTrue);
       compiling.expect(equals(5));
