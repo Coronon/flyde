@@ -2,13 +2,10 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 import 'package:flyde/core/async/event_synchronizer.dart';
 import 'package:flyde/core/fs/compiler/installed_compiler.dart';
 import 'package:flyde/core/fs/configs/compiler_config.dart';
-import 'package:flyde/core/fs/file_extension.dart';
-import 'package:flyde/core/fs/search_directory.dart';
 import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:flyde/core/networking/protocol/compile_status.dart';
 import 'package:flyde/core/networking/protocol/process_completion.dart';
@@ -22,6 +19,8 @@ import 'package:flyde/features/build_server/build_provider.dart';
 
 import '../../helpers/clear_test_cache_directory.dart';
 import '../../helpers/get_uri.dart';
+import '../../helpers/load_eaxmple_files.dart';
+import '../../helpers/map_example_files.dart';
 import '../../helpers/value_hook.dart';
 
 /// Name of the temporary file storage
@@ -152,20 +151,8 @@ void main() async {
     linkerFlags: ['-flto'],
   );
 
-  final files = await searchDirectory(Directory('./example'), (e) {
-    final isSource = FileExtension.sources.contains(p.extension(e.path));
-    final isHeader = FileExtension.headers.contains(p.extension(e.path));
-
-    if (e is File && (isSource || isHeader)) {
-      return SourceFile.fromFile(0, e, entryDirectory: Directory('./example'));
-    }
-
-    return null;
-  });
-
-  final fileMap = {
-    for (final file in files) file.id: await file.hash,
-  };
+  final files = await loadExampleFiles();
+  final fileMap = await mapExampleFiles(files);
 
   late WebServer server;
   late ClientSession clientSession;

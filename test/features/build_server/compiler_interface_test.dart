@@ -17,6 +17,8 @@ import 'package:flyde/features/build_server/compiler_interface.dart';
 
 import '../../helpers/clear_test_cache_directory.dart';
 import '../../helpers/create_dummy_project_cache.dart';
+import '../../helpers/load_eaxmple_files.dart';
+import '../../helpers/map_example_files.dart';
 import '../../helpers/value_hook.dart';
 
 /// Attempts to build the project using the [interface].
@@ -69,20 +71,8 @@ Future<void> main() async {
     linkerFlags: ['-flto'],
   );
 
-  final files = await searchDirectory(Directory('./example'), (e) {
-    final isSource = FileExtension.sources.contains(p.extension(e.path));
-    final isHeader = FileExtension.headers.contains(p.extension(e.path));
-
-    if (e is File && (isSource || isHeader)) {
-      return SourceFile.fromFile(0, e, entryDirectory: Directory('./example'));
-    }
-
-    return null;
-  });
-
-  final fileMap = {
-    for (final file in files) file.id: await file.hash,
-  };
+  final files = await loadExampleFiles();
+  final fileMap = await mapExampleFiles(files);
 
   setUp(() async {
     await clearTestCacheDirectory(id: 'compiler_interface_test');
