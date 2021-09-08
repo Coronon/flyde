@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-09-07 12:36:45</td>
+            <td class="headerValue">2021-09-08 08:35:57</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -264,7 +264,7 @@
 <a name="202"><span class="lineNum">     202 </span><span class="lineCov">          2 :     Future&lt;void&gt; run(List&lt;_ProcessInvocation&gt; invocs) async {</span></a>
 <a name="203"><span class="lineNum">     203 </span><span class="lineCov">          4 :       for (final invoc in invocs) {</span></a>
 <a name="204"><span class="lineNum">     204 </span><span class="lineCov">          8 :         await Process.run(invoc.executable, invoc.args);</span></a>
-<a name="205"><span class="lineNum">     205 </span><span class="lineCov">          6 :         await invoc.completionHandler?.call();</span></a>
+<a name="205"><span class="lineNum">     205 </span><span class="lineCov">          4 :         await invoc.completionHandler?.call();</span></a>
 <a name="206"><span class="lineNum">     206 </span>            :       }</a>
 <a name="207"><span class="lineNum">     207 </span>            :     }</a>
 <a name="208"><span class="lineNum">     208 </span>            : </a>
@@ -275,7 +275,7 @@
 <a name="213"><span class="lineNum">     213 </span>            :     }</a>
 <a name="214"><span class="lineNum">     214 </span>            : </a>
 <a name="215"><span class="lineNum">     215 </span>            :     // We run all the groups in parallel.</a>
-<a name="216"><span class="lineNum">     216 </span><span class="lineCov">         10 :     await Future.wait(groups.map((group) =&gt; run(group)));</span></a>
+<a name="216"><span class="lineNum">     216 </span><span class="lineCov">          8 :     await Future.wait(groups.map((group) =&gt; run(group)));</span></a>
 <a name="217"><span class="lineNum">     217 </span>            :   }</a>
 <a name="218"><span class="lineNum">     218 </span>            : }</a>
 <a name="219"><span class="lineNum">     219 </span>            : </a>
