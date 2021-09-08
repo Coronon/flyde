@@ -261,7 +261,7 @@ Future<void> main() async {
       expect(capacityResponseHook.value, isNull);
     });
 
-    test('responds to all build requests', () async {
+    test('responds to all build related requests', () async {
       final testReceive = ReceivePort();
       final receivePort = ReceivePort();
       final sendPort = testReceive.sendPort;
