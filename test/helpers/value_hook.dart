@@ -205,6 +205,40 @@ class VHook<T> {
         skip: skip,
       );
 
+  /// Wait for the value to conform to [matcher].
+  ///
+  /// The optional [timeout] specifies the maximum time to wait for the match
+  /// before a [TimeoutException] is thrown. All intermidiate non-matching
+  /// states are ignored.
+  ///
+  /// This method uses 'expect' from the 'test' package.
+  ///
+  /// [matcher] is used to test for the expected value
+  /// e.g. `equals(true)`
+  Future<void> expectAsync(
+    test.Matcher matcher, {
+    String? reason,
+    dynamic skip,
+    Duration? timeout,
+  }) async =>
+      awaitValue(
+        timeout: timeout,
+        condition: (T val) {
+          try {
+            test.expect(
+              _value,
+              matcher,
+              reason: reason,
+              skip: skip,
+            );
+
+            return true;
+          } catch (e) {
+            return false;
+          }
+        },
+      );
+
   /// Get awaitable that completes when the contained value is set.
   ///
   /// The optional [timeout] specifies the maximum time to wait for the value
