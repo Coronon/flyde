@@ -6,7 +6,7 @@ import 'package:test/test.dart' as test show expect, Matcher;
 /// that set values outside of their scope.
 ///
 /// ```dart
-/// // Construct VHook with no initial value'
+/// // Construct VHook with no initial value
 /// VHook calledHandler = VHook();
 ///
 /// willCallHandler(() {
@@ -66,6 +66,81 @@ class VHook<T> {
 
     // Complete value
     _completer.complete(_value);
+  }
+
+  /// Update value with the return of [updater] which takes
+  /// the current value as its only argument.
+  ///
+  /// The new value is returned.
+  ///
+  /// [updater] will not be called if no value has been set, use
+  /// [orElse] to provide a fallback in such a case. An error will be
+  /// thrown if neither [updater] nor [orElse] can be used.
+  ///
+  /// ```dart
+  /// // Construct VHook with initial value
+  /// VHook<int> myHook = VHook<int>(someInteger);
+  ///
+  /// // Raise the current value (any value) to the power of two (x^2)
+  /// int newVal = myHook.update((int val) => val*val);
+  /// ```
+  T update(T Function(T) updater, {dynamic orElse = _VHookValue.none}) {
+    // Do not change value if already completed
+    _assertNotCompleted();
+
+    if (_value != _VHookValue.none) {
+      // Some value already set -> type guarantee -> can use updater
+      set(updater(_value));
+    } else if (orElse != _VHookValue.none) {
+      // No value set + fallback provided -> use fallback
+      set(orElse);
+    } else {
+      throw StateError('Attempted to update value before initial set without fallback');
+    }
+
+    return _value;
+  }
+
+  /// Update value with the return of [updater] which takes
+  /// the current value as its only argument.
+  ///
+  /// The new value is returned.
+  ///
+  /// [updater] will not be called if no value has been set, use
+  /// [orElse] to provide a fallback in such a case, which can be a [Future]
+  /// whose completion value will be used. An error will be
+  /// thrown if neither [updater] nor [orElse] can be used.
+  ///
+  /// ```dart
+  /// // Construct VHook with initial value
+  /// VHook<String> myHook = VHook<String>(someFileName);
+  ///
+  /// // Use current value as filename and set content of that file
+  /// // as new value
+  /// String content = await myHook.updateAsync(
+  ///   (String name) async => await File(name).readAsString()
+  /// );
+  /// ```
+  Future<T> updateAsync(Future<T> Function(T) updater, {dynamic orElse = _VHookValue.none}) async {
+    // Do not change value if already completed
+    _assertNotCompleted();
+
+    if (_value != _VHookValue.none) {
+      // Some value already set -> type guarantee -> can use updater
+      set(await updater(_value));
+    } else if (orElse != _VHookValue.none) {
+      // No value set + fallback provided -> use fallback
+      // Handle both value and Future fallbacks
+      if (orElse is Future) {
+        set(await orElse);
+      } else {
+        set(orElse);
+      }
+    } else {
+      throw StateError('Attempted to update value before initial set without fallback');
+    }
+
+    return _value;
   }
 
   /// Obtain the current value.
