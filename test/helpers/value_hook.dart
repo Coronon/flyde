@@ -23,9 +23,15 @@ class VHook<T> {
   /// The value of the variable.
   dynamic _value;
 
+  /// The error that might be completed with
+  Object _error = _VHookValue.none;
+
   /// Flag that indicates that the value reached it's final state.
   final _completer = Completer<T>();
 
+  /// Stream used to subscribe to value changes
+  ///
+  /// Used to allow awaiting values with [awaitValue]
   final _stream = StreamController<T>.broadcast();
 
   /// Construct a new ValueHook with the given initial value.
@@ -44,7 +50,7 @@ class VHook<T> {
     _value = val;
 
     // Notify listeners
-    _stream.sink.add(val);
+    _stream.add(val);
   }
 
   /// Complete with the given value.
@@ -66,6 +72,21 @@ class VHook<T> {
 
     // Complete value
     _completer.complete(_value);
+  }
+
+  /// Complete with an error or exception
+  void completeError(Object error) {
+    // Can not complete multiple times
+    _assertNotCompleted();
+
+    // Save error
+    _error = error;
+
+    // Publish error to all listeners
+    _stream.addError(error);
+
+    // Complete with error
+    _completer.completeError(error);
   }
 
   /// Update value with the return of [updater] which takes
@@ -147,12 +168,24 @@ class VHook<T> {
   ///
   /// This will throw if no value has been assigned yet.
   /// Check with [hasValue] before.
-  T get value => _value;
+  T get value => _value != _VHookValue.none ? _value : throw StateError('No value set yet');
 
   /// Whether a value is present.
   ///
   /// Precondition before accessing [value].
   bool get hasValue => _value != _VHookValue.none;
+
+  /// Obtain completion error.
+  ///
+  /// This will throw if not already completed with error.
+  /// Check with [hasError] before.
+  Object get error =>
+      _error != _VHookValue.none ? _error : throw StateError('Did not complete with error');
+
+  /// Whether an error is present.
+  ///
+  /// Precondition before accessing [error].
+  bool get hasError => _error != _VHookValue.none;
 
   /// Check the value of the variable.
   ///
@@ -218,6 +251,9 @@ class VHook<T> {
       return true;
     }
 
+    // Throw if already completed with error
+    _assertNotCompletedError();
+
     // Check current value
     if (wrappedCond(_value)) return _value;
 
@@ -280,6 +316,13 @@ class VHook<T> {
         'VHook is completed with a value that does not satisfy the provided condition',
       );
     }
+  }
+
+  /// Assert that value is not yet completed with an error
+  ///
+  /// Will throw [_error] if set
+  void _assertNotCompletedError() {
+    if (_error != _VHookValue.none) throw _error;
   }
 }
 
