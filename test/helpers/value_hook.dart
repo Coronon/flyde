@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:test/test.dart' as test show expect, Matcher;
+import 'package:test/test.dart' as test show expect, Matcher, TestFailure;
 
 /// Useful to easily test handler functions
 /// that set values outside of their scope.
@@ -208,8 +208,10 @@ class VHook<T> {
   /// Wait for the value to conform to [matcher].
   ///
   /// The optional [timeout] specifies the maximum time to wait for the match
-  /// before a [TimeoutException] is thrown. All intermidiate non-matching
-  /// states are ignored.
+  /// before a [TimeoutException] is thrown.
+  ///
+  /// By default all intermediate states are checked, to only check after
+  /// completion enable [onlyOnCompletion].
   ///
   /// This method uses 'expect' from the 'test' package.
   ///
@@ -220,24 +222,44 @@ class VHook<T> {
     String? reason,
     dynamic skip,
     Duration? timeout,
-  }) async =>
-      awaitValue(
-        timeout: timeout,
-        condition: (T val) {
-          try {
-            test.expect(
-              _value,
-              matcher,
-              reason: reason,
-              skip: skip,
-            );
+    bool onlyOnCompletion = false,
+  }) async {
+    if (onlyOnCompletion) {
+      // Only check after completion
+      await awaitCompletion(timeout);
+    } else {
+      // Check all intermediate states
+      try {
+        await awaitValue(
+          timeout: timeout,
+          condition: (T val) {
+            try {
+              test.expect(
+                _value,
+                matcher,
+                reason: reason,
+                skip: skip,
+              );
 
-            return true;
-          } catch (e) {
-            return false;
-          }
-        },
-      );
+              return true;
+            } on test.TestFailure {
+              return false;
+            }
+          },
+        );
+      } on TimeoutException {
+        // We catch TimeoutException to show the results of
+        // matching the most current value (the [TestFailure])
+      }
+    }
+
+    test.expect(
+      _value,
+      matcher,
+      reason: reason,
+      skip: skip,
+    );
+  }
 
   /// Get awaitable that completes when the contained value is set.
   ///
