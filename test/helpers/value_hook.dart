@@ -21,10 +21,13 @@ import 'package:test/test.dart' as test show expect, Matcher, TestFailure;
 /// ```
 class VHook<T> {
   /// The value of the variable.
-  dynamic _value;
+  late T _value;
 
-  /// The error that might be completed with
-  Object _error = _VHookValue.none;
+  /// Whether a value is present.
+  bool _hasValue = false;
+
+  /// The error that might be completed with.
+  Object? _error;
 
   /// Flag that indicates that the value reached it's final state.
   final _completer = Completer<T>();
@@ -35,16 +38,21 @@ class VHook<T> {
   final _stream = StreamController<T>.broadcast();
 
   /// Construct a new ValueHook with the given initial value.
+  VHook(this._value) : _hasValue = true;
+
+  /// Construct a new ValueHook with no initial value.
   ///
-  /// If not initial value is specified, a placeholder will
-  /// be used. Please check [hasValue] before directly accessing
-  /// [value] in such a case.
-  VHook([this._value = _VHookValue.none]);
+  /// Please check [hasValue] before directly accessing
+  /// [value] if you use this constructor.
+  VHook.empty();
 
   /// Set the value of the variable.
   void set(T val) {
     // Do not change value if already completed
     _assertNotCompleted();
+
+    // Note presence of value
+    _hasValue = true;
 
     // Update value
     _value = val;
@@ -98,6 +106,9 @@ class VHook<T> {
   /// [orElse] to provide a fallback in such a case. An error will be
   /// thrown if neither [updater] nor [orElse] can be used.
   ///
+  /// Please note that providing a wrapped `Future<T>` withing a [VHookValue]
+  /// to [orElse] will throw an [ArgumentError].
+  ///
   /// ```dart
   /// // Construct VHook with initial value
   /// VHook<int> myHook = VHook<int>(someInteger);
@@ -105,16 +116,23 @@ class VHook<T> {
   /// // Raise the current value (any value) to the power of two (x^2)
   /// int newVal = myHook.update((int val) => val*val);
   /// ```
-  T update(T Function(T) updater, {dynamic orElse = _VHookValue.none}) {
+  T update(T Function(T) updater, {VHookValue<T>? orElse}) {
     // Do not change value if already completed
     _assertNotCompleted();
 
-    if (_value != _VHookValue.none) {
+    if (hasValue) {
       // Some value already set -> type guarantee -> can use updater
       set(updater(_value));
-    } else if (orElse != _VHookValue.none) {
+    } else if (orElse != null) {
       // No value set + fallback provided -> use fallback
-      set(orElse);
+      final FutureOr<T> value = orElse.value;
+
+      /// Don't accept Future<T>
+      if (value is Future) {
+        throw ArgumentError("Please use 'updateAsync' for a fallback of type 'Future<T>'");
+      }
+
+      set(value);
     } else {
       throw StateError('Attempted to update value before initial set without fallback');
     }
@@ -142,20 +160,21 @@ class VHook<T> {
   ///   (String name) async => await File(name).readAsString()
   /// );
   /// ```
-  Future<T> updateAsync(Future<T> Function(T) updater, {dynamic orElse = _VHookValue.none}) async {
+  Future<T> updateAsync(Future<T> Function(T) updater, {VHookValue<T>? orElse}) async {
     // Do not change value if already completed
     _assertNotCompleted();
 
-    if (_value != _VHookValue.none) {
+    if (hasValue) {
       // Some value already set -> type guarantee -> can use updater
       set(await updater(_value));
-    } else if (orElse != _VHookValue.none) {
+    } else if (orElse != null) {
       // No value set + fallback provided -> use fallback
       // Handle both value and Future fallbacks
-      if (orElse is Future) {
-        set(await orElse);
+      final FutureOr<T> fallbackValue = orElse.value;
+      if (fallbackValue is Future) {
+        set(await fallbackValue);
       } else {
-        set(orElse);
+        set(fallbackValue);
       }
     } else {
       throw StateError('Attempted to update value before initial set without fallback');
@@ -168,24 +187,23 @@ class VHook<T> {
   ///
   /// This will throw if no value has been assigned yet.
   /// Check with [hasValue] before.
-  T get value => _value != _VHookValue.none ? _value : throw StateError('No value set yet');
+  T get value => hasValue ? _value : throw StateError('No value set yet');
 
   /// Whether a value is present.
   ///
   /// Precondition before accessing [value].
-  bool get hasValue => _value != _VHookValue.none;
+  bool get hasValue => _hasValue;
 
   /// Obtain completion error.
   ///
   /// This will throw if not already completed with error.
   /// Check with [hasError] before.
-  Object get error =>
-      _error != _VHookValue.none ? _error : throw StateError('Did not complete with error');
+  Object get error => hasError ? _error! : throw StateError('Did not complete with error');
 
   /// Whether an error is present.
   ///
   /// Precondition before accessing [error].
-  bool get hasError => _error != _VHookValue.none;
+  bool get hasError => _error != null;
 
   /// Check the value of the variable.
   ///
@@ -294,9 +312,9 @@ class VHook<T> {
   /// ```
   Future<T> awaitValue({Duration? timeout, bool Function(T)? condition}) async {
     // Wrap condition to ensure correct handling
-    bool wrappedCond(dynamic val) {
+    bool wrappedCond(T val) {
       // Don't test without value
-      if (val == _VHookValue.none) return false;
+      if (!hasValue) return false;
 
       // Test condition if specified
       if (condition != null) {
@@ -317,13 +335,13 @@ class VHook<T> {
     _assertNotCompleted();
 
     // Subscribe to changes and find first that satisfies [condition]
-    Future<dynamic> value = _stream.stream.firstWhere(wrappedCond);
+    Future<T> value = _stream.stream.firstWhere(wrappedCond);
 
     // Add optional timeout
     if (timeout != null) value = value.timeout(timeout);
 
-    // Wait for condition to be met and cast to avoid dynamic
-    return await value as T;
+    // Wait for condition to be met
+    return await value;
   }
 
   /// Wait for and return the completed value.
@@ -378,13 +396,17 @@ class VHook<T> {
   ///
   /// Will throw [_error] if set
   void _assertNotCompletedError() {
-    if (_error != _VHookValue.none) throw _error;
+    if (_error != null) throw _error!;
   }
 }
 
-/// Enum that holds special value states for [VHook]
-enum _VHookValue {
-  /// Indicates that the [VHook] was not set to nor completed
-  /// with a value.
-  none
+/// Used to encapsulate a value.
+///
+/// This is useful to distinguish  between the value `null`
+/// and 'argument not specified' for optional arguments.
+class VHookValue<T> {
+  /// Value encapsulated
+  final FutureOr<T> value;
+
+  const VHookValue(this.value);
 }
