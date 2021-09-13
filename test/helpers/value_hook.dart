@@ -7,7 +7,7 @@ import 'package:test/test.dart' as test show expect, Matcher, TestFailure;
 ///
 /// ```dart
 /// // Construct VHook with no initial value
-/// VHook calledHandler = VHook();
+/// VHook calledHandler = VHook.empty();
 ///
 /// willCallHandler(() {
 ///   // Some handler code
@@ -292,7 +292,7 @@ class VHook<T> {
   ///
   /// ```dart
   /// // Construct VHook with no initial value
-  /// VHook<int> conditionValue = VHook<int>();
+  /// VHook<int> conditionValue = VHook<int>.empty();
   ///
   /// // This function is supposed to call the handler soon
   /// willCallHandlerAsyncRecurring(() {
@@ -351,7 +351,7 @@ class VHook<T> {
   ///
   /// ```dart
   /// // Construct VHook with no initial value
-  /// VHook<int> conditionValue = VHook<int>();
+  /// VHook<int> conditionValue = VHook<int>.empty();
   ///
   /// // This function is supposed to call the handler soon
   /// willCallHandlerAsyncRecurring(() {
