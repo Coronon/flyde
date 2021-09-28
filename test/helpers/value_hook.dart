@@ -245,38 +245,33 @@ class VHook<T> {
     if (onlyOnCompletion) {
       // Only check after completion
       await awaitCompletion(timeout);
+      
+      test.expect(
+        _value,
+        matcher,
+        reason: reason,
+        skip: skip,
+      );
     } else {
       // Check all intermediate states
-      try {
-        await awaitValue(
-          timeout: timeout,
-          condition: (T val) {
-            try {
-              test.expect(
-                _value,
-                matcher,
-                reason: reason,
-                skip: skip,
-              );
+      await awaitValue(
+        timeout: timeout,
+        condition: (T val) {
+          try {
+            test.expect(
+              _value,
+              matcher,
+              reason: reason,
+              skip: skip,
+            );
 
-              return true;
-            } on test.TestFailure {
-              return false;
-            }
-          },
-        );
-      } on TimeoutException {
-        // We catch TimeoutException to show the results of
-        // matching the most current value (the [TestFailure])
-      }
+            return true;
+          } on test.TestFailure {
+            return false;
+          }
+        },
+      );
     }
-
-    test.expect(
-      _value,
-      matcher,
-      reason: reason,
-      skip: skip,
-    );
   }
 
   /// Get awaitable that completes when the contained value is set.
