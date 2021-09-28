@@ -106,8 +106,8 @@ class VHook<T> {
   /// [orElse] to provide a fallback in such a case. An error will be
   /// thrown if neither [updater] nor [orElse] can be used.
   ///
-  /// Please note that providing a wrapped `Future<T>` withing a [VHookValue]
-  /// to [orElse] will throw an [ArgumentError].
+  /// Please note that providing a wrapped `Future<T>` within a [ValueContainer]
+  /// to [orElse] will throw an [ArgumentError]. Use [updateAsync] instead.
   ///
   /// ```dart
   /// // Construct VHook with initial value
@@ -116,7 +116,7 @@ class VHook<T> {
   /// // Raise the current value (any value) to the power of two (x^2)
   /// int newVal = myHook.update((int val) => val*val);
   /// ```
-  T update(T Function(T) updater, {VHookValue<T>? orElse}) {
+  T update(T Function(T) updater, {ValueContainer<T>? orElse}) {
     // Do not change value if already completed
     _assertNotCompleted();
 
@@ -160,7 +160,7 @@ class VHook<T> {
   ///   (String name) async => await File(name).readAsString()
   /// );
   /// ```
-  Future<T> updateAsync(Future<T> Function(T) updater, {VHookValue<T>? orElse}) async {
+  Future<T> updateAsync(Future<T> Function(T) updater, {ValueContainer<T>? orElse}) async {
     // Do not change value if already completed
     _assertNotCompleted();
 
@@ -404,9 +404,9 @@ class VHook<T> {
 ///
 /// This is useful to distinguish  between the value `null`
 /// and 'argument not specified' for optional arguments.
-class VHookValue<T> {
+class ValueContainer<T> {
   /// Value encapsulated
   final FutureOr<T> value;
 
-  const VHookValue(this.value);
+  const ValueContainer(this.value);
 }
