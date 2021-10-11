@@ -205,6 +205,14 @@ class VHook<T> {
   /// Precondition before accessing [error].
   bool get hasError => _error != null;
 
+  /// Whether neither a value nor an error is present.
+  ///
+  /// Useful to check if [empty] constructed VHook was used.
+  ///
+  /// Note: If [complete] was called on the [VHook], this will
+  /// return false.
+  bool get isEmpty => !hasValue && !hasError && !_completer.isCompleted;
+
   /// Check the value of the variable.
   ///
   /// This method uses 'expect' from the 'test' package.
