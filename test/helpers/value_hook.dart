@@ -79,7 +79,7 @@ class VHook<T> {
     _stream.close();
 
     // Complete value
-    _completer.complete(_value);
+    hasValue ? _completer.complete(value) : _completer.complete();
   }
 
   /// Complete with an error or exception
@@ -245,7 +245,7 @@ class VHook<T> {
     if (onlyOnCompletion) {
       // Only check after completion
       await awaitCompletion(timeout);
-      
+
       test.expect(
         _value,
         matcher,
@@ -324,7 +324,7 @@ class VHook<T> {
     _assertNotCompletedError();
 
     // Check current value
-    if (wrappedCond(_value)) return _value;
+    if (hasValue ? wrappedCond(_value) : false) return _value;
 
     // Throw if already completed as no updates are expected
     _assertNotCompleted();
