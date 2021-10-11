@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:isolate';
 
 import 'package:test/test.dart';
@@ -17,43 +16,44 @@ void _echo(SendPort send, ReceivePort receive) async => receive.listen(send.send
 void main() {
   test('Spawn function is called in new isolate', () async {
     final isolate = await connect(ReceivePort(), _sendIsolateName);
-    final messageHook = VHook<String?>(null);
+    final messageHook = VHook<String>.empty();
 
     isolate.receivePort.listen((dynamic message) {
       if (message is String) {
-        messageHook.set(message);
+        messageHook.completeValue(message);
       }
     });
 
-    await messageHook.awaitValue(Duration(milliseconds: 100));
-
-    expect(
-      messageHook.value,
+    await messageHook.expectAsync(
       isNot(equals(Isolate.current.debugName)),
+      timeout: Duration(milliseconds: 100),
+      onlyOnCompletion: true,
     );
   });
 
   test('Isolates can communicate in both directions', () async {
     final isolate = await connect(ReceivePort(), _echo);
-    final sendPortHook = VHook<bool?>(null);
-    final messageHook = VHook<String?>(null);
+    final sendPortHook = VHook.empty();
+    final messageHook = VHook<String>.empty();
     const testMessage = 'test';
 
     isolate.receivePort.listen((dynamic message) {
       if (message is SendPort) {
         isolate.sendPort = message;
-        sendPortHook.set(true);
+        sendPortHook.complete();
       }
 
       if (message is String) {
-        messageHook.set(message);
+        messageHook.completeValue(message);
       }
     });
 
-    await sendPortHook.awaitValue(Duration(milliseconds: 100));
+    await sendPortHook.awaitCompletion(Duration(milliseconds: 100));
     isolate.sendPort.send(testMessage);
-    await messageHook.awaitValue(Duration(milliseconds: 100));
-
-    expect(messageHook.value, equals(testMessage));
+    await messageHook.expectAsync(
+      equals(testMessage),
+      timeout: Duration(milliseconds: 100),
+      onlyOnCompletion: true,
+    );
   });
 }

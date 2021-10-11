@@ -182,56 +182,61 @@ void main() async {
   });
 
   test('Responds with list of required files', () async {
-    final filesHook = VHook<List<String>?>(null);
-    final initHook = VHook<bool?>(null);
+    final filesHook = VHook<List<String>>.empty();
+    final initHook = VHook.empty();
 
     clientSession.onMessage = (session, message) async {
       if (message is ProjectUpdateResponse) {
-        filesHook.set(message.files);
+        filesHook.completeValue(message.files);
       }
 
       if (message is ProcessCompletionMessage) {
-        initHook.set(message.process == CompletableProcess.projectInit);
+        message.process == CompletableProcess.projectInit
+            ? initHook.complete()
+            : initHook.completeError(message.process);
       }
     };
 
     clientSession.send(ProjectInitRequest(id: 'test', name: 'test'));
 
-    await initHook.awaitValue(Duration(milliseconds: 500));
+    await initHook.awaitCompletion(Duration(milliseconds: 500));
 
     clientSession.send(reserveBuildRequest);
     clientSession.send(ProjectUpdateRequest(config: config1, files: fileMap));
 
-    await filesHook.awaitValue(Duration(seconds: 2));
-
-    expect(filesHook.value, unorderedEquals(files.map((f) => f.id)));
+    await filesHook.expectAsync(
+      unorderedEquals(files.map((f) => f.id)),
+      timeout: Duration(seconds: 2),
+      onlyOnCompletion: true,
+    );
   });
 
   test('Verifies that initialization has been completed and accepts build requests', () async {
-    final initHook = VHook<bool?>(null);
-    final hadError = VHook<bool?>(null);
+    final initHook = VHook.empty();
+    final hadError = VHook.empty();
 
     clientSession.onMessage = (session, message) async {
       if (message is ProcessCompletionMessage) {
-        initHook.set(message.process == CompletableProcess.projectInit);
+        message.process == CompletableProcess.projectInit
+            ? initHook.complete()
+            : initHook.completeError(message.process);
       }
     };
 
     server.wsOnError = (session, error) async {
-      hadError.set(true);
+      hadError.completeError(true);
     };
 
     clientSession.send(ProjectInitRequest(id: 'test', name: 'test'));
 
-    await initHook.awaitValue(Duration(seconds: 10), raiseOnTimeout: true);
-    initHook.expect(equals(true));
+    await initHook.awaitCompletion(Duration(milliseconds: 500));
 
     clientSession.send(reserveBuildRequest);
     clientSession.send(ProjectUpdateRequest(config: config1, files: fileMap));
 
     //? Wait for 500ms to ensure no errors have been thrown.
-    await hadError.awaitValue(Duration(milliseconds: 500));
-    hadError.expect(isNull);
+    await Future.delayed(Duration(milliseconds: 500));
+    expect(hadError.isEmpty, isTrue);
   });
 
   test('Receives correct binary after successfull build', () async {
@@ -301,28 +306,28 @@ void main() async {
   });
 
   test('Can manage active projects', () async {
-    final initHook1 = VHook<bool?>(null);
-    final initHook2 = VHook<bool?>(null);
+    final initHook1 = VHook.empty();
+    final initHook2 = VHook.empty();
     final secondSession = ClientSession(getUri(server, 'ws').toString())
       ..middleware.add(protocolMiddleware);
 
     clientSession.onMessage = (session, message) async {
       if (message is ProcessCompletionMessage) {
-        initHook1.set(true);
+        initHook1.complete();
       }
     };
 
     secondSession.onMessage = (session, message) async {
       if (message is ProcessCompletionMessage) {
-        initHook2.set(true);
+        initHook2.complete();
       }
     };
 
     clientSession.send(ProjectInitRequest(id: 'test_id', name: 'test_name'));
     secondSession.send(ProjectInitRequest(id: 'test_id_2', name: 'test_name_2'));
 
-    await initHook1.awaitValue(Duration(milliseconds: 100));
-    await initHook2.awaitValue(Duration(milliseconds: 100));
+    await initHook1.awaitCompletion(Duration(seconds: 1));
+    await initHook2.awaitCompletion(Duration(seconds: 1));
 
     expect(provider.activeProjectIds, unorderedEquals(['test_id', 'test_id_2']));
     expect(provider.projectName('test_id'), equals('test_name'));

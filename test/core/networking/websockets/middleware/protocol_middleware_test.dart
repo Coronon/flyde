@@ -12,7 +12,7 @@ void main() {
     final request = AuthRequest(username: 'testUsername', password: 'testPassword');
     final String message =
         '{"type":"AuthRequest","data":{"username":"testUsername","password":"testPassword"}}';
-    final calledNext = VHook<bool>(false);
+    final calledNext = VHook.empty();
 
     final dynamic deserialized = await protocolMiddleware(
       null,
@@ -21,7 +21,7 @@ void main() {
       (dynamic msg) async {
         expect(msg, isA<AuthRequest>());
 
-        calledNext.set(true);
+        calledNext.complete();
         return msg;
       },
     );
@@ -39,14 +39,14 @@ void main() {
       equals(request.password),
     );
 
-    calledNext.expect(isTrue);
+    await calledNext.awaitCompletion(Duration(seconds: 1));
   });
 
   test('ProtocolMiddleware passes messages and finally serializes them', () async {
     final request = AuthRequest(username: 'testUsername', password: 'testPassword');
     final String message =
         '{"type":"AuthRequest","data":{"username":"testUsername","password":"testPassword"}}';
-    final calledNext = VHook<bool>(false);
+    final calledNext = VHook.empty();
 
     final dynamic serialized = await protocolMiddleware(
       null,
@@ -56,7 +56,7 @@ void main() {
         // Should still be non serialized
         expect(msg, isA<AuthRequest>());
 
-        calledNext.set(true);
+        calledNext.complete();
         return msg;
       },
     );
@@ -64,19 +64,19 @@ void main() {
     //* Verify that the serialized message is the same as the original message
     expect(serialized, equals(message));
 
-    calledNext.expect(isTrue);
+    await calledNext.awaitCompletion(Duration(seconds: 1));
   });
 
   test('ProtocolMiddleware catches exceptions', () async {
     final session = MockSession();
-    final calledNext = VHook<bool>(false);
+    final calledNext = VHook.empty();
 
     final dynamic serialized = await protocolMiddleware(
       session,
       'ANYTHING',
       MiddlewareAction.receive,
       (dynamic msg) async {
-        calledNext.set(true);
+        calledNext.complete();
         return msg;
       },
     );
@@ -84,6 +84,6 @@ void main() {
     //* Verify that the middleware caught the exception
     expect(serialized, isNull);
 
-    calledNext.expect(isFalse);
+    expect(calledNext.isEmpty, isTrue);
   });
 }

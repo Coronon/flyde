@@ -13,11 +13,11 @@ import '../../helpers/mocks/mock_exception.dart';
 
 void main() {
   test('WebServer can receive http request', () async {
-    final VHook<bool?> received = VHook<bool?>(null);
+    final received = VHook.empty();
 
     final WebServer server = await openWebServer();
     server.httpOnRequest = (HttpRequest req) {
-      received.set(true);
+      received.complete();
       req.response.statusCode = 404;
       req.response.close();
     };
@@ -25,15 +25,14 @@ void main() {
     http.get(getUri(server, 'http'));
 
     // Wait for handler to be called and check
-    await received.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    received.expect(isTrue);
+    await received.awaitCompletion(Duration(seconds: 5));
 
     // Teardown
     server.close();
   });
 
   test('WebServer can receive https request', () async {
-    final VHook<bool?> received = VHook<bool?>(null);
+    final received = VHook.empty();
 
     final securityContext = SecurityContext()
       ..useCertificateChain('./test/helpers/mocks/certs/mock_key_store.p12')
@@ -41,7 +40,7 @@ void main() {
 
     final WebServer server = await openWebServer(securityContext: securityContext);
     server.httpOnRequest = (HttpRequest req) {
-      received.set(true);
+      received.complete();
       req.response.statusCode = 404;
       req.response.close();
     };
@@ -52,9 +51,8 @@ void main() {
       ..badCertificateCallback = ((X509Certificate cert, String host, int port) => true);
     client.getUrl(getUri(server, 'https')).then((HttpClientRequest req) => req.close());
 
-    // Wait for handler to be called and check
-    await received.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    received.expect(isTrue);
+    // Wait for handler to be called
+    await received.awaitCompletion(Duration(seconds: 5));
 
     // Teardown
     server.close();
@@ -92,19 +90,18 @@ void main() {
   });
 
   test('WebServer can establish WebSocket connections', () async {
-    final VHook<bool?> received = VHook<bool?>(null);
+    final received = VHook.empty();
 
     final WebServer server = await openWebServer();
     server.wsOnMessage = (ServerSession sess, dynamic msg) async {
-      received.set(true);
+      received.complete();
     };
 
     final WebSocket client = await WebSocket.connect(getUri(server, 'ws').toString());
     client.add('ANYTHING');
 
     // Wait for handler to be called
-    await received.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    received.expect(isTrue);
+    await received.awaitCompletion(Duration(seconds: 5));
 
     // Teardown
     client.close();
@@ -112,40 +109,38 @@ void main() {
   });
 
   test('WebServer can close all WebSocket connections', () async {
-    final VHook<bool?> established = VHook<bool?>(null);
-    final VHook<bool?> closed = VHook<bool?>(null);
+    final established = VHook.empty();
+    final closed = VHook.empty();
 
     final WebServer server = await openWebServer();
     server.wsOnMessage = (ServerSession sess, dynamic msg) async {
-      established.set(true);
+      established.complete();
     };
 
     final ClientSession client = ClientSession(getUri(server, 'ws').toString());
     client.onDone = (ClientSession _) async {
-      closed.set(true);
+      closed.complete();
     };
     client.send('ANYTHING');
 
     // Wait for connection to be established
-    await established.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    established.expect(isTrue);
+    await established.awaitCompletion(Duration(seconds: 5));
 
     // Close server
     server.close();
 
     // Wait for connection to be closed
-    await closed.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    closed.expect(isTrue);
+    await closed.awaitCompletion(Duration(seconds: 5));
     waitFor(() => server.hasNoSessions, timeout: Duration(seconds: 5), raiseOnTimeout: true);
   });
 
   test('WebServer can redirect WebSocket requests', () async {
-    final VHook<bool?> received = VHook<bool?>(null);
+    final received = VHook.empty();
 
     final WebServer server = await openWebServer();
     server.redirectWebsocket = true;
     server.httpOnRequest = (HttpRequest req) {
-      received.set(true);
+      received.complete();
       req.response.statusCode = 404;
       req.response.close();
     };
@@ -170,19 +165,18 @@ void main() {
     );
 
     // Wait for handler to be called
-    await received.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    received.expect(isTrue);
+    await received.awaitCompletion(Duration(seconds: 5));
 
     // Teardown
     server.close();
   });
 
   test('OnError is called', () async {
-    final VHook<Object?> called = VHook<Object?>(null);
+    final VHook<Object> called = VHook<Object>.empty();
 
     final WebServer server = await openWebServer();
     server.wsOnError = (ServerSession sess, Object error) {
-      called.set(error);
+      called.completeValue(error);
     };
     server.wsOnMessage = (ServerSession sess, dynamic msg) async {
       sess.raise(MockException(msg));
@@ -193,13 +187,14 @@ void main() {
     client.send('ANYTHING');
 
     // Wait for handler to be called
-    await called.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    called.expect(
+    await called.expectAsync(
       isA<MockException>().having(
         (MockException e) => e.message,
         'message',
         equals('ANYTHING'),
       ),
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
     );
 
     // Teardown
@@ -208,11 +203,11 @@ void main() {
   });
 
   test('OnDone is called', () async {
-    final VHook<bool?> called = VHook<bool?>(null);
+    final called = VHook.empty();
 
     final WebServer server = await openWebServer();
     server.wsOnDone = (ServerSession sess) {
-      called.set(true);
+      called.complete();
     };
     server.wsOnMessage = (ServerSession sess, dynamic msg) async {};
 
@@ -222,8 +217,7 @@ void main() {
     client.close();
 
     // Wait for handler to be called
-    await called.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    called.expect(isTrue);
+    await called.awaitCompletion(Duration(seconds: 5));
 
     // Teardown
     client.close();
@@ -249,11 +243,11 @@ void main() {
   });
 
   test('Can get hasNoSessions from WebServer', () async {
-    final VHook<bool?> received = VHook<bool?>(null);
+    final received = VHook.empty();
 
     final WebServer server = await openWebServer();
     server.wsOnMessage = (ServerSession sess, dynamic msg) async {
-      received.set(true);
+      received.complete();
     };
 
     expect(server.hasNoSessions, isTrue);
@@ -263,8 +257,7 @@ void main() {
     client.send('ANYTHING');
 
     // Check if server is still empty
-    await received.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    received.expect(isTrue);
+    await received.awaitCompletion(Duration(seconds: 5));
 
     expect(server.hasNoSessions, isFalse);
 

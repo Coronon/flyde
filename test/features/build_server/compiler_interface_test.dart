@@ -174,23 +174,23 @@ Future<void> main() async {
       final compiling = VHook(0);
       final linking = VHook(0);
       final waiting = VHook(0);
-      final done = VHook<bool?>(null);
+      final done = VHook.empty();
 
       testReceive.listen((message) {
         if (message is InterfaceMessage && message.name == 'stateUpdate') {
           final msg = message.args as CompileStatusMessage;
           switch (msg.status) {
             case CompileStatus.compiling:
-              compiling.set(compiling.value + 1);
+              compiling.update((val) => val + 1);
               break;
             case CompileStatus.linking:
-              linking.set(linking.value + 1);
+              linking.update((val) => val + 1);
               break;
             case CompileStatus.waiting:
-              waiting.set(waiting.value + 1);
+              waiting.update((val) => val + 1);
               break;
             case CompileStatus.done:
-              done.set(true);
+              done.complete();
               break;
             case CompileStatus.failed:
               break;
@@ -207,9 +207,8 @@ Future<void> main() async {
       worker.didFinishLinking();
       worker.done();
 
-      await done.awaitValue(Duration(seconds: 1));
+      await done.awaitCompletion(Duration(seconds: 1));
 
-      done.expect(isTrue);
       compiling.expect(equals(5));
       linking.expect(equals(1));
       waiting.expect(equals(1));
@@ -244,21 +243,20 @@ Future<void> main() async {
       final receivePort = ReceivePort();
       final sendPort = testReceive.sendPort;
       final testSend = receivePort.sendPort;
-      final capacityResponseHook = VHook<bool?>(null);
+      final capacityResponseHook = VHook.empty();
 
       WorkerInterface.start(sendPort, receivePort);
 
       testReceive.listen((message) {
         if (message is InterfaceMessage) {
-          capacityResponseHook.set(true);
+          capacityResponseHook.complete();
         }
       });
 
       testSend.send(InterfaceMessage('hasCapacity', null));
 
-      await capacityResponseHook.awaitValue(Duration(milliseconds: 100));
-
-      expect(capacityResponseHook.value, isNull);
+      await Future.delayed(Duration(milliseconds: 100));
+      expect(capacityResponseHook.isEmpty, isTrue);
     });
 
     test('responds to all build related requests', () async {

@@ -62,8 +62,8 @@ void main() {
   });
 
   test('Requests each stream item', () async {
-    final firstHook = VHook<bool?>(null);
-    final secondHook = VHook<bool?>(null);
+    final firstHook = VHook.empty();
+    final secondHook = VHook.empty();
 
     Stream<String> streamCreator() async* {
       yield 'test1';
@@ -72,18 +72,16 @@ void main() {
 
     client.onSent = (dynamic message) {
       if (message == 'test1') {
-        firstHook.set(true);
+        firstHook.complete();
       } else if (message == 'test2') {
-        secondHook.set(true);
+        secondHook.complete();
       }
     };
 
     await sync.request(streamCreator());
-    await firstHook.awaitValue(Duration(milliseconds: 1));
-    await secondHook.awaitValue(Duration(milliseconds: 1));
 
-    firstHook.expect(equals(true));
-    secondHook.expect(equals(true));
+    await firstHook.awaitCompletion(Duration(milliseconds: 1));
+    await secondHook.awaitCompletion(Duration(milliseconds: 1));
   });
 
   test('Can exchange a data stream', () async {
@@ -128,13 +126,13 @@ void main() {
   });
 
   test('Can ignore messages until the right one is received', () async {
-    final receivedHook = VHook<bool?>(null);
+    final receivedHook = VHook.empty();
     await sync.request('echo many');
     await sync.expect(
       String,
       validator: (String resp) {
         if (resp == 'right') {
-          receivedHook.set(true);
+          receivedHook.complete();
           return true;
         }
 
@@ -143,7 +141,6 @@ void main() {
       keepAlive: true,
     );
 
-    await receivedHook.awaitValue(Duration(milliseconds: 1));
-    receivedHook.expect(equals(true));
+    await receivedHook.awaitCompletion(Duration(milliseconds: 1));
   });
 }
