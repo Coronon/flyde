@@ -25,12 +25,12 @@ void main() {
   });
 
   test('Server can receive; Client can send', () async {
-    final msgReceived = VHook<String?>(null);
+    final msgReceived = VHook<String>.empty();
 
     server!.listen((HttpRequest request) {
       final ServerSession sess = ServerSession(request);
       sess.onMessage = (ServerSession sess, dynamic msg) async {
-        msgReceived.set(msg);
+        msgReceived.completeValue(msg);
 
         return msg;
       };
@@ -40,17 +40,18 @@ void main() {
     final ClientSession client = ClientSession(url.toString());
     client.send('ANYTHING');
 
-    // Wait for msgs to be received
-    await msgReceived.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-
-    // Check received data
-    msgReceived.expect(equals('ANYTHING'));
+    // Wait for msgs to be received and check received data
+    await msgReceived.expectAsync(
+      equals('ANYTHING'),
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
+    );
 
     // Teardown
     client.close();
   });
   test('Server can send; Client can receive', () async {
-    final msgReceived = VHook<String?>(null);
+    final msgReceived = VHook<String>.empty();
 
     server!.listen((HttpRequest request) {
       final ServerSession sess = ServerSession(request);
@@ -62,31 +63,32 @@ void main() {
     //? This is not a race condition, because of how the dart eventloop is implemented
     //? The internal 'WebSocket.connect' is scheduled and executed when this strain waits (await)
     client.onMessage = (ClientSession sess, dynamic msg) async {
-      msgReceived.set(msg);
+      msgReceived.completeValue(msg);
       return null;
     };
 
-    // Wait for msgs to be received
-    await msgReceived.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-
-    // Check received data
-    msgReceived.expect(equals('ANYTHING'));
+    // Wait for msgs to be received and check received data
+    await msgReceived.expectAsync(
+      equals('ANYTHING'),
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
+    );
 
     // Teardown
     client.close();
   });
   test('Middleware is run', () async {
-    final msgClientReceived = VHook<bool?>(null);
+    final msgClientReceived = VHook<bool>.empty();
     // First middleware
-    final middlewareServerReceived1 = VHook<String?>(null);
-    final middlewareServerSend1 = VHook<String?>(null);
-    final middlewareClientReceived1 = VHook<String?>(null);
-    final middlewareClientSend1 = VHook<String?>(null);
+    final middlewareServerReceived1 = VHook<String>.empty();
+    final middlewareServerSend1 = VHook<String>.empty();
+    final middlewareClientReceived1 = VHook<String>.empty();
+    final middlewareClientSend1 = VHook<String>.empty();
     // Second middleware
-    final middlewareServerReceived2 = VHook<String?>(null);
-    final middlewareServerSend2 = VHook<String?>(null);
-    final middlewareClientReceived2 = VHook<String?>(null);
-    final middlewareClientSend2 = VHook<String?>(null);
+    final middlewareServerReceived2 = VHook<String>.empty();
+    final middlewareServerSend2 = VHook<String>.empty();
+    final middlewareClientReceived2 = VHook<String>.empty();
+    final middlewareClientSend2 = VHook<String>.empty();
 
     // Two middleware functions to test 'next' behaviour
     Future<dynamic> middlewareFunc1(
@@ -97,15 +99,15 @@ void main() {
     ) async {
       if (session is ServerSession) {
         if (action == MiddlewareAction.receive) {
-          middlewareServerReceived1.set(message);
+          middlewareServerReceived1.completeValue(message);
         } else {
-          middlewareServerSend1.set(message);
+          middlewareServerSend1.completeValue(message);
         }
       } else {
         if (action == MiddlewareAction.receive) {
-          middlewareClientReceived1.set(message);
+          middlewareClientReceived1.completeValue(message);
         } else {
-          middlewareClientSend1.set(message);
+          middlewareClientSend1.completeValue(message);
         }
       }
 
@@ -120,15 +122,15 @@ void main() {
     ) async {
       if (session is ServerSession) {
         if (action == MiddlewareAction.receive) {
-          middlewareServerReceived2.set(message);
+          middlewareServerReceived2.completeValue(message);
         } else {
-          middlewareServerSend2.set(message);
+          middlewareServerSend2.completeValue(message);
         }
       } else {
         if (action == MiddlewareAction.receive) {
-          middlewareClientReceived2.set(message);
+          middlewareClientReceived2.completeValue(message);
         } else {
-          middlewareClientSend2.set(message);
+          middlewareClientSend2.completeValue(message);
         }
       }
 
@@ -153,49 +155,72 @@ void main() {
     client.middleware = middleware;
     client.onMessage = (ClientSession sess, dynamic msg) async {
       expect(msg, equals('ANYTHING-2'));
-      msgClientReceived.set(true);
+      msgClientReceived.completeValue(true);
     };
 
     // Send messages
     client.send('ANYTHING-1');
 
-    // Wait for msgs to be received
-    await msgClientReceived.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
+    // Wait for msgs to be received and check received data
+    await msgClientReceived.expectAsync(
+      isTrue,
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
+    );
 
-    await middlewareServerReceived1.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    await middlewareServerSend1.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    await middlewareClientReceived1.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    await middlewareClientSend1.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
+    await middlewareServerReceived1.expectAsync(
+      equals('ANYTHING-1'),
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
+    );
+    await middlewareServerSend1.expectAsync(
+      equals('ANYTHING-2'),
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
+    );
+    await middlewareClientReceived1.expectAsync(
+      equals('ANYTHING-2'),
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
+    );
+    await middlewareClientSend1.expectAsync(
+      equals('ANYTHING-1'),
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
+    );
 
-    await middlewareServerReceived2.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    await middlewareServerSend2.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    await middlewareClientReceived2.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    await middlewareClientSend2.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-
-    // Check received data
-    msgClientReceived.expect(isTrue);
-
-    middlewareServerReceived1.expect(equals('ANYTHING-1'));
-    middlewareServerSend1.expect(equals('ANYTHING-2'));
-    middlewareClientReceived1.expect(equals('ANYTHING-2'));
-    middlewareClientSend1.expect(equals('ANYTHING-1'));
-
-    middlewareServerReceived2.expect(equals('ANYTHING-1'));
-    middlewareServerSend2.expect(equals('ANYTHING-2'));
-    middlewareClientReceived2.expect(equals('ANYTHING-2'));
-    middlewareClientSend2.expect(equals('ANYTHING-1'));
+    await middlewareServerReceived2.expectAsync(
+      equals('ANYTHING-1'),
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
+    );
+    await middlewareServerSend2.expectAsync(
+      equals('ANYTHING-2'),
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
+    );
+    await middlewareClientReceived2.expectAsync(
+      equals('ANYTHING-2'),
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
+    );
+    await middlewareClientSend2.expectAsync(
+      equals('ANYTHING-1'),
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
+    );
 
     // Teardown
     client.close();
   });
   test('OnDone is called', () async {
-    final onDoneServerCalled = VHook<bool?>(null);
-    final onDoneClientCalled = VHook<bool?>(null);
+    final onDoneServerCalled = VHook.empty();
+    final onDoneClientCalled = VHook.empty();
 
     server!.listen((HttpRequest request) {
       final ServerSession sess = ServerSession(request);
       sess.onDone = (ServerSession sess) {
-        onDoneServerCalled.set(true);
+        onDoneServerCalled.complete();
       };
     });
 
@@ -204,27 +229,24 @@ void main() {
     //? This is not a race condition, because of how the dart eventloop is implemented
     //? The internal 'WebSocket.connect' is scheduled and executed when this strain waits (await)
     client.onDone = (ClientSession sess) {
-      onDoneClientCalled.set(true);
+      onDoneClientCalled.complete();
     };
     client.close();
 
     // Wait for handlers to be called
-    await onDoneServerCalled.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    await onDoneClientCalled.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-
-    onDoneServerCalled.expect(isTrue);
-    onDoneClientCalled.expect(isTrue);
+    await onDoneServerCalled.awaitCompletion(Duration(seconds: 5));
+    await onDoneClientCalled.awaitCompletion(Duration(seconds: 5));
   });
   test('Storage is persisted', () async {
-    final serverSession = VHook<ServerSession?>(null);
-    final serverPersisted = VHook<bool?>(null);
-    final clientPersisted = VHook<bool?>(null);
+    final serverSession = VHook<ServerSession>.empty();
+    final serverPersisted = VHook.empty();
+    final clientPersisted = VHook.empty();
 
     server!.listen((HttpRequest request) {
-      serverSession.set(ServerSession(request));
-      serverSession.value!.onMessage = (ServerSession sess, dynamic msg) async {
+      serverSession.completeValue(ServerSession(request));
+      serverSession.value.onMessage = (ServerSession sess, dynamic msg) async {
         sess.storage['msg'] = msg;
-        serverPersisted.set(true);
+        serverPersisted.complete();
         sess.send('ANYTHING-2');
       };
     });
@@ -235,23 +257,22 @@ void main() {
     //? The internal 'WebSocket.connect' is scheduled and executed when this strain waits (await)
     client.onMessage = (ClientSession sess, dynamic msg) async {
       sess.storage['msg'] = msg;
-      clientPersisted.set(true);
+      clientPersisted.complete();
     };
 
     // Send messages
     client.send('ANYTHING-1');
 
-    // Wait for msgs to be persisted
-    await serverSession.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    await serverPersisted.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-    await clientPersisted.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
+    // Wait for msgs to be persisted and check persisted data
+    await serverSession.expectAsync(
+      isA<ServerSession>(),
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
+    );
+    await serverPersisted.awaitCompletion(Duration(seconds: 5));
+    await clientPersisted.awaitCompletion(Duration(seconds: 5));
 
-    // Check persisted data
-    serverSession.expect(isA<ServerSession>());
-    serverPersisted.expect(isTrue);
-    clientPersisted.expect(isTrue);
-
-    expect(serverSession.value!.storage['msg'], equals('ANYTHING-1'));
+    expect(serverSession.value.storage['msg'], equals('ANYTHING-1'));
     expect(client.storage['msg'], equals('ANYTHING-2'));
 
     //* Check storage is erased on close
@@ -268,8 +289,8 @@ void main() {
     expect(client.storage['msg'], isNull);
   });
   test('OnError is called', () async {
-    final exceptionServer = VHook<Object?>(null);
-    final exceptionClient = VHook<Object?>(null);
+    final exceptionServer = VHook<Object>.empty();
+    final exceptionClient = VHook<Object>.empty();
 
     //* Test server
     final StreamSubscription<HttpRequest> sub = server!.listen((HttpRequest request) {
@@ -278,7 +299,7 @@ void main() {
         sess.raise(MockException(msg));
       };
       sess.onError = (ServerSession sess, Object ex) {
-        exceptionServer.set(ex);
+        exceptionServer.completeValue(ex);
       };
     });
 
@@ -286,18 +307,15 @@ void main() {
     ClientSession client = ClientSession(url.toString());
     client.send('ANYTHING-1');
 
-    // Wait for handlers to be called
-    await exceptionServer.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-
-    // Check exception
-    exceptionServer.expect(
-      equals(
-        isA<MockException>().having(
-          (MockException e) => e.message,
-          'message',
-          equals('ANYTHING-1'),
-        ),
+    // Wait for handlers to be called and check exception
+    await exceptionServer.expectAsync(
+      isA<MockException>().having(
+        (MockException e) => e.message,
+        'message',
+        equals('ANYTHING-1'),
       ),
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
     );
 
     //* Test client
@@ -315,26 +333,23 @@ void main() {
       sess.raise(MockException(msg));
     };
     client.onError = (ClientSession sess, Object ex) {
-      exceptionClient.set(ex);
+      exceptionClient.completeValue(ex);
     };
 
-    // Wait for handlers to be called
-    await exceptionClient.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-
-    // Check exception
-    exceptionClient.expect(
-      equals(
-        isA<MockException>().having(
-          (MockException e) => e.message,
-          'message',
-          equals('ANYTHING-2'),
-        ),
+    // Wait for handlers to be called and check exception
+    await exceptionClient.expectAsync(
+      isA<MockException>().having(
+        (MockException e) => e.message,
+        'message',
+        equals('ANYTHING-2'),
       ),
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
     );
   });
   test('OnMessage return is send', () async {
-    final msgReceivedFromServer = VHook<String?>(null);
-    final msgReceivedFromClient = VHook<String?>(null);
+    final msgReceivedFromServer = VHook<String>.empty();
+    final msgReceivedFromClient = VHook<String>.empty();
 
     //* Test server
     final StreamSubscription<HttpRequest> sub = server!.listen((HttpRequest request) {
@@ -349,23 +364,24 @@ void main() {
     //? This is not a race condition, because of how the dart eventloop is implemented
     //? The internal 'WebSocket.connect' is scheduled and executed when this strain waits (await)
     client.onMessage = (ClientSession sess, dynamic msg) async {
-      msgReceivedFromServer.set(msg);
+      msgReceivedFromServer.completeValue(msg);
     };
 
     // Send message to trigger onMessage return
     client.send('ANYTHING');
 
-    // Wait for msgs to be received
-    await msgReceivedFromServer.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-
-    // Check received data
-    msgReceivedFromServer.expect(equals('ANYTHING-RETURN-1'));
+    // Wait for msgs to be received and check received data
+    await msgReceivedFromServer.expectAsync(
+      equals('ANYTHING-RETURN-1'),
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
+    );
 
     //* Test client
     sub.onData((HttpRequest request) {
       final ServerSession sess = ServerSession(request);
       sess.onMessage = (ServerSession sess, dynamic msg) async {
-        msgReceivedFromClient.set(msg);
+        msgReceivedFromClient.completeValue(msg);
       };
 
       // Send message to trigger onMessage return
@@ -381,11 +397,12 @@ void main() {
       return 'ANYTHING-RETURN-2';
     };
 
-    // Wait for msgs to be received
-    await msgReceivedFromClient.awaitValue(Duration(seconds: 5), raiseOnTimeout: true);
-
-    // Check received data
-    msgReceivedFromClient.expect(equals('ANYTHING-RETURN-2'));
+    // Wait for msgs to be received and check received data
+    await msgReceivedFromClient.expectAsync(
+      equals('ANYTHING-RETURN-2'),
+      timeout: Duration(seconds: 5),
+      onlyOnCompletion: true,
+    );
 
     // Teardown
     client.close();
