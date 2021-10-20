@@ -27,16 +27,16 @@ Future<List<CompileStatusMessage>> _buildProject(
   ProjectCache cache, {
   bool skipUpdateFiles = false,
 }) async {
-  final Completer<List<CompileStatusMessage>> completer = Completer();
-  final List<CompileStatusMessage> messageCache = [];
+  final VHook<List<CompileStatusMessage>> messageHook = VHook([]);
 
   interface.onStateUpdate = (CompileStatusMessage m) {
-    messageCache.add(m);
+    messageHook.update((p) => [...p, m]);
+
     if (m.status == CompileStatus.done) {
-      completer.complete(messageCache);
+      messageHook.complete();
     }
     if (m.status == CompileStatus.failed) {
-      completer.completeError(StateError(m.payload));
+      messageHook.completeError(StateError(m.payload));
     }
   };
 
@@ -53,7 +53,7 @@ Future<List<CompileStatusMessage>> _buildProject(
 
   await interface.build();
 
-  return await completer.future;
+  return await messageHook.awaitCompletion(Duration(seconds: 5));
 }
 
 Future<void> main() async {
@@ -264,7 +264,7 @@ Future<void> main() async {
       final receivePort = ReceivePort();
       final sendPort = testReceive.sendPort;
       final testSend = receivePort.sendPort;
-      final buildCompleter = Completer<void>();
+      final buildCompleter = VHook<void>.empty();
 
       WorkerInterface.start(sendPort, receivePort);
 
@@ -296,7 +296,7 @@ Future<void> main() async {
       }
 
       await mainInterface.build();
-      await buildCompleter.future;
+      await buildCompleter.awaitCompletion();
 
       expect(await mainInterface.binary, isNotNull);
     });
