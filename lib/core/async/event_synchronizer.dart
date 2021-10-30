@@ -35,7 +35,7 @@ typedef _Subscriber = Future<bool?> Function(dynamic);
 ///
 /// // If we are waiting for a specific response and can ignore other messages, we can use keepAlive.
 /// // It will wait with completion until we receive "THAT'S IT".
-/// // The return value in this case is `String`.
+/// // The return value in this case is "THAT'S IT".
 /// await synchronizer.expect(String, validator: (String resp) => resp == "THAT'S IT", keepAlive: true);
 ///
 /// // Using exchange, we can realize a ping-pong communication.
