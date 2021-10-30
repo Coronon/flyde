@@ -21,6 +21,27 @@ void main() {
     await sync.expect(String, handler: (String resp) => expect(resp, equals('echo')));
   });
 
+  test('Returns the correct result after expected message is received', () async {
+    await sync.request('echo');
+    expect(await sync.expect(String), equals('echo'));
+
+    await sync.request('echo');
+    expect(
+      await sync.expect(String, handler: (String resp) => resp + '1'),
+      equals('echo1'),
+    );
+
+    await sync.request('echo');
+    expect(
+      await sync.expect(
+        String,
+        handler: (String resp) => resp + '1',
+        validator: (String resp) => resp == 'echo',
+      ),
+      equals('echo1'),
+    );
+  });
+
   test('Fails if the wrong type is received', () async {
     await sync.request('echo');
 
