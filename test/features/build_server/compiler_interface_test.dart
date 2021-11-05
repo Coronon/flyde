@@ -264,7 +264,7 @@ Future<void> main() async {
       final receivePort = ReceivePort();
       final sendPort = testReceive.sendPort;
       final testSend = receivePort.sendPort;
-      final buildCompleter = VHook<void>.empty();
+      final buildCompleter = VHook.empty();
 
       WorkerInterface.start(sendPort, receivePort);
 
