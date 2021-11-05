@@ -222,11 +222,11 @@ Future<void> main() async {
 
       WorkerInterface.start(sendPort, receivePort);
 
-      int responses = 0;
+      final responseHook = VHook<int>(0);
 
       testReceive.listen((message) {
         if (message is InterfaceMessage && message.name == 'init') {
-          responses += 1;
+          responseHook.update((int prev) => prev + 1, orElse: ValueContainer(1));
         }
       });
 
@@ -235,7 +235,7 @@ Future<void> main() async {
 
       await Future.delayed(Duration(milliseconds: 100));
 
-      expect(responses, equals(1));
+      responseHook.expect(equals(1));
     });
 
     test('requires init as first call', () async {
