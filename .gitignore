@@ -22,3 +22,6 @@ doc/api/
 .dev/
 flyde-test-lib*/
 coverage/
+
+# Generated binaries
+dist/

@@ -56,8 +56,13 @@ abstract class Session<T> {
   /// Internal delegation handler for received messages
   void _onData(dynamic message) async {
     if (onMessage != null) {
-      final dynamic response = await onMessage!(this as T, message);
-      if (response != null) send(response);
+      try {
+        final dynamic response = await onMessage!(this as T, message);
+        if (response != null) send(response);
+      } catch (e) {
+        raise(e);
+        rethrow;
+      }
     }
   }
 

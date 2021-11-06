@@ -2,18 +2,16 @@
 
 import 'dart:io';
 
+import 'package:test/test.dart';
 import 'package:flyde/core/fs/compiler/installed_compiler.dart';
 import 'package:flyde/core/fs/configs/compiler_config.dart';
-import 'package:flyde/core/fs/file_extension.dart';
-import 'package:flyde/core/fs/search_directory.dart';
-import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:flyde/features/build_server/cache/project_cache.dart';
 import 'package:flyde/features/build_server/compiler.dart';
-import 'package:path/path.dart' as p;
-import 'package:test/test.dart';
 
 import '../../helpers/clear_test_cache_directory.dart';
 import '../../helpers/create_dummy_project_cache.dart';
+import '../../helpers/load_eaxmple_files.dart';
+import '../../helpers/map_example_files.dart';
 
 const _cacheId = 'compiler_test';
 
@@ -38,21 +36,9 @@ Future<void> main() async {
       linkerFlags: ['-flto']);
 
   ProjectCache cache = await createDummyProjectCache(init: true, id: _cacheId);
-  final fileOverview = <String, String>{};
-  final files = await searchDirectory(Directory('./example'), (e) {
-    final isSource = FileExtension.sources.contains(p.extension(e.path));
-    final isHeader = FileExtension.headers.contains(p.extension(e.path));
 
-    if (e is File && (isSource || isHeader)) {
-      return SourceFile.fromFile(0, e, entryDirectory: Directory('./example'));
-    }
-
-    return null;
-  });
-
-  for (final file in files) {
-    fileOverview[file.id] = await file.hash;
-  }
+  final files = await loadExampleFiles();
+  final fileMap = await mapExampleFiles(files);
 
   setUp(() async {
     await clearTestCacheDirectory(id: _cacheId);
@@ -62,7 +48,7 @@ Future<void> main() async {
   tearDown(() async => await clearTestCacheDirectory(id: _cacheId));
 
   test('Finds outdated files', () async {
-    final comp = Compiler(config1, fileOverview, cache);
+    final comp = Compiler(config1, fileMap, cache);
     final old = await comp.outdatedFiles;
 
     expect(old.length, files.length);
@@ -70,7 +56,7 @@ Future<void> main() async {
   });
 
   test('Compiles with all flags', () async {
-    final comp = Compiler(config1, fileOverview, cache);
+    final comp = Compiler(config1, fileMap, cache);
     String out;
     File? exe;
 
@@ -88,7 +74,7 @@ Future<void> main() async {
   });
 
   test('Creates seperate binaries for different configs', () async {
-    final comp = Compiler(config1, fileOverview, cache);
+    final comp = Compiler(config1, fileMap, cache);
     final out = <String>[];
     final exe = <File?>[];
 
@@ -101,7 +87,7 @@ Future<void> main() async {
     exe.add(await comp.lastExecutable);
     out.add(await _run(exe[0]!));
 
-    comp.update(config2, fileOverview);
+    comp.update(config2, fileMap);
     await comp.compile();
 
     exe.add(await comp.lastExecutable);
@@ -112,12 +98,12 @@ Future<void> main() async {
   });
 
   test('Fails when not in sync', () async {
-    final comp = Compiler(config1, fileOverview, cache);
+    final comp = Compiler(config1, fileMap, cache);
     await expectLater(comp.compile(), throwsA(isA<StateError>()));
   });
 
   test('Executable is null if nothing has been compiled', () async {
-    final comp = Compiler(config1, fileOverview, cache);
+    final comp = Compiler(config1, fileMap, cache);
     await expectLater(comp.lastExecutable, completion(equals(null)));
   });
 }

@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:test/test.dart';
 import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:flyde/features/build_server/cache/dependencies/resolve_dependency.dart';
-import 'package:test/test.dart';
 
 void main() {
   final entryDir = Directory('./example');

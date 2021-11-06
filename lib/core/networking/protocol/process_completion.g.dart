@@ -1,29 +1,23 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'authentication.dart';
+part of 'process_completion.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-AuthRequest _$AuthRequestFromJson(Map<String, dynamic> json) => AuthRequest(
-      username: json['username'] as String,
-      password: json['password'] as String,
+ProcessCompletionMessage _$ProcessCompletionMessageFromJson(
+        Map<String, dynamic> json) =>
+    ProcessCompletionMessage(
+      process: _$enumDecode(_$CompletableProcessEnumMap, json['process']),
+      description: json['description'] as String,
     );
 
-Map<String, dynamic> _$AuthRequestToJson(AuthRequest instance) =>
+Map<String, dynamic> _$ProcessCompletionMessageToJson(
+        ProcessCompletionMessage instance) =>
     <String, dynamic>{
-      'username': instance.username,
-      'password': instance.password,
-    };
-
-AuthResponse _$AuthResponseFromJson(Map<String, dynamic> json) => AuthResponse(
-      status: _$enumDecode(_$AuthResponseStatusEnumMap, json['status']),
-    );
-
-Map<String, dynamic> _$AuthResponseToJson(AuthResponse instance) =>
-    <String, dynamic>{
-      'status': _$AuthResponseStatusEnumMap[instance.status],
+      'process': _$CompletableProcessEnumMap[instance.process],
+      'description': instance.description,
     };
 
 K _$enumDecode<K, V>(
@@ -52,8 +46,7 @@ K _$enumDecode<K, V>(
   ).key;
 }
 
-const _$AuthResponseStatusEnumMap = {
-  AuthResponseStatus.required: 'required',
-  AuthResponseStatus.success: 'success',
-  AuthResponseStatus.failure: 'failure',
+const _$CompletableProcessEnumMap = {
+  CompletableProcess.projectInit: 'projectInit',
+  CompletableProcess.fileUpdate: 'fileUpdate',
 };

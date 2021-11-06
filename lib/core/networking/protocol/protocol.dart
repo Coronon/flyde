@@ -1,6 +1,11 @@
 import 'dart:convert';
 
+import 'process_completion.dart';
+import 'project_build.dart';
 import 'authentication.dart';
+import 'compile_status.dart';
+import 'project_update.dart';
+import 'project_init.dart';
 
 /// Function signature of '$.fromJson'
 typedef Deserialize<T> = T Function(Map<String, dynamic>);
@@ -12,9 +17,22 @@ typedef Deserialize<T> = T Function(Map<String, dynamic>);
 class ProtocolDelegate {
   /// A dictionary of all protocol elements and their coresponding deserializers
   static final Map<String, Deserialize> elements = {
+    //* General
+    'ProcessCompletionMessage': (Map<String, dynamic> json) =>
+        ProcessCompletionMessage.fromJson(json),
+
     //* Authentication
     'AuthRequest': (Map<String, dynamic> json) => AuthRequest.fromJson(json),
     'AuthResponse': (Map<String, dynamic> json) => AuthResponse.fromJson(json),
+
+    //* Compile
+    'ProjectUpdateRequest': (Map<String, dynamic> json) => ProjectUpdateRequest.fromJson(json),
+    'ProjectUpdateResponse': (Map<String, dynamic> json) => ProjectUpdateResponse.fromJson(json),
+    'ProjectInitRequest': (Map<String, dynamic> json) => ProjectInitRequest.fromJson(json),
+    'FileUpdate': (Map<String, dynamic> json) => FileUpdate.fromJson(json),
+    'BinaryResponse': (Map<String, dynamic> json) => BinaryResponse.fromJson(json),
+    'CompileStatusMessage<dynamic>': (Map<String, dynamic> json) =>
+        CompileStatusMessage.fromJson(json),
   };
 
   /// Serialize a protocol message to a transmittable message
@@ -33,6 +51,11 @@ class ProtocolDelegate {
       throw ProtocolException("Message does not contain 'type' property");
     }
     final String type = data['type'];
+
+    //* Return primitive strings
+    if (type == 'String' && data['data'] is String) {
+      return data['data'];
+    }
 
     if (!elements.containsKey(type)) {
       throw ProtocolException("'$type' unknown protocol element");

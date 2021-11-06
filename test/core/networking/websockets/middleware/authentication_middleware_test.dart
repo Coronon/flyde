@@ -10,11 +10,11 @@ import '../../../../helpers/mocks/mock_session.dart';
 void main() {
   test('AuthenticationMiddleware does not run on send', () async {
     final session = MockSession();
-    final calledAuthHandler = VHook<bool>(false);
-    final calledNext = VHook<bool>(false);
+    final calledAuthHandler = VHook.empty();
+    final calledNext = VHook.empty();
 
     final MiddlewareFunc authMiddleware = makeAuthenticationMiddleware((AuthRequest request) async {
-      calledAuthHandler.set(true);
+      calledAuthHandler.complete();
       return true;
     });
 
@@ -23,25 +23,25 @@ void main() {
       null,
       MiddlewareAction.send,
       (dynamic msg) async {
-        calledNext.set(true);
+        calledNext.complete();
         return msg;
       },
     );
 
     //* Verify that the middleware did not intercept the message
-    calledAuthHandler.expect(isFalse);
-    calledNext.expect(isTrue);
+    expect(calledAuthHandler.isEmpty, isTrue);
+    await calledNext.awaitCompletion(Duration(seconds: 1));
     expect(response, isNull);
     expect(session.storage, isNot(contains('authenticated')));
   });
 
   test('AuthenticationMiddleware requires authentication', () async {
     final session = MockSession();
-    final calledAuthHandler = VHook<bool>(false);
-    final calledNext = VHook<bool>(false);
+    final calledAuthHandler = VHook.empty();
+    final calledNext = VHook.empty();
 
     final MiddlewareFunc authMiddleware = makeAuthenticationMiddleware((AuthRequest request) async {
-      calledAuthHandler.set(true);
+      calledAuthHandler.complete();
       return true;
     });
 
@@ -50,14 +50,14 @@ void main() {
       'ANYTHING',
       MiddlewareAction.receive,
       (dynamic msg) async {
-        calledNext.set(true);
+        calledNext.complete();
         return msg;
       },
     );
 
     //* Verify that the middleware rejected the message
-    calledAuthHandler.expect(isFalse);
-    calledNext.expect(isFalse);
+    expect(calledAuthHandler.isEmpty, isTrue);
+    expect(calledNext.isEmpty, isTrue);
     expect(response, isA<AuthResponse>());
     response as AuthResponse;
     expect(response.status, equals(AuthResponseStatus.required));
@@ -67,11 +67,11 @@ void main() {
   test('AuthenticationMiddleware lets authed sessions pass', () async {
     final session = MockSession();
     session.storage['authenticated'] = true;
-    final calledAuthHandler = VHook<bool>(false);
-    final calledNext = VHook<bool>(false);
+    final calledAuthHandler = VHook.empty();
+    final calledNext = VHook.empty();
 
     final MiddlewareFunc authMiddleware = makeAuthenticationMiddleware((AuthRequest request) async {
-      calledAuthHandler.set(true);
+      calledAuthHandler.complete();
       return false;
     });
 
@@ -82,14 +82,14 @@ void main() {
       (dynamic msg) async {
         expect(msg, equals('ANYTHING'));
 
-        calledNext.set(true);
+        calledNext.complete();
         return msg;
       },
     );
 
     //* Verify that the middleware let the message through
-    calledAuthHandler.expect(isFalse);
-    calledNext.expect(isTrue);
+    expect(calledAuthHandler.isEmpty, isTrue);
+    await calledNext.awaitCompletion(Duration(seconds: 1));
     expect(response, isA<String>());
     response as String;
     expect(response, equals('ANYTHING'));
@@ -97,14 +97,14 @@ void main() {
 
   test('AuthenticationMiddleware can authenticate session', () async {
     final session = MockSession();
-    final calledAuthHandler = VHook<bool>(false);
-    final calledNext = VHook<bool>(false);
+    final calledAuthHandler = VHook.empty();
+    final calledNext = VHook.empty();
 
     final MiddlewareFunc authMiddleware = makeAuthenticationMiddleware((AuthRequest request) async {
       expect(request.username, equals('testUsername'));
       expect(request.password, equals('testPassword'));
 
-      calledAuthHandler.set(true);
+      calledAuthHandler.complete();
       return true;
     });
 
@@ -113,14 +113,14 @@ void main() {
       AuthRequest(username: 'testUsername', password: 'testPassword'),
       MiddlewareAction.receive,
       (dynamic msg) async {
-        calledNext.set(true);
+        calledNext.complete();
         return msg;
       },
     );
 
     //* Verify that the middleware can accept AuthRequest's
-    calledAuthHandler.expect(isTrue);
-    calledNext.expect(isFalse);
+    await calledAuthHandler.awaitCompletion(Duration(seconds: 1));
+    expect(calledNext.isEmpty, isTrue);
     expect(response, isA<AuthResponse>());
     response as AuthResponse;
     expect(response.status, equals(AuthResponseStatus.success));

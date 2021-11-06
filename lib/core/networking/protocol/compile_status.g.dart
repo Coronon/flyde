@@ -1,29 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'authentication.dart';
+part of 'compile_status.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-AuthRequest _$AuthRequestFromJson(Map<String, dynamic> json) => AuthRequest(
-      username: json['username'] as String,
-      password: json['password'] as String,
+CompileStatusMessage<T> _$CompileStatusMessageFromJson<T>(
+  Map<String, dynamic> json,
+  T Function(Object? json) fromJsonT,
+) =>
+    CompileStatusMessage<T>(
+      status: _$enumDecode(_$CompileStatusEnumMap, json['status']),
+      payload: fromJsonT(json['payload']),
     );
 
-Map<String, dynamic> _$AuthRequestToJson(AuthRequest instance) =>
+Map<String, dynamic> _$CompileStatusMessageToJson<T>(
+  CompileStatusMessage<T> instance,
+  Object? Function(T value) toJsonT,
+) =>
     <String, dynamic>{
-      'username': instance.username,
-      'password': instance.password,
-    };
-
-AuthResponse _$AuthResponseFromJson(Map<String, dynamic> json) => AuthResponse(
-      status: _$enumDecode(_$AuthResponseStatusEnumMap, json['status']),
-    );
-
-Map<String, dynamic> _$AuthResponseToJson(AuthResponse instance) =>
-    <String, dynamic>{
-      'status': _$AuthResponseStatusEnumMap[instance.status],
+      'status': _$CompileStatusEnumMap[instance.status],
+      'payload': toJsonT(instance.payload),
     };
 
 K _$enumDecode<K, V>(
@@ -52,8 +50,10 @@ K _$enumDecode<K, V>(
   ).key;
 }
 
-const _$AuthResponseStatusEnumMap = {
-  AuthResponseStatus.required: 'required',
-  AuthResponseStatus.success: 'success',
-  AuthResponseStatus.failure: 'failure',
+const _$CompileStatusEnumMap = {
+  CompileStatus.waiting: 'waiting',
+  CompileStatus.compiling: 'compiling',
+  CompileStatus.linking: 'linking',
+  CompileStatus.done: 'done',
+  CompileStatus.failed: 'failed',
 };

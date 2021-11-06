@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:test/test.dart';
 import 'package:flyde/core/fs/wrapper/source_file.dart';
 import 'package:flyde/features/build_server/cache/dependencies/find_dependencies.dart';
-import 'package:test/test.dart';
 
 void main() {
   final file = SourceFile.fromFile(0, File('./example/src/main.cpp'));

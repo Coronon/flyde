@@ -80,6 +80,17 @@ class SourceFile {
   String relativePath({String origin = '', bool filename = true}) =>
       p.joinAll([origin, ...path, filename ? '$name.$extension' : '']);
 
+  /// Creates a copy of this file enuring that the data is stored in memory.
+  Future<SourceFile> asMemoryData() async {
+    return SourceFile(
+      entry,
+      path,
+      name,
+      extension,
+      data: await data,
+    );
+  }
+
   /// The content of the file as raw byte data.
   ///
   /// If the constructor was called with `file:` the getter will read
