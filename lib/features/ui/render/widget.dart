@@ -88,7 +88,7 @@ mixin StatefulWidget on Widget {
   /// Called by each [State] field on value changes.
   ///
   /// Do not call directly to avoid unneccessary redraws.
-  void requestUpdate() {
+  void _requestUpdate() {
     updateRequestReceiver.add(WidgetUpdateRequest(line, this));
   }
 }
@@ -118,7 +118,7 @@ class State<T> {
     _value = val;
 
     for (final subscriber in _subscribers) {
-      subscriber.requestUpdate();
+      subscriber._requestUpdate();
     }
   }
 
