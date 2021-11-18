@@ -21,7 +21,9 @@ class Scene {
   /// changes of single [Widget]s.
   final StreamController<WidgetUpdateRequest> _updateController = StreamController();
 
-  Scene(List<Widget> widgets) {
+  final IOSink _outStream;
+
+  Scene(List<Widget> widgets, {IOSink? output}) : _outStream = output ?? stdout {
     _updateController.stream.listen(_handleUpdateRequest);
 
     _importWidgets(widgets);
@@ -32,13 +34,14 @@ class Scene {
   /// of the [Widget] specified in [request].
   void _handleUpdateRequest(WidgetUpdateRequest request) {
     final int lineDifference = (request.line - _widgets.length).abs();
-    final newContent = _widgets[request.line].render().padRight(stdout.terminalColumns);
+    final int width = _outStream == stdout ? stdout.terminalColumns : 200;
+    final newContent = _widgets[request.line].render().padRight(width);
 
-    hideCursor();
-    moveUp(lineDifference);
-    stdout.write(newContent);
-    moveDown(lineDifference);
-    showCursor();
+    hideCursor(sink: _outStream);
+    moveUp(lineDifference, sink: _outStream);
+    _outStream.write(newContent);
+    moveDown(lineDifference, sink: _outStream);
+    showCursor(sink: _outStream);
   }
 
   /// Imports all [Widget]s contained in [widgets] and
@@ -74,8 +77,8 @@ class Scene {
   /// Initially displays the [Scene] on the standard output.
   void show() {
     for (final widget in _widgets) {
-      stdout.write(widget.render());
-      stdout.write('\n');
+      _outStream.write(widget.render());
+      _outStream.write('\n');
     }
   }
 }
