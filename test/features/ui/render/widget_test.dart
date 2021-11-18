@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flyde/features/ui/render/widget.dart';
 import 'package:test/test.dart';
 
+import '../../../helpers/mocks/mock_widget.dart';
 import '../../../helpers/value_hook.dart';
 
 const _initialPrimaryState = '1';
@@ -14,20 +15,20 @@ void main() {
   late StreamController<WidgetUpdateRequest> controller;
   late State<String> state;
   late State<String> inlineState;
-  late _MockWidget widget;
-  late _MockInline inline;
+  late MockWidget widget;
+  late MockInline inline;
 
   setUp(() {
     controller = StreamController();
     state = State(_initialPrimaryState);
     inlineState = State(_initialSecondaryState);
-    widget = _MockWidget(state)
+    widget = MockWidget(state)
       ..updateRequestReceiver = controller.sink
       ..line = 0;
 
-    inline = _MockInline([
-      _MockWidget(inlineState),
-      _MockWidget(State('*')),
+    inline = MockInline([
+      MockWidget(inlineState),
+      MockWidget(State('*')),
     ])
       ..updateRequestReceiver = controller.sink
       ..line = 1;
@@ -68,26 +69,4 @@ void main() {
     await hook.awaitCompletion(Duration(seconds: 1));
     expect(inline.render(), equals('mock-$_changedSecondaryState->mock-*'));
   });
-}
-
-class _MockWidget extends Widget with StatefulWidget {
-  final State<String> content;
-
-  _MockWidget(this.content) {
-    content.subscribe(this);
-  }
-
-  @override
-  String render() {
-    return 'mock-${content.value}';
-  }
-}
-
-class _MockInline extends InlineWidget {
-  _MockInline(List<Widget> body) : super(body);
-
-  @override
-  String render() {
-    return body.map((e) => e.render()).join('->');
-  }
 }
