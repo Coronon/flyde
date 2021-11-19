@@ -9,7 +9,7 @@ import 'package:flyde/features/cli/command/load_command.dart';
 import 'package:flyde/features/cli/command/run_command.dart';
 
 void main(List<String> args) {
-  final runner = CommandRunner('flyde', 'An easy to use C++ distributed compilation framework.')
+  CommandRunner('flyde', 'An easy to use C++ distributed compilation framework.')
     ..addCommand(BuildCommand())
     ..addCommand(LoadCommand())
     ..addCommand(InitCommand())
