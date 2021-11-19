@@ -6,6 +6,7 @@ import 'package:flyde/features/cli/build_command.dart';
 import 'package:flyde/features/cli/create_command.dart';
 import 'package:flyde/features/cli/init_command.dart';
 import 'package:flyde/features/cli/load_command.dart';
+import 'package:flyde/features/cli/run_command.dart';
 
 void main(List<String> args) {
   final runner = CommandRunner('flyde', 'An easy to use C++ distributed compilation framework.')
@@ -13,6 +14,7 @@ void main(List<String> args) {
     ..addCommand(LoadCommand())
     ..addCommand(InitCommand())
     ..addCommand(CreateCommand())
+    ..addCommand(RunCommand())
     ..run(args).catchError((error) {
       if (error is! UsageException) throw error;
       print(error);
