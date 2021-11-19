@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 
 import 'package:flyde/features/cli/build_command.dart';
+import 'package:flyde/features/cli/create_command.dart';
 import 'package:flyde/features/cli/init_command.dart';
 import 'package:flyde/features/cli/load_command.dart';
 
@@ -11,6 +12,7 @@ void main(List<String> args) {
     ..addCommand(BuildCommand())
     ..addCommand(LoadCommand())
     ..addCommand(InitCommand())
+    ..addCommand(CreateCommand())
     ..run(args).catchError((error) {
       if (error is! UsageException) throw error;
       print(error);
