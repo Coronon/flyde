@@ -9,11 +9,11 @@ import 'package:args/command_runner.dart';
 class BuildCommand extends Command {
   /// Command name 'flyde {name} ...'
   @override
-  final name = "build";
+  final name = 'build';
 
   /// Basic description of this command
   @override
-  final description = "Handle builds of the current project.";
+  final description = 'Handle builds of the current project.';
 
   BuildCommand() {
     //* Add command line arguments for this command
