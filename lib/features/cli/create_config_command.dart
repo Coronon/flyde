@@ -17,12 +17,14 @@ class CreateConfigCommand extends Command {
     argParser.addOption(
       'preset',
       abbr: 'p',
+      mandatory: true,
       help: 'Available presets: []',
     );
 
     argParser.addOption(
       'name',
       abbr: 'n',
+      mandatory: true,
       help: 'Name for the new config',
     );
   }

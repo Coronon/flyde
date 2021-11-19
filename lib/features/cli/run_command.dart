@@ -17,6 +17,7 @@ class RunCommand extends Command {
     argParser.addOption(
       'remote',
       abbr: 'r',
+      mandatory: true,
       help: 'Remote to execute command on',
     );
 

@@ -18,12 +18,14 @@ class InitCommand extends Command {
     argParser.addOption(
       'name',
       abbr: 'n',
+      mandatory: true,
       help: 'Name of the new project',
     );
 
     argParser.addOption(
       'server',
       abbr: 's',
+      mandatory: true,
       help: 'Server the new project should be hosted on',
     );
 

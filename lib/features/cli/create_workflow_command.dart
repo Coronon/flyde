@@ -16,6 +16,7 @@ class CreateWorkflowCommand extends Command {
     argParser.addOption(
       'name',
       abbr: 'n',
+      mandatory: true,
       help: 'Name for the new workflow',
     );
   }
