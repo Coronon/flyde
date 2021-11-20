@@ -21,9 +21,22 @@ class Scene {
   /// changes of single [Widget]s.
   final StreamController<WidgetUpdateRequest> _updateController = StreamController();
 
+  /// [IOSink] to use for rendered output.
+  ///
+  /// Default is [stdout]
   final IOSink _outStream;
 
-  Scene(List<Widget> widgets, {IOSink? output}) : _outStream = output ?? stdout {
+  /// Fallback for number of available columns if [_outStream] has no terminal attached.
+  final int _fallbackTerminalColumns;
+
+  /// Creates a new [Scene] with the given [widgets].
+  ///
+  /// If output is not specified [stdout] will be used and
+  /// a value for [fallbackTerminalColumns] must be passed. Otherwise a
+  /// default value of 200 available columns will be used.
+  Scene(List<Widget> widgets, {IOSink? output, int? fallbackTerminalColumns})
+      : _outStream = output ?? stdout,
+        _fallbackTerminalColumns = fallbackTerminalColumns ?? 200 {
     _updateController.stream.listen(_handleUpdateRequest);
 
     _importWidgets(widgets);
@@ -34,7 +47,7 @@ class Scene {
   /// of the [Widget] specified in [request].
   void _handleUpdateRequest(WidgetUpdateRequest request) {
     final int lineDifference = (request.line - _widgets.length).abs();
-    final int width = _outStream == stdout ? stdout.terminalColumns : 200;
+    final int width = _outStream == stdout ? stdout.terminalColumns : _fallbackTerminalColumns;
     final newContent = _widgets[request.line].render().padRight(width);
 
     hideCursor(sink: _outStream);
