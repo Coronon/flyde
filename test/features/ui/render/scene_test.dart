@@ -13,15 +13,22 @@ void main() {
   late IOSink fakeOutStream;
   late StreamController<List<int>> controller;
   late List<Widget> widgets;
+  late State<String> widgetState;
+  const int virtualTerminalWidth = 200;
 
   setUp(() {
+    widgetState = State('state1');
     widgets = [
-      MockWidget(State('state1')),
+      MockWidget(widgetState),
       MockWidget(State('state2')),
     ];
     controller = StreamController();
     fakeOutStream = IOSink(controller.sink);
-    scene = Scene(widgets, output: fakeOutStream);
+    scene = Scene(
+      widgets,
+      output: fakeOutStream,
+      fallbackTerminalColumns: virtualTerminalWidth,
+    );
   });
 
   test('Renders widgets', () async {
@@ -44,5 +51,36 @@ void main() {
 
     hook.expect(hasLength(4));
     hook.expect(orderedEquals(['mock-state1', '\n', 'mock-state2', '\n']));
+  });
+
+  test('Updates related lines on state change', () async {
+    final hook = VHook<List<String>>([]);
+    controller.stream.listen((event) {
+      hook.update(
+        (previous) => [
+          ...previous,
+          String.fromCharCodes(event),
+        ],
+      );
+    });
+    scene.show();
+    widgetState.value = 'state-changed';
+    await hook.awaitValue(
+      timeout: Duration(seconds: 1),
+      condition: (cnt) => cnt.length == 9,
+    );
+
+    hook.expect(hasLength(9));
+    hook.expect(orderedEquals([
+      'mock-state1',
+      '\n',
+      'mock-state2',
+      '\n',
+      '\x1B[?25l',
+      '\x1B[2F',
+      'mock-state-changed'.padRight(virtualTerminalWidth),
+      '\x1B[2E',
+      '\x1B[?25h',
+    ]));
   });
 }
