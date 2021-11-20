@@ -31,13 +31,13 @@
             <td class="headerValue">lcov.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">8</td>
             <td class="headerCovTableEntry">10</td>
-            <td class="headerCovTableEntryLo">0.0 %</td>
+            <td class="headerCovTableEntryMed">80.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-11-18 20:54:13</td>
+            <td class="headerValue">2021-11-20 21:57:09</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -64,14 +64,14 @@
 <a name="2"><span class="lineNum">       2 </span>            : </a>
 <a name="3"><span class="lineNum">       3 </span>            : /// Writes a sequence to [sink] or [stdout] which</a>
 <a name="4"><span class="lineNum">       4 </span>            : /// moves the cursor to the start of the previous line.</a>
-<a name="5"><span class="lineNum">       5 </span><span class="lineNoCov">          0 : void moveUp(int lines, {StringSink? sink}) {</span></a>
-<a name="6"><span class="lineNum">       6 </span><span class="lineNoCov">          0 :   (sink ?? stdout).write('\x1B[${lines}F');</span></a>
+<a name="5"><span class="lineNum">       5 </span><span class="lineCov">          1 : void moveUp(int lines, {StringSink? sink}) {</span></a>
+<a name="6"><span class="lineNum">       6 </span><span class="lineCov">          2 :   (sink ?? stdout).write('\x1B[${lines}F');</span></a>
 <a name="7"><span class="lineNum">       7 </span>            : }</a>
 <a name="8"><span class="lineNum">       8 </span>            : </a>
 <a name="9"><span class="lineNum">       9 </span>            : /// Writes a sequence to [sink] or [stdout] which</a>
 <a name="10"><span class="lineNum">      10 </span>            : /// moves the cursor to the start of the next line.</a>
-<a name="11"><span class="lineNum">      11 </span><span class="lineNoCov">          0 : void moveDown(int lines, {StringSink? sink}) {</span></a>
-<a name="12"><span class="lineNum">      12 </span><span class="lineNoCov">          0 :   (sink ?? stdout).write('\x1B[${lines}E');</span></a>
+<a name="11"><span class="lineNum">      11 </span><span class="lineCov">          1 : void moveDown(int lines, {StringSink? sink}) {</span></a>
+<a name="12"><span class="lineNum">      12 </span><span class="lineCov">          2 :   (sink ?? stdout).write('\x1B[${lines}E');</span></a>
 <a name="13"><span class="lineNum">      13 </span>            : }</a>
 <a name="14"><span class="lineNum">      14 </span>            : </a>
 <a name="15"><span class="lineNum">      15 </span>            : /// Writes a sequence to [sink] or [stdout] which</a>
@@ -82,14 +82,14 @@
 <a name="20"><span class="lineNum">      20 </span>            : </a>
 <a name="21"><span class="lineNum">      21 </span>            : /// Writes a sequence to [sink] or [stdout] which</a>
 <a name="22"><span class="lineNum">      22 </span>            : /// hides the cursor.</a>
-<a name="23"><span class="lineNum">      23 </span><span class="lineNoCov">          0 : void hideCursor({StringSink? sink}) {</span></a>
-<a name="24"><span class="lineNum">      24 </span><span class="lineNoCov">          0 :   (sink ?? stdout).write('\x1B[?25l');</span></a>
+<a name="23"><span class="lineNum">      23 </span><span class="lineCov">          1 : void hideCursor({StringSink? sink}) {</span></a>
+<a name="24"><span class="lineNum">      24 </span><span class="lineCov">          1 :   (sink ?? stdout).write('\x1B[?25l');</span></a>
 <a name="25"><span class="lineNum">      25 </span>            : }</a>
 <a name="26"><span class="lineNum">      26 </span>            : </a>
 <a name="27"><span class="lineNum">      27 </span>            : /// Writes a sequence to [sink] or [stdout] which</a>
 <a name="28"><span class="lineNum">      28 </span>            : /// shows the cursor.</a>
-<a name="29"><span class="lineNum">      29 </span><span class="lineNoCov">          0 : void showCursor({StringSink? sink}) {</span></a>
-<a name="30"><span class="lineNum">      30 </span><span class="lineNoCov">          0 :   (sink ?? stdout).write('\x1B[?25h');</span></a>
+<a name="29"><span class="lineNum">      29 </span><span class="lineCov">          1 : void showCursor({StringSink? sink}) {</span></a>
+<a name="30"><span class="lineNum">      30 </span><span class="lineCov">          1 :   (sink ?? stdout).write('\x1B[?25h');</span></a>
 <a name="31"><span class="lineNum">      31 </span>            : }</a>
 </pre>
       </td>
