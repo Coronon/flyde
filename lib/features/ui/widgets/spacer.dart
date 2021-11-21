@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flyde/core/console/terminal_color.dart';
 import 'package:flyde/features/ui/render/widget.dart';
 import 'package:flyde/features/ui/widgets/label.dart';
 
@@ -13,6 +14,6 @@ class Spacer extends Widget with ContainerWidget {
   @override
   List<Widget> get children => List.filled(
         max(_lines, 1),
-        Label.constant(''),
+        Label.constant('', color: TerminalColor.none),
       );
 }

@@ -8,6 +8,7 @@ enum TerminalColor {
   cyan,
   magenta,
   black,
+  none,
 }
 
 /// Implementation of [TerminalColor] to support [String] manipulation.
@@ -31,6 +32,8 @@ extension TerminalColorImpl on TerminalColor {
         return '\x1B[35m$output\x1B[0m';
       case TerminalColor.black:
         return '\x1B[30m$output\x1B[0m';
+      case TerminalColor.none:
+        return output;
     }
   }
 }

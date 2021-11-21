@@ -45,6 +45,11 @@ void main() {
         TerminalColor.magenta.prepare(testStr),
         equals('\x1B[35m$testStr\x1B[0m'),
       );
+
+      expect(
+        TerminalColor.none.prepare(testStr),
+        equals(testStr),
+      );
     }
   });
 }
