@@ -21,3 +21,12 @@ class MockInline extends InlineWidget {
     return body.map((e) => e.render()).join('->');
   }
 }
+
+class MockContainer extends Widget with ContainerWidget {
+  final State<String> content;
+
+  MockContainer(this.content);
+
+  @override
+  List<Widget> get children => [MockWidget(content), MockWidget(content)];
+}

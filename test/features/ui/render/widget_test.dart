@@ -69,4 +69,9 @@ void main() {
     await hook.awaitCompletion(Duration(seconds: 1));
     expect(inline.render(), equals('mock-$_changedSecondaryState->mock-*'));
   });
+
+  test('Container widget cannot be rendered', () {
+    final container = MockContainer(State('any'));
+    expect(container.render, throwsStateError);
+  });
 }
