@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-11-21 22:49:48</td>
+            <td class="headerValue">2021-11-21 23:09:12</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -61,13 +61,13 @@
 <pre class="sourceHeading">          Line data    Source code</pre>
 <pre class="source">
 <a name="1"><span class="lineNum">       1 </span>            : /// Removes all ANSI sequences from [str] and returns it's resulting length</a>
-<a name="2"><span class="lineNum">       2 </span><span class="lineCov">          1 : int getDisplayedLength(String str) {</span></a>
-<a name="3"><span class="lineNum">       3 </span><span class="lineCov">          3 :   return str.replaceAll(RegExp('\x1B[[0-9]+[a-zA-Z]'), '').length;</span></a>
+<a name="2"><span class="lineNum">       2 </span><span class="lineCov">          2 : int getDisplayedLength(String str) {</span></a>
+<a name="3"><span class="lineNum">       3 </span><span class="lineCov">          6 :   return str.replaceAll(RegExp('\x1B[[0-9]+[a-zA-Z]'), '').length;</span></a>
 <a name="4"><span class="lineNum">       4 </span>            : }</a>
 <a name="5"><span class="lineNum">       5 </span>            : </a>
 <a name="6"><span class="lineNum">       6 </span>            : extension DisplayedLength on String {</a>
 <a name="7"><span class="lineNum">       7 </span>            :   /// The length of this [String] without ANSI escape sequences</a>
-<a name="8"><span class="lineNum">       8 </span><span class="lineCov">          2 :   int get displayedLength =&gt; getDisplayedLength(this);</span></a>
+<a name="8"><span class="lineNum">       8 </span><span class="lineCov">          4 :   int get displayedLength =&gt; getDisplayedLength(this);</span></a>
 <a name="9"><span class="lineNum">       9 </span>            : }</a>
 </pre>
       </td>
