@@ -13,7 +13,9 @@ class Label extends Widget with StatefulWidget {
   /// The color of the [_text].
   final State<TerminalColor> _color;
 
-  Label(this._text, this._color, this._bold) {
+  Label(this._text, {State<TerminalColor>? color, State<bool>? bold})
+      : _color = color ?? State(TerminalColor.white),
+        _bold = bold ?? State(false) {
     _text.subscribe(this);
     _color.subscribe(this);
     _bold.subscribe(this);
