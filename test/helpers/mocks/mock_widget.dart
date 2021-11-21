@@ -2,13 +2,18 @@ import 'package:flyde/features/ui/render/widget.dart';
 
 class MockWidget extends Widget with StatefulWidget {
   final State<String> content;
+  final bool straightForwardContent;
 
-  MockWidget(this.content) {
+  MockWidget(this.content, {this.straightForwardContent = false}) {
     content.subscribe(this);
   }
 
   @override
   String render() {
+    if (straightForwardContent) {
+      return content.value;
+    }
+
     return 'mock-${content.value}';
   }
 }
