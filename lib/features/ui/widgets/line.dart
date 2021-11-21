@@ -8,6 +8,8 @@ import 'package:flyde/features/ui/render/widget.dart';
 ///
 /// If a `width` parameter is passed to the constructor, each child [Widget] which
 /// is smaller in width will be padded according to `alignment` to match the required width.
+///
+/// A [Line] does not support rendering container (-> multi-line) [Widget]s for obvious reasons.
 class Line extends InlineWidget {
   /// The [Widget] used to separate the child [Widget]s
   final Widget _separator;
