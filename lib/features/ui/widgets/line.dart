@@ -32,6 +32,11 @@ class Line extends InlineWidget {
   @override
   String render() {
     final rendered = body.map((e) => e.render());
+
+    if (_width < 0) {
+      return rendered.join(_separator.render());
+    }
+
     final displayedWidths = rendered.map(getDisplayedLength);
     final minWidth = displayedWidths.reduce(max);
     final width = max(minWidth, _width);
