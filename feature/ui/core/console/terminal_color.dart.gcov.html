@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-11-23 20:50:51</td>
+            <td class="headerValue">2021-11-23 21:25:13</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -61,7 +61,7 @@
 <pre class="sourceHeading">          Line data    Source code</pre>
 <pre class="source">
 <a name="1"><span class="lineNum">       1 </span>            : /// Enumeration of colors available in standard terminals.</a>
-<a name="2"><span class="lineNum">       2 </span><span class="lineCov">          5 : enum TerminalColor {</span></a>
+<a name="2"><span class="lineNum">       2 </span><span class="lineCov">          7 : enum TerminalColor {</span></a>
 <a name="3"><span class="lineNum">       3 </span>            :   white,</a>
 <a name="4"><span class="lineNum">       4 </span>            :   red,</a>
 <a name="5"><span class="lineNum">       5 </span>            :   green,</a>
@@ -76,10 +76,10 @@
 <a name="14"><span class="lineNum">      14 </span>            : /// Implementation of [TerminalColor] to support [String] manipulation.</a>
 <a name="15"><span class="lineNum">      15 </span>            : extension TerminalColorImpl on TerminalColor {</a>
 <a name="16"><span class="lineNum">      16 </span>            :   /// Prepares [output] to be displayed colorful on the terminal.</a>
-<a name="17"><span class="lineNum">      17 </span><span class="lineCov">          4 :   String prepare(String output) {</span></a>
+<a name="17"><span class="lineNum">      17 </span><span class="lineCov">          5 :   String prepare(String output) {</span></a>
 <a name="18"><span class="lineNum">      18 </span>            :     switch (this) {</a>
-<a name="19"><span class="lineNum">      19 </span><span class="lineCov">          4 :       case TerminalColor.white:</span></a>
-<a name="20"><span class="lineNum">      20 </span><span class="lineCov">          2 :         return '\x1B[37m$output\x1B[0m';</span></a>
+<a name="19"><span class="lineNum">      19 </span><span class="lineCov">          5 :       case TerminalColor.white:</span></a>
+<a name="20"><span class="lineNum">      20 </span><span class="lineCov">          3 :         return '\x1B[37m$output\x1B[0m';</span></a>
 <a name="21"><span class="lineNum">      21 </span><span class="lineCov">          4 :       case TerminalColor.red:</span></a>
 <a name="22"><span class="lineNum">      22 </span><span class="lineCov">          1 :         return '\x1B[31m$output\x1B[0m';</span></a>
 <a name="23"><span class="lineNum">      23 </span><span class="lineCov">          4 :       case TerminalColor.green:</span></a>
