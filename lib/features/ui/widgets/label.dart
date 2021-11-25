@@ -1,6 +1,6 @@
-import 'package:flyde/core/console/terminal_color.dart';
-import 'package:flyde/core/console/bold.dart';
-import 'package:flyde/features/ui/render/widget.dart';
+import '../../../core/console/terminal_color.dart';
+import '../../../core/console/bold.dart';
+import '../render/widget.dart';
 
 /// A [Widget] which displays non-static styled text.
 class Label extends Widget with StatefulWidget {

@@ -1,4 +1,4 @@
-import 'package:flyde/features/ui/render/widget.dart';
+import '../render/widget.dart';
 
 /// Simple progress bar widget.
 class ProgressBar extends Widget with StatefulWidget {

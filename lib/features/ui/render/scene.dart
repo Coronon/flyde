@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flyde/core/console/cursor.dart';
-import 'package:flyde/features/ui/render/widget.dart';
+import '../../../core/console/cursor.dart';
+import 'widget.dart';
 
 /// A [Scene] is the default renderer for [Widget]s.
 ///

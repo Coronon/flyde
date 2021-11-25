@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:flyde/core/console/displayed_length.dart';
-import 'package:flyde/core/console/text_alignment.dart';
-import 'package:flyde/features/ui/render/widget.dart';
+import '../../../core/console/displayed_length.dart';
+import '../../../core/console/text_alignment.dart';
+import '../render/widget.dart';
 
 /// A line combines multiple [Widget]s in one line and adds a separator between them.
 ///

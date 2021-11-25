@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:flyde/core/console/terminal_color.dart';
-import 'package:flyde/features/ui/render/widget.dart';
-import 'package:flyde/features/ui/widgets/label.dart';
+import '../../../core/console/terminal_color.dart';
+import '../render/widget.dart';
+import 'label.dart';
 
 /// Spacer element which resolves to a bunch of empty lines.
 class Spacer extends Widget with ContainerWidget {

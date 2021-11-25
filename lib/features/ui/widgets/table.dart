@@ -1,8 +1,8 @@
-import 'package:flyde/core/console/text_alignment.dart';
-import 'package:flyde/core/list/insert_between.dart';
-import 'package:flyde/features/ui/render/widget.dart';
-import 'package:flyde/features/ui/widgets/label.dart';
-import 'package:flyde/features/ui/widgets/line.dart';
+import '../../../core/console/text_alignment.dart';
+import '../../../core/list/insert_between.dart';
+import '../render/widget.dart';
+import 'label.dart';
+import 'line.dart';
 
 /// Creates a table like widget with cell dividers and fixed cell width.
 ///
