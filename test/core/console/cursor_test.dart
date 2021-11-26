@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flyde/core/console/cursor.dart';
 import 'package:test/test.dart';
+
+import 'package:flyde/core/console/cursor.dart';
 
 void main() {
   late StreamController<List<int>> controller;

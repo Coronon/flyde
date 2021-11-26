@@ -1,7 +1,8 @@
+import 'package:test/test.dart';
+
 import 'package:flyde/core/console/bold.dart';
 import 'package:flyde/core/console/displayed_length.dart';
 import 'package:flyde/core/console/terminal_color.dart';
-import 'package:test/test.dart';
 
 void main() {
   const testStrings = ['hello', 'world', '42'];

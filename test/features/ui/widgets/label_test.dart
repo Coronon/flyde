@@ -1,9 +1,10 @@
 import 'dart:async';
 
+import 'package:test/test.dart';
+
 import 'package:flyde/core/console/terminal_color.dart';
 import 'package:flyde/features/ui/render/widget.dart';
 import 'package:flyde/features/ui/widgets/label.dart';
-import 'package:test/test.dart';
 
 void main() {
   test('Renders colorful and bold text', () {

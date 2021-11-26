@@ -1,7 +1,8 @@
+import 'package:test/test.dart';
+
 import 'package:flyde/core/console/text_alignment.dart';
 import 'package:flyde/features/ui/render/widget.dart';
 import 'package:flyde/features/ui/widgets/line.dart';
-import 'package:test/test.dart';
 
 import '../../../helpers/mocks/mock_widget.dart';
 

@@ -1,8 +1,9 @@
 import 'dart:async';
 
+import 'package:test/test.dart';
+
 import 'package:flyde/features/ui/render/widget.dart';
 import 'package:flyde/features/ui/widgets/progress_bar.dart';
-import 'package:test/test.dart';
 
 String _constructBar(int highlighted, int decent, int percent) =>
     '${''.padLeft(highlighted, '█')}${''.padLeft(decent, '▒')} | $percent%';

@@ -1,5 +1,6 @@
-import 'package:flyde/core/console/bold.dart';
 import 'package:test/test.dart';
+
+import 'package:flyde/core/console/bold.dart';
 
 void main() {
   test('Applies ANSI code to print bold text to string', () {

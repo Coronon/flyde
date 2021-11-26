@@ -1,5 +1,6 @@
-import 'package:flyde/core/console/terminal_color.dart';
 import 'package:test/test.dart';
+
+import 'package:flyde/core/console/terminal_color.dart';
 
 void main() {
   const testStrings = ['hello', 'world', 'Hello, World!'];

@@ -1,6 +1,7 @@
+import 'package:test/test.dart';
+
 import 'package:flyde/features/ui/widgets/label.dart';
 import 'package:flyde/features/ui/widgets/spacer.dart';
-import 'package:test/test.dart';
 
 void main() {
   test('Resolves to label widgets', () {
