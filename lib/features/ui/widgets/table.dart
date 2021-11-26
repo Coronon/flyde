@@ -9,7 +9,7 @@ import 'line.dart';
 /// ```dart
 ///Table(
 ///  bodyAlignment: TextAlignment.center,
-///  cellWidth: 40,
+///  cellWidth: 20,
 ///  head: [
 ///    Label.constant('Item1', bold: true),
 ///    Label.constant('Item1', bold: true),
@@ -33,11 +33,11 @@ import 'line.dart';
 /// renders to
 ///
 ///```bash
-///                  Item1                  │                   Item1                  │                   Item1
-///──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-///                Child1.1                 │                 Child1.2                 │                 Child1.3
-///──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-///                Child2.1                 │                 Child2.2                 │                 Child2.3
+///        Item1        │         Item1        │         Item1
+///──────────────────────────────────────────────────────────────────
+///      Child1.1       │       Child1.2       │       Child1.3
+///──────────────────────────────────────────────────────────────────
+///      Child2.1       │       Child2.2       │       Child2.3
 /// ```
 class Table extends Widget with ContainerWidget {
   /// The [Widget]s used to create the head row.
