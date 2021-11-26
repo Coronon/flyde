@@ -1,13 +1,13 @@
 import 'dart:io';
 
 /// Writes a sequence to [sink] or [stdout] which
-/// moves the cursor to the start of the previous line.
+/// moves the cursor [lines] lines up and places it at the first column.
 void moveUp(int lines, {StringSink? sink}) {
   (sink ?? stdout).write('\x1B[${lines}F');
 }
 
 /// Writes a sequence to [sink] or [stdout] which
-/// moves the cursor to the start of the next line.
+/// moves the cursor [lines] lines down and places it at the first column.
 void moveDown(int lines, {StringSink? sink}) {
   (sink ?? stdout).write('\x1B[${lines}E');
 }
