@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-11-26 17:19:53</td>
+            <td class="headerValue">2021-11-26 17:22:52</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -63,13 +63,13 @@
 <a name="1"><span class="lineNum">       1 </span>            : import 'dart:io';</a>
 <a name="2"><span class="lineNum">       2 </span>            : </a>
 <a name="3"><span class="lineNum">       3 </span>            : /// Writes a sequence to [sink] or [stdout] which</a>
-<a name="4"><span class="lineNum">       4 </span>            : /// moves the cursor to the start of the previous line.</a>
+<a name="4"><span class="lineNum">       4 </span>            : /// moves the cursor [lines] lines up and places it at the first column.</a>
 <a name="5"><span class="lineNum">       5 </span><span class="lineCov">          2 : void moveUp(int lines, {StringSink? sink}) {</span></a>
 <a name="6"><span class="lineNum">       6 </span><span class="lineCov">          4 :   (sink ?? stdout).write('\x1B[${lines}F');</span></a>
 <a name="7"><span class="lineNum">       7 </span>            : }</a>
 <a name="8"><span class="lineNum">       8 </span>            : </a>
 <a name="9"><span class="lineNum">       9 </span>            : /// Writes a sequence to [sink] or [stdout] which</a>
-<a name="10"><span class="lineNum">      10 </span>            : /// moves the cursor to the start of the next line.</a>
+<a name="10"><span class="lineNum">      10 </span>            : /// moves the cursor [lines] lines down and places it at the first column.</a>
 <a name="11"><span class="lineNum">      11 </span><span class="lineCov">          2 : void moveDown(int lines, {StringSink? sink}) {</span></a>
 <a name="12"><span class="lineNum">      12 </span><span class="lineCov">          4 :   (sink ?? stdout).write('\x1B[${lines}E');</span></a>
 <a name="13"><span class="lineNum">      13 </span>            : }</a>
