@@ -37,6 +37,6 @@ class Label extends Widget with StatefulWidget {
   @override
   String render() {
     final content = _color.value.prepare(_text.value);
-    return _bold.value ? content.bold() : content;
+    return _bold.value ? content.bold : content;
   }
 }

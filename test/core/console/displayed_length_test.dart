@@ -9,7 +9,7 @@ void main() {
   test('Can remove any ANSI codes from the string', () {
     for (final testStr in testStrings) {
       expect(
-        getDisplayedLength(testStr.bold()),
+        getDisplayedLength(testStr.bold),
         equals(testStr.length),
       );
 
