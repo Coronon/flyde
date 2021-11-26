@@ -20,10 +20,15 @@ class Line extends InlineWidget {
   /// The alignment of each child which has a width less than the minimum width
   final TextAlignment _alignment;
 
+  /// Value used as default width for each child.
+  ///
+  /// Indicates that no further padding should be applied.
+  static const int _defaultWidth = -1;
+
   Line(
     List<Widget> body,
     this._separator, {
-    int width = -1,
+    int width = _defaultWidth,
     TextAlignment alignment = TextAlignment.left,
   })  : _width = width,
         _alignment = alignment,
@@ -33,7 +38,7 @@ class Line extends InlineWidget {
   String render() {
     final rendered = body.map((e) => e.render());
 
-    if (_width < 0) {
+    if (_width <= _defaultWidth) {
       return rendered.join(_separator.render());
     }
 
