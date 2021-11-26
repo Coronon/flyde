@@ -39,15 +39,17 @@ void main() {
   });
 
   test('Requests update on state change', () async {
-    final hook = VHook.empty();
+    final hook = VHook<int>.empty();
 
     controller.stream.listen((event) {
-      expect(event.line, equals(0));
-      hook.complete();
+      hook.completeValue(event.line);
     });
 
     state.value = _changedPrimaryState;
-    await hook.awaitCompletion(Duration(seconds: 1));
+    await hook.awaitValue(
+      timeout: Duration(seconds: 1),
+      condition: (line) => line == 0,
+    );
     expect(widget.content.value, equals(_changedPrimaryState));
     expect(widget.render(), equals('mock-$_changedPrimaryState'));
   });
@@ -57,16 +59,18 @@ void main() {
   });
 
   test('Children of inline widgets respond to state updates', () async {
-    final hook = VHook.empty();
+    final hook = VHook<int>.empty();
 
     inline.syncBody();
     controller.stream.listen((event) {
-      expect(event.line, equals(1));
-      hook.complete();
+      hook.completeValue(event.line);
     });
 
     inlineState.value = _changedSecondaryState;
-    await hook.awaitCompletion(Duration(seconds: 1));
+    await hook.awaitValue(
+      timeout: Duration(seconds: 1),
+      condition: (line) => line == 1,
+    );
     expect(inline.render(), equals('mock-$_changedSecondaryState->mock-*'));
   });
 
