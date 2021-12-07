@@ -74,11 +74,26 @@ class Table extends Widget with ContainerWidget {
 
   @override
   List<Widget> get children {
-    return [
+    final List<Widget> widgets = [
       Line(_head, _verticalDivider, width: _cellWidth, alignment: TextAlignment.center),
       _horizontalDivider,
       ..._composeBody()
     ];
+
+    for (final child in widgets) {
+      child.minWidth = _fullWidth;
+      child.maxWidth = _fullWidth;
+    }
+
+    return widgets;
+  }
+
+  /// The width of the whole table widget.
+  int get _fullWidth {
+    final int content = _cellWidth * _head.length;
+    final int divider = (_head.length - 1) * 3;
+
+    return content + divider;
   }
 
   /// Creates the table rows and inserts the dividing lines.
@@ -93,7 +108,7 @@ class Table extends Widget with ContainerWidget {
   /// The [Widget] used to divide cells vertically.
   Widget get _horizontalDivider {
     // Combined width of each cell + combined width of the dividers.
-    final int totalLineWidth = _cellWidth * _head.length + (_head.length - 1) * 3;
+    final int totalLineWidth = _fullWidth;
 
     return Label.constant(
       ''.padRight(totalLineWidth, '─'),
