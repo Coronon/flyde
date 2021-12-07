@@ -96,15 +96,15 @@ class Scene {
     final String content = widget.render();
     final int length = content.displayedLength;
 
-    if (widget.maxWidth != null && widget.maxWidth! > length) {
+    if (widget.maxWidth != null && widget.maxWidth! < length) {
       throw StateError(
-        'The widget is smaller than expected. Expected: ${widget.maxWidth!}. Actual: $length',
+        'The widget is wider than expected. Expected: ${widget.maxWidth}. Actual: $length',
       );
     }
 
-    if (widget.minWidth != null && widget.minWidth! < length) {
+    if (widget.minWidth != null && widget.minWidth! > length) {
       throw StateError(
-        'The widget is wider than expected. Expected: ${widget.maxWidth!}. Actual: $length',
+        'The widget is smaller than expected. Expected: ${widget.minWidth}. Actual: $length',
       );
     }
 
