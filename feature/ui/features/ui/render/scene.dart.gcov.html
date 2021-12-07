@@ -31,13 +31,13 @@
             <td class="headerValue">lcov.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">27</td>
-            <td class="headerCovTableEntry">30</td>
-            <td class="headerCovTableEntryHi">90.0 %</td>
+            <td class="headerCovTableEntry">32</td>
+            <td class="headerCovTableEntry">39</td>
+            <td class="headerCovTableEntryMed">82.1 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-11-26 23:20:35</td>
+            <td class="headerValue">2021-12-07 19:06:10</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -63,100 +63,124 @@
 <a name="1"><span class="lineNum">       1 </span>            : import 'dart:async';</a>
 <a name="2"><span class="lineNum">       2 </span>            : import 'dart:io';</a>
 <a name="3"><span class="lineNum">       3 </span>            : </a>
-<a name="4"><span class="lineNum">       4 </span>            : import '../../../core/console/cursor.dart';</a>
-<a name="5"><span class="lineNum">       5 </span>            : import 'widget.dart';</a>
-<a name="6"><span class="lineNum">       6 </span>            : </a>
-<a name="7"><span class="lineNum">       7 </span>            : /// A [Scene] is the default renderer for [Widget]s.</a>
-<a name="8"><span class="lineNum">       8 </span>            : ///</a>
-<a name="9"><span class="lineNum">       9 </span>            : /// [Scene] renders and displays [Widget]s on the</a>
-<a name="10"><span class="lineNum">      10 </span>            : /// standard output. For [Scene] to work properly</a>
-<a name="11"><span class="lineNum">      11 </span>            : /// [stdout] has to have a terminal attached.</a>
-<a name="12"><span class="lineNum">      12 </span>            : class Scene {</a>
-<a name="13"><span class="lineNum">      13 </span>            :   /// [List] of widgets to display.</a>
-<a name="14"><span class="lineNum">      14 </span>            :   ///</a>
-<a name="15"><span class="lineNum">      15 </span>            :   /// Contains all [Widget]s, which can be more</a>
-<a name="16"><span class="lineNum">      16 </span>            :   /// than passed to the constructor if one of them</a>
-<a name="17"><span class="lineNum">      17 </span>            :   /// is a [ContainerWidget].</a>
-<a name="18"><span class="lineNum">      18 </span>            :   final List&lt;Widget&gt; _widgets = [];</a>
-<a name="19"><span class="lineNum">      19 </span>            : </a>
-<a name="20"><span class="lineNum">      20 </span>            :   /// A [StreamController] to manage the stream of update requests on state</a>
-<a name="21"><span class="lineNum">      21 </span>            :   /// changes of single [Widget]s.</a>
-<a name="22"><span class="lineNum">      22 </span>            :   final StreamController&lt;WidgetUpdateRequest&gt; _updateController = StreamController();</a>
-<a name="23"><span class="lineNum">      23 </span>            : </a>
-<a name="24"><span class="lineNum">      24 </span>            :   /// [IOSink] to use for rendered output.</a>
-<a name="25"><span class="lineNum">      25 </span>            :   ///</a>
-<a name="26"><span class="lineNum">      26 </span>            :   /// Default is [stdout]</a>
-<a name="27"><span class="lineNum">      27 </span>            :   final IOSink _outStream;</a>
-<a name="28"><span class="lineNum">      28 </span>            : </a>
-<a name="29"><span class="lineNum">      29 </span>            :   /// Fallback for number of available columns if [_outStream] has no terminal attached.</a>
-<a name="30"><span class="lineNum">      30 </span>            :   final int _fallbackTerminalColumns;</a>
-<a name="31"><span class="lineNum">      31 </span>            : </a>
-<a name="32"><span class="lineNum">      32 </span>            :   /// Creates a new [Scene] with the given [widgets].</a>
-<a name="33"><span class="lineNum">      33 </span>            :   ///</a>
-<a name="34"><span class="lineNum">      34 </span>            :   /// If output is not specified [stdout] will be used and</a>
-<a name="35"><span class="lineNum">      35 </span>            :   /// a value for [fallbackTerminalColumns] must be passed. Otherwise a</a>
-<a name="36"><span class="lineNum">      36 </span>            :   /// default value of 200 available columns will be used.</a>
-<a name="37"><span class="lineNum">      37 </span><span class="lineCov">          1 :   Scene(List&lt;Widget&gt; widgets, {IOSink? output, int? fallbackTerminalColumns})</span></a>
-<a name="38"><span class="lineNum">      38 </span><span class="lineNoCov">          0 :       : _outStream = output ?? stdout,</span></a>
-<a name="39"><span class="lineNum">      39 </span>            :         _fallbackTerminalColumns = fallbackTerminalColumns ?? 200 {</a>
-<a name="40"><span class="lineNum">      40 </span><span class="lineCov">          4 :     _updateController.stream.listen(_handleUpdateRequest);</span></a>
-<a name="41"><span class="lineNum">      41 </span>            : </a>
-<a name="42"><span class="lineNum">      42 </span><span class="lineCov">          1 :     _importWidgets(widgets);</span></a>
-<a name="43"><span class="lineNum">      43 </span><span class="lineCov">          1 :     _setup();</span></a>
-<a name="44"><span class="lineNum">      44 </span>            :   }</a>
-<a name="45"><span class="lineNum">      45 </span>            : </a>
-<a name="46"><span class="lineNum">      46 </span>            :   /// Redraws the parts of the scene which are affeced by the change</a>
-<a name="47"><span class="lineNum">      47 </span>            :   /// of the [Widget] specified in [request].</a>
-<a name="48"><span class="lineNum">      48 </span><span class="lineCov">          1 :   void _handleUpdateRequest(WidgetUpdateRequest request) {</span></a>
-<a name="49"><span class="lineNum">      49 </span><span class="lineCov">          5 :     final int lineDifference = (request.line - _widgets.length).abs();</span></a>
-<a name="50"><span class="lineNum">      50 </span><span class="lineCov">          4 :     final int width = _outStream == stdout ? stdout.terminalColumns : _fallbackTerminalColumns;</span></a>
-<a name="51"><span class="lineNum">      51 </span><span class="lineCov">          5 :     final newContent = _widgets[request.line].render().padRight(width);</span></a>
-<a name="52"><span class="lineNum">      52 </span>            : </a>
-<a name="53"><span class="lineNum">      53 </span><span class="lineCov">          2 :     hideCursor(sink: _outStream);</span></a>
-<a name="54"><span class="lineNum">      54 </span><span class="lineCov">          2 :     moveUp(lineDifference, sink: _outStream);</span></a>
-<a name="55"><span class="lineNum">      55 </span><span class="lineCov">          2 :     _outStream.write(newContent);</span></a>
-<a name="56"><span class="lineNum">      56 </span><span class="lineCov">          2 :     moveDown(lineDifference, sink: _outStream);</span></a>
-<a name="57"><span class="lineNum">      57 </span><span class="lineCov">          2 :     showCursor(sink: _outStream);</span></a>
-<a name="58"><span class="lineNum">      58 </span>            :   }</a>
-<a name="59"><span class="lineNum">      59 </span>            : </a>
-<a name="60"><span class="lineNum">      60 </span>            :   /// Imports all [Widget]s contained in [widgets] and</a>
-<a name="61"><span class="lineNum">      61 </span>            :   /// possible children of [ContainerWidget]s.</a>
-<a name="62"><span class="lineNum">      62 </span><span class="lineCov">          1 :   void _importWidgets(List&lt;Widget&gt; widgets) {</span></a>
-<a name="63"><span class="lineNum">      63 </span><span class="lineCov">          2 :     for (final widget in widgets) {</span></a>
-<a name="64"><span class="lineNum">      64 </span><span class="lineCov">          1 :       if (widget is ContainerWidget) {</span></a>
-<a name="65"><span class="lineNum">      65 </span><span class="lineNoCov">          0 :         _importWidgets(widget.children);</span></a>
-<a name="66"><span class="lineNum">      66 </span>            :       } else {</a>
-<a name="67"><span class="lineNum">      67 </span><span class="lineCov">          2 :         _widgets.add(widget);</span></a>
-<a name="68"><span class="lineNum">      68 </span>            :       }</a>
-<a name="69"><span class="lineNum">      69 </span>            :     }</a>
-<a name="70"><span class="lineNum">      70 </span>            :   }</a>
-<a name="71"><span class="lineNum">      71 </span>            : </a>
-<a name="72"><span class="lineNum">      72 </span>            :   /// Gives each [Widget] the corresponding line number and</a>
-<a name="73"><span class="lineNum">      73 </span>            :   /// if neccessary connects the notification stream.</a>
-<a name="74"><span class="lineNum">      74 </span><span class="lineCov">          1 :   void _setup() {</span></a>
-<a name="75"><span class="lineNum">      75 </span>            :     int line = 0;</a>
-<a name="76"><span class="lineNum">      76 </span>            : </a>
-<a name="77"><span class="lineNum">      77 </span><span class="lineCov">          2 :     for (final widget in _widgets) {</span></a>
-<a name="78"><span class="lineNum">      78 </span><span class="lineCov">          2 :       widget.line = line++;</span></a>
-<a name="79"><span class="lineNum">      79 </span>            : </a>
-<a name="80"><span class="lineNum">      80 </span><span class="lineCov">          1 :       if (widget is StatefulWidget) {</span></a>
-<a name="81"><span class="lineNum">      81 </span><span class="lineCov">          3 :         widget.updateRequestReceiver = _updateController.sink;</span></a>
-<a name="82"><span class="lineNum">      82 </span>            :       }</a>
-<a name="83"><span class="lineNum">      83 </span>            : </a>
-<a name="84"><span class="lineNum">      84 </span><span class="lineCov">          1 :       if (widget is InlineWidget) {</span></a>
-<a name="85"><span class="lineNum">      85 </span><span class="lineNoCov">          0 :         widget.syncBody();</span></a>
-<a name="86"><span class="lineNum">      86 </span>            :       }</a>
-<a name="87"><span class="lineNum">      87 </span>            :     }</a>
-<a name="88"><span class="lineNum">      88 </span>            :   }</a>
-<a name="89"><span class="lineNum">      89 </span>            : </a>
-<a name="90"><span class="lineNum">      90 </span>            :   /// Initially displays the [Scene] on the standard output.</a>
-<a name="91"><span class="lineNum">      91 </span><span class="lineCov">          1 :   void show() {</span></a>
-<a name="92"><span class="lineNum">      92 </span><span class="lineCov">          2 :     for (final widget in _widgets) {</span></a>
-<a name="93"><span class="lineNum">      93 </span><span class="lineCov">          3 :       _outStream.write(widget.render());</span></a>
-<a name="94"><span class="lineNum">      94 </span><span class="lineCov">          2 :       _outStream.write('\n');</span></a>
-<a name="95"><span class="lineNum">      95 </span>            :     }</a>
-<a name="96"><span class="lineNum">      96 </span>            :   }</a>
-<a name="97"><span class="lineNum">      97 </span>            : }</a>
+<a name="4"><span class="lineNum">       4 </span>            : import '../../../core/console/displayed_length.dart';</a>
+<a name="5"><span class="lineNum">       5 </span>            : import '../../../core/console/cursor.dart';</a>
+<a name="6"><span class="lineNum">       6 </span>            : import 'widget.dart';</a>
+<a name="7"><span class="lineNum">       7 </span>            : </a>
+<a name="8"><span class="lineNum">       8 </span>            : /// A [Scene] is the default renderer for [Widget]s.</a>
+<a name="9"><span class="lineNum">       9 </span>            : ///</a>
+<a name="10"><span class="lineNum">      10 </span>            : /// [Scene] renders and displays [Widget]s on the</a>
+<a name="11"><span class="lineNum">      11 </span>            : /// standard output. For [Scene] to work properly</a>
+<a name="12"><span class="lineNum">      12 </span>            : /// [stdout] has to have a terminal attached.</a>
+<a name="13"><span class="lineNum">      13 </span>            : class Scene {</a>
+<a name="14"><span class="lineNum">      14 </span>            :   /// [List] of widgets to display.</a>
+<a name="15"><span class="lineNum">      15 </span>            :   ///</a>
+<a name="16"><span class="lineNum">      16 </span>            :   /// Contains all [Widget]s, which can be more</a>
+<a name="17"><span class="lineNum">      17 </span>            :   /// than passed to the constructor if one of them</a>
+<a name="18"><span class="lineNum">      18 </span>            :   /// is a [ContainerWidget].</a>
+<a name="19"><span class="lineNum">      19 </span>            :   final List&lt;Widget&gt; _widgets = [];</a>
+<a name="20"><span class="lineNum">      20 </span>            : </a>
+<a name="21"><span class="lineNum">      21 </span>            :   /// A [StreamController] to manage the stream of update requests on state</a>
+<a name="22"><span class="lineNum">      22 </span>            :   /// changes of single [Widget]s.</a>
+<a name="23"><span class="lineNum">      23 </span>            :   final StreamController&lt;WidgetUpdateRequest&gt; _updateController = StreamController();</a>
+<a name="24"><span class="lineNum">      24 </span>            : </a>
+<a name="25"><span class="lineNum">      25 </span>            :   /// [IOSink] to use for rendered output.</a>
+<a name="26"><span class="lineNum">      26 </span>            :   ///</a>
+<a name="27"><span class="lineNum">      27 </span>            :   /// Default is [stdout]</a>
+<a name="28"><span class="lineNum">      28 </span>            :   final IOSink _outStream;</a>
+<a name="29"><span class="lineNum">      29 </span>            : </a>
+<a name="30"><span class="lineNum">      30 </span>            :   /// Fallback for number of available columns if [_outStream] has no terminal attached.</a>
+<a name="31"><span class="lineNum">      31 </span>            :   final int _fallbackTerminalColumns;</a>
+<a name="32"><span class="lineNum">      32 </span>            : </a>
+<a name="33"><span class="lineNum">      33 </span>            :   /// Creates a new [Scene] with the given [widgets].</a>
+<a name="34"><span class="lineNum">      34 </span>            :   ///</a>
+<a name="35"><span class="lineNum">      35 </span>            :   /// If output is not specified [stdout] will be used and</a>
+<a name="36"><span class="lineNum">      36 </span>            :   /// a value for [fallbackTerminalColumns] must be passed. Otherwise a</a>
+<a name="37"><span class="lineNum">      37 </span>            :   /// default value of 200 available columns will be used.</a>
+<a name="38"><span class="lineNum">      38 </span><span class="lineCov">          1 :   Scene(List&lt;Widget&gt; widgets, {IOSink? output, int? fallbackTerminalColumns})</span></a>
+<a name="39"><span class="lineNum">      39 </span><span class="lineNoCov">          0 :       : _outStream = output ?? stdout,</span></a>
+<a name="40"><span class="lineNum">      40 </span>            :         _fallbackTerminalColumns = fallbackTerminalColumns ?? 200 {</a>
+<a name="41"><span class="lineNum">      41 </span><span class="lineCov">          4 :     _updateController.stream.listen(_handleUpdateRequest);</span></a>
+<a name="42"><span class="lineNum">      42 </span>            : </a>
+<a name="43"><span class="lineNum">      43 </span><span class="lineCov">          1 :     _importWidgets(widgets);</span></a>
+<a name="44"><span class="lineNum">      44 </span><span class="lineCov">          1 :     _setup();</span></a>
+<a name="45"><span class="lineNum">      45 </span>            :   }</a>
+<a name="46"><span class="lineNum">      46 </span>            : </a>
+<a name="47"><span class="lineNum">      47 </span>            :   /// Redraws the parts of the scene which are affeced by the change</a>
+<a name="48"><span class="lineNum">      48 </span>            :   /// of the [Widget] specified in [request].</a>
+<a name="49"><span class="lineNum">      49 </span><span class="lineCov">          1 :   void _handleUpdateRequest(WidgetUpdateRequest request) {</span></a>
+<a name="50"><span class="lineNum">      50 </span><span class="lineCov">          5 :     final int lineDifference = (request.line - _widgets.length).abs();</span></a>
+<a name="51"><span class="lineNum">      51 </span><span class="lineCov">          4 :     final int width = _outStream == stdout ? stdout.terminalColumns : _fallbackTerminalColumns;</span></a>
+<a name="52"><span class="lineNum">      52 </span><span class="lineCov">          5 :     final String newContent = _safeRender(_widgets[request.line]).padRight(width);</span></a>
+<a name="53"><span class="lineNum">      53 </span>            : </a>
+<a name="54"><span class="lineNum">      54 </span><span class="lineCov">          2 :     hideCursor(sink: _outStream);</span></a>
+<a name="55"><span class="lineNum">      55 </span><span class="lineCov">          2 :     moveUp(lineDifference, sink: _outStream);</span></a>
+<a name="56"><span class="lineNum">      56 </span><span class="lineCov">          2 :     _outStream.write(newContent);</span></a>
+<a name="57"><span class="lineNum">      57 </span><span class="lineCov">          2 :     moveDown(lineDifference, sink: _outStream);</span></a>
+<a name="58"><span class="lineNum">      58 </span><span class="lineCov">          2 :     showCursor(sink: _outStream);</span></a>
+<a name="59"><span class="lineNum">      59 </span>            :   }</a>
+<a name="60"><span class="lineNum">      60 </span>            : </a>
+<a name="61"><span class="lineNum">      61 </span>            :   /// Imports all [Widget]s contained in [widgets] and</a>
+<a name="62"><span class="lineNum">      62 </span>            :   /// possible children of [ContainerWidget]s.</a>
+<a name="63"><span class="lineNum">      63 </span><span class="lineCov">          1 :   void _importWidgets(List&lt;Widget&gt; widgets) {</span></a>
+<a name="64"><span class="lineNum">      64 </span><span class="lineCov">          2 :     for (final widget in widgets) {</span></a>
+<a name="65"><span class="lineNum">      65 </span><span class="lineCov">          1 :       if (widget is ContainerWidget) {</span></a>
+<a name="66"><span class="lineNum">      66 </span><span class="lineNoCov">          0 :         _importWidgets(widget.children);</span></a>
+<a name="67"><span class="lineNum">      67 </span>            :       } else {</a>
+<a name="68"><span class="lineNum">      68 </span><span class="lineCov">          2 :         _widgets.add(widget);</span></a>
+<a name="69"><span class="lineNum">      69 </span>            :       }</a>
+<a name="70"><span class="lineNum">      70 </span>            :     }</a>
+<a name="71"><span class="lineNum">      71 </span>            :   }</a>
+<a name="72"><span class="lineNum">      72 </span>            : </a>
+<a name="73"><span class="lineNum">      73 </span>            :   /// Gives each [Widget] the corresponding line number and</a>
+<a name="74"><span class="lineNum">      74 </span>            :   /// if neccessary connects the notification stream.</a>
+<a name="75"><span class="lineNum">      75 </span><span class="lineCov">          1 :   void _setup() {</span></a>
+<a name="76"><span class="lineNum">      76 </span>            :     int line = 0;</a>
+<a name="77"><span class="lineNum">      77 </span>            : </a>
+<a name="78"><span class="lineNum">      78 </span><span class="lineCov">          2 :     for (final widget in _widgets) {</span></a>
+<a name="79"><span class="lineNum">      79 </span><span class="lineCov">          2 :       widget.line = line++;</span></a>
+<a name="80"><span class="lineNum">      80 </span>            : </a>
+<a name="81"><span class="lineNum">      81 </span><span class="lineCov">          1 :       if (widget is StatefulWidget) {</span></a>
+<a name="82"><span class="lineNum">      82 </span><span class="lineCov">          3 :         widget.updateRequestReceiver = _updateController.sink;</span></a>
+<a name="83"><span class="lineNum">      83 </span>            :       }</a>
+<a name="84"><span class="lineNum">      84 </span>            : </a>
+<a name="85"><span class="lineNum">      85 </span><span class="lineCov">          1 :       if (widget is InlineWidget) {</span></a>
+<a name="86"><span class="lineNum">      86 </span><span class="lineNoCov">          0 :         widget.syncBody();</span></a>
+<a name="87"><span class="lineNum">      87 </span>            :       }</a>
+<a name="88"><span class="lineNum">      88 </span>            :     }</a>
+<a name="89"><span class="lineNum">      89 </span>            :   }</a>
+<a name="90"><span class="lineNum">      90 </span>            : </a>
+<a name="91"><span class="lineNum">      91 </span>            :   /// Renders the passed [widget] and ensures that it meets it's expected</a>
+<a name="92"><span class="lineNum">      92 </span>            :   /// dimensions.</a>
+<a name="93"><span class="lineNum">      93 </span>            :   ///</a>
+<a name="94"><span class="lineNum">      94 </span>            :   /// If the [widget] is wider or smaller than expected a [StateError] will be thrown.</a>
+<a name="95"><span class="lineNum">      95 </span><span class="lineCov">          1 :   String _safeRender(Widget widget) {</span></a>
+<a name="96"><span class="lineNum">      96 </span><span class="lineCov">          1 :     final String content = widget.render();</span></a>
+<a name="97"><span class="lineNum">      97 </span><span class="lineCov">          1 :     final int length = content.displayedLength;</span></a>
+<a name="98"><span class="lineNum">      98 </span>            : </a>
+<a name="99"><span class="lineNum">      99 </span><span class="lineCov">          1 :     if (widget.maxWidth != null &amp;&amp; widget.maxWidth! &gt; length) {</span></a>
+<a name="100"><span class="lineNum">     100 </span><span class="lineNoCov">          0 :       throw StateError(</span></a>
+<a name="101"><span class="lineNum">     101 </span><span class="lineNoCov">          0 :         'The widget is smaller than expected. Expected: ${widget.maxWidth!}. Actual: $length',</span></a>
+<a name="102"><span class="lineNum">     102 </span>            :       );</a>
+<a name="103"><span class="lineNum">     103 </span>            :     }</a>
+<a name="104"><span class="lineNum">     104 </span>            : </a>
+<a name="105"><span class="lineNum">     105 </span><span class="lineCov">          1 :     if (widget.minWidth != null &amp;&amp; widget.minWidth! &lt; length) {</span></a>
+<a name="106"><span class="lineNum">     106 </span><span class="lineNoCov">          0 :       throw StateError(</span></a>
+<a name="107"><span class="lineNum">     107 </span><span class="lineNoCov">          0 :         'The widget is wider than expected. Expected: ${widget.maxWidth!}. Actual: $length',</span></a>
+<a name="108"><span class="lineNum">     108 </span>            :       );</a>
+<a name="109"><span class="lineNum">     109 </span>            :     }</a>
+<a name="110"><span class="lineNum">     110 </span>            : </a>
+<a name="111"><span class="lineNum">     111 </span>            :     return content;</a>
+<a name="112"><span class="lineNum">     112 </span>            :   }</a>
+<a name="113"><span class="lineNum">     113 </span>            : </a>
+<a name="114"><span class="lineNum">     114 </span>            :   /// Initially displays the [Scene] on the standard output.</a>
+<a name="115"><span class="lineNum">     115 </span><span class="lineCov">          1 :   void show() {</span></a>
+<a name="116"><span class="lineNum">     116 </span><span class="lineCov">          2 :     for (final widget in _widgets) {</span></a>
+<a name="117"><span class="lineNum">     117 </span><span class="lineCov">          3 :       _outStream.write(_safeRender(widget));</span></a>
+<a name="118"><span class="lineNum">     118 </span><span class="lineCov">          2 :       _outStream.write('\n');</span></a>
+<a name="119"><span class="lineNum">     119 </span>            :     }</a>
+<a name="120"><span class="lineNum">     120 </span>            :   }</a>
+<a name="121"><span class="lineNum">     121 </span>            : }</a>
 </pre>
       </td>
     </tr>
