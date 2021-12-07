@@ -6,7 +6,33 @@ import 'package:flyde/features/ui/widgets/table.dart';
 
 import '../../../helpers/mocks/mock_widget.dart';
 
+/// Creates an equivalent of a table divider width given [length]
 String _verticalDivider(int length) => '\x1B[1m\x1B[37m${''.padRight(length, '─')}\x1B[0m\x1B[0m';
+
+/// Creates a [Table] object for testing with stateless content
+Table _createTestTable({int cellWidth = 20, TextAlignment alignment = TextAlignment.left}) {
+  return Table(
+    head: [
+      MockWidget(State('head1'), straightForwardContent: true),
+      MockWidget(State('head2'), straightForwardContent: true),
+      MockWidget(State('head3'), straightForwardContent: true),
+    ],
+    body: [
+      [
+        MockWidget(State('body1.1'), straightForwardContent: true),
+        MockWidget(State('body1.2'), straightForwardContent: true),
+        MockWidget(State('body1.3'), straightForwardContent: true),
+      ],
+      [
+        MockWidget(State('body2.1'), straightForwardContent: true),
+        MockWidget(State('body2.2'), straightForwardContent: true),
+        MockWidget(State('body2.3'), straightForwardContent: true),
+      ],
+    ],
+    cellWidth: cellWidth,
+    bodyAlignment: alignment,
+  );
+}
 
 void main() {
   final verticalSpacer = '\x1B[1m\x1B[37m │ \x1B[0m\x1B[0m';
@@ -50,25 +76,7 @@ void main() {
   });
 
   test('Creates expected children with default layout', () {
-    final table = Table(
-      head: [
-        MockWidget(State('head1'), straightForwardContent: true),
-        MockWidget(State('head2'), straightForwardContent: true),
-        MockWidget(State('head3'), straightForwardContent: true),
-      ],
-      body: [
-        [
-          MockWidget(State('body1.1'), straightForwardContent: true),
-          MockWidget(State('body1.2'), straightForwardContent: true),
-          MockWidget(State('body1.3'), straightForwardContent: true),
-        ],
-        [
-          MockWidget(State('body2.1'), straightForwardContent: true),
-          MockWidget(State('body2.2'), straightForwardContent: true),
-          MockWidget(State('body2.3'), straightForwardContent: true),
-        ],
-      ],
-    );
+    final table = _createTestTable();
     final displayedChildren = table.children;
 
     expect(displayedChildren, hasLength(5));
@@ -101,26 +109,7 @@ void main() {
   });
 
   test('Creates expected children with centered body', () {
-    final table = Table(
-      head: [
-        MockWidget(State('head1'), straightForwardContent: true),
-        MockWidget(State('head2'), straightForwardContent: true),
-        MockWidget(State('head3'), straightForwardContent: true),
-      ],
-      body: [
-        [
-          MockWidget(State('body1.1'), straightForwardContent: true),
-          MockWidget(State('body1.2'), straightForwardContent: true),
-          MockWidget(State('body1.3'), straightForwardContent: true),
-        ],
-        [
-          MockWidget(State('body2.1'), straightForwardContent: true),
-          MockWidget(State('body2.2'), straightForwardContent: true),
-          MockWidget(State('body2.3'), straightForwardContent: true),
-        ],
-      ],
-      bodyAlignment: TextAlignment.center,
-    );
+    final table = _createTestTable(alignment: TextAlignment.center);
     final displayedChildren = table.children;
 
     expect(displayedChildren, hasLength(5));
@@ -153,26 +142,7 @@ void main() {
   });
 
   test('Creates expected children with right-side layout', () {
-    final table = Table(
-      head: [
-        MockWidget(State('head1'), straightForwardContent: true),
-        MockWidget(State('head2'), straightForwardContent: true),
-        MockWidget(State('head3'), straightForwardContent: true),
-      ],
-      body: [
-        [
-          MockWidget(State('body1.1'), straightForwardContent: true),
-          MockWidget(State('body1.2'), straightForwardContent: true),
-          MockWidget(State('body1.3'), straightForwardContent: true),
-        ],
-        [
-          MockWidget(State('body2.1'), straightForwardContent: true),
-          MockWidget(State('body2.2'), straightForwardContent: true),
-          MockWidget(State('body2.3'), straightForwardContent: true),
-        ],
-      ],
-      bodyAlignment: TextAlignment.right,
-    );
+    final table = _createTestTable(alignment: TextAlignment.right);
     final displayedChildren = table.children;
 
     expect(displayedChildren, hasLength(5));
@@ -205,26 +175,7 @@ void main() {
   });
 
   test('Creates expected children with different cell width', () {
-    final table = Table(
-      head: [
-        MockWidget(State('head1'), straightForwardContent: true),
-        MockWidget(State('head2'), straightForwardContent: true),
-        MockWidget(State('head3'), straightForwardContent: true),
-      ],
-      body: [
-        [
-          MockWidget(State('body1.1'), straightForwardContent: true),
-          MockWidget(State('body1.2'), straightForwardContent: true),
-          MockWidget(State('body1.3'), straightForwardContent: true),
-        ],
-        [
-          MockWidget(State('body2.1'), straightForwardContent: true),
-          MockWidget(State('body2.2'), straightForwardContent: true),
-          MockWidget(State('body2.3'), straightForwardContent: true),
-        ],
-      ],
-      cellWidth: 10,
-    );
+    final table = _createTestTable(cellWidth: 10);
     final displayedChildren = table.children;
 
     expect(displayedChildren, hasLength(5));
@@ -258,26 +209,7 @@ void main() {
 
   test('Sets the min and max width of the child widget acccording to the cell width', () {
     final cellWidth = 10;
-    final table = Table(
-      head: [
-        MockWidget(State('head1'), straightForwardContent: true),
-        MockWidget(State('head2'), straightForwardContent: true),
-        MockWidget(State('head3'), straightForwardContent: true),
-      ],
-      body: [
-        [
-          MockWidget(State('body1.1'), straightForwardContent: true),
-          MockWidget(State('body1.2'), straightForwardContent: true),
-          MockWidget(State('body1.3'), straightForwardContent: true),
-        ],
-        [
-          MockWidget(State('body2.1'), straightForwardContent: true),
-          MockWidget(State('body2.2'), straightForwardContent: true),
-          MockWidget(State('body2.3'), straightForwardContent: true),
-        ],
-      ],
-      cellWidth: cellWidth,
-    );
+    final table = _createTestTable(cellWidth: cellWidth);
     final displayedChildren = table.children;
 
     // Three cells per row and two dividers with length 3
