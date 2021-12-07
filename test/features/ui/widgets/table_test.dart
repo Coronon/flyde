@@ -255,4 +255,37 @@ void main() {
       ),
     );
   });
+
+  test('Sets the min and max width of the child widget acccording to the cell width', () {
+    final cellWidth = 10;
+    final table = Table(
+      head: [
+        MockWidget(State('head1'), straightForwardContent: true),
+        MockWidget(State('head2'), straightForwardContent: true),
+        MockWidget(State('head3'), straightForwardContent: true),
+      ],
+      body: [
+        [
+          MockWidget(State('body1.1'), straightForwardContent: true),
+          MockWidget(State('body1.2'), straightForwardContent: true),
+          MockWidget(State('body1.3'), straightForwardContent: true),
+        ],
+        [
+          MockWidget(State('body2.1'), straightForwardContent: true),
+          MockWidget(State('body2.2'), straightForwardContent: true),
+          MockWidget(State('body2.3'), straightForwardContent: true),
+        ],
+      ],
+      cellWidth: cellWidth,
+    );
+    final displayedChildren = table.children;
+
+    // Three cells per row and two dividers with length 3
+    final rowWidth = cellWidth * 3 + 2 * 3;
+
+    for (final child in displayedChildren) {
+      expect(child.maxWidth, equals(rowWidth));
+      expect(child.minWidth, equals(rowWidth));
+    }
+  });
 }
