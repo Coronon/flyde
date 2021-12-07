@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import '../../../core/console/displayed_length.dart';
 import '../../../core/console/cursor.dart';
 import 'widget.dart';
 
@@ -48,7 +49,7 @@ class Scene {
   void _handleUpdateRequest(WidgetUpdateRequest request) {
     final int lineDifference = (request.line - _widgets.length).abs();
     final int width = _outStream == stdout ? stdout.terminalColumns : _fallbackTerminalColumns;
-    final newContent = _widgets[request.line].render().padRight(width);
+    final String newContent = _safeRender(_widgets[request.line]).padRight(width);
 
     hideCursor(sink: _outStream);
     moveUp(lineDifference, sink: _outStream);
@@ -87,10 +88,33 @@ class Scene {
     }
   }
 
+  /// Renders the passed [widget] and ensures that it meets it's expected
+  /// dimensions.
+  ///
+  /// If the [widget] is wider or smaller than expected a [StateError] will be thrown.
+  String _safeRender(Widget widget) {
+    final String content = widget.render();
+    final int length = content.displayedLength;
+
+    if (widget.maxWidth != null && widget.maxWidth! > length) {
+      throw StateError(
+        'The widget is smaller than expected. Expected: ${widget.maxWidth!}. Actual: $length',
+      );
+    }
+
+    if (widget.minWidth != null && widget.minWidth! < length) {
+      throw StateError(
+        'The widget is wider than expected. Expected: ${widget.maxWidth!}. Actual: $length',
+      );
+    }
+
+    return content;
+  }
+
   /// Initially displays the [Scene] on the standard output.
   void show() {
     for (final widget in _widgets) {
-      _outStream.write(widget.render());
+      _outStream.write(_safeRender(widget));
       _outStream.write('\n');
     }
   }

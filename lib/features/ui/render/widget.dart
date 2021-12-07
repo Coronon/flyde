@@ -13,6 +13,18 @@ abstract class Widget {
   /// The value has to be set by the renderer (normally [Scene])
   late int line;
 
+  /// The expected minimum width of the widget.
+  ///
+  /// This property is expected to be set by an higher order widget,
+  /// which expects it's child widgets to meet a specific width.
+  int? minWidth;
+
+  /// The expected maximum width of the widget.
+  ///
+  /// This property is expected to be set by an higher order widget,
+  /// which expects it's child widgets to meet a specific width.
+  int? maxWidth;
+
   /// The method used to convert the abstract state of a
   /// component into a displayable [String]s.
   /// The returned value may or may not contain ANSI escape sequences.
