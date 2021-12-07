@@ -5,6 +5,7 @@ import 'package:test/test.dart';
 
 import 'package:flyde/features/ui/render/scene.dart';
 import 'package:flyde/features/ui/render/widget.dart';
+import 'package:flyde/core/console/displayed_length.dart';
 
 import '../../../helpers/mocks/mock_widget.dart';
 import '../../../helpers/value_hook.dart';
@@ -83,5 +84,38 @@ void main() {
       '\x1B[2E',
       '\x1B[?25h',
     ]));
+  });
+
+  test('Fails when minimum or maximum width are not met', () {
+    final int len = widgets.last.render().displayedLength;
+    final maxErrMsg = 'The widget is wider than expected. Expected: ${len - 1}. Actual: $len';
+    final minErrMsg = 'The widget is smaller than expected. Expected: ${len + 1}. Actual: $len';
+
+    widgets.last.minWidth = len + 1;
+
+    expect(
+      scene.show,
+      throwsA(
+        isA<StateError>().having(
+          (err) => err.message,
+          'message',
+          equals(minErrMsg),
+        ),
+      ),
+    );
+
+    widgets.last.minWidth = null;
+    widgets.last.maxWidth = len - 1;
+
+    expect(
+      scene.show,
+      throwsA(
+        isA<StateError>().having(
+          (err) => err.message,
+          'message',
+          equals(maxErrMsg),
+        ),
+      ),
+    );
   });
 }
