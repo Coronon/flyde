@@ -23,6 +23,10 @@ void main() {
     widgets = [
       MockWidget(widgetState),
       MockWidget(State('state2')),
+      MockInline([
+        MockWidget(State('inline-1'), straightForwardContent: true),
+        MockWidget(State('inline-2'), straightForwardContent: true),
+      ]),
     ];
     controller = StreamController();
     fakeOutStream = IOSink(controller.sink);
@@ -48,11 +52,20 @@ void main() {
     scene.show();
     await hook.awaitValue(
       timeout: Duration(seconds: 1),
-      condition: (cnt) => cnt.length == 4,
+      condition: (cnt) => cnt.length == 6,
     );
 
-    hook.expect(hasLength(4));
-    hook.expect(orderedEquals(['mock-state1', '\n', 'mock-state2', '\n']));
+    hook.expect(hasLength(6));
+    hook.expect(
+      orderedEquals([
+        'mock-state1',
+        '\n',
+        'mock-state2',
+        '\n',
+        'inline-1->inline-2',
+        '\n',
+      ]),
+    );
   });
 
   test('Updates related lines on state change', () async {
@@ -69,19 +82,21 @@ void main() {
     widgetState.value = 'state-changed';
     await hook.awaitValue(
       timeout: Duration(seconds: 1),
-      condition: (cnt) => cnt.length == 9,
+      condition: (cnt) => cnt.length == 11,
     );
 
-    hook.expect(hasLength(9));
+    hook.expect(hasLength(11));
     hook.expect(orderedEquals([
       'mock-state1',
       '\n',
       'mock-state2',
       '\n',
+      'inline-1->inline-2',
+      '\n',
       '\x1B[?25l',
-      '\x1B[2F',
+      '\x1B[3F',
       'mock-state-changed'.padRight(virtualTerminalWidth),
-      '\x1B[2E',
+      '\x1B[3E',
       '\x1B[?25h',
     ]));
   });
