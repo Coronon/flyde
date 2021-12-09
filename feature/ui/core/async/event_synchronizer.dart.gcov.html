@@ -31,13 +31,13 @@
             <td class="headerValue">lcov.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">31</td>
-            <td class="headerCovTableEntry">31</td>
+            <td class="headerCovTableEntry">33</td>
+            <td class="headerCovTableEntry">33</td>
             <td class="headerCovTableEntryHi">100.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-12-08 13:16:02</td>
+            <td class="headerValue">2021-12-09 00:10:01</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -135,7 +135,7 @@
 <a name="73"><span class="lineNum">      73 </span><span class="lineCov">          2 :       final id = entry.key;</span></a>
 <a name="74"><span class="lineNum">      74 </span><span class="lineCov">          2 :       final subscription = entry.value;</span></a>
 <a name="75"><span class="lineNum">      75 </span>            : </a>
-<a name="76"><span class="lineNum">      76 </span><span class="lineCov">          4 :       if (await subscription(message) == true) {</span></a>
+<a name="76"><span class="lineNum">      76 </span><span class="lineCov">          6 :       if (await subscription(message) == true) {</span></a>
 <a name="77"><span class="lineNum">      77 </span><span class="lineCov">          2 :         toKeep.add(id);</span></a>
 <a name="78"><span class="lineNum">      78 </span>            :       }</a>
 <a name="79"><span class="lineNum">      79 </span>            :     }</a>
@@ -149,10 +149,10 @@
 <a name="87"><span class="lineNum">      87 </span><span class="lineCov">          2 :   Future&lt;void&gt; request(dynamic message) async {</span></a>
 <a name="88"><span class="lineNum">      88 </span><span class="lineCov">          2 :     if (message is Stream) {</span></a>
 <a name="89"><span class="lineNum">      89 </span><span class="lineCov">          2 :       await for (final item in message) {</span></a>
-<a name="90"><span class="lineNum">      90 </span><span class="lineCov">          2 :         await _sender(item);</span></a>
+<a name="90"><span class="lineNum">      90 </span><span class="lineCov">          3 :         await _sender(item);</span></a>
 <a name="91"><span class="lineNum">      91 </span>            :       }</a>
 <a name="92"><span class="lineNum">      92 </span>            :     } else {</a>
-<a name="93"><span class="lineNum">      93 </span><span class="lineCov">          4 :       await _sender(message);</span></a>
+<a name="93"><span class="lineNum">      93 </span><span class="lineCov">          6 :       await _sender(message);</span></a>
 <a name="94"><span class="lineNum">      94 </span>            :     }</a>
 <a name="95"><span class="lineNum">      95 </span>            :   }</a>
 <a name="96"><span class="lineNum">      96 </span>            : </a>
@@ -172,7 +172,7 @@
 <a name="110"><span class="lineNum">     110 </span>            : </a>
 <a name="111"><span class="lineNum">     111 </span><span class="lineCov">          6 :     _subscriptions[id] = (dynamic message) async {</span></a>
 <a name="112"><span class="lineNum">     112 </span><span class="lineCov">          4 :       if (message.runtimeType == responseType) {</span></a>
-<a name="113"><span class="lineNum">     113 </span>            :         final isValid = validator?.call(message) ?? true;</a>
+<a name="113"><span class="lineNum">     113 </span><span class="lineCov">          2 :         final isValid = validator?.call(message) ?? true;</span></a>
 <a name="114"><span class="lineNum">     114 </span>            : </a>
 <a name="115"><span class="lineNum">     115 </span>            :         if (!isValid &amp;&amp; keepAlive) {</a>
 <a name="116"><span class="lineNum">     116 </span>            :           return true;</a>
@@ -181,7 +181,7 @@
 <a name="119"><span class="lineNum">     119 </span>            :         if (!isValid) {</a>
 <a name="120"><span class="lineNum">     120 </span><span class="lineCov">          2 :           completer.completeError(ArgumentError('Message is invalid'));</span></a>
 <a name="121"><span class="lineNum">     121 </span>            :         } else {</a>
-<a name="122"><span class="lineNum">     122 </span>            :           final res = handler?.call(message) ?? message as R;</a>
+<a name="122"><span class="lineNum">     122 </span><span class="lineCov">          2 :           final res = handler?.call(message) ?? message as R;</span></a>
 <a name="123"><span class="lineNum">     123 </span><span class="lineCov">          2 :           completer.complete(res);</span></a>
 <a name="124"><span class="lineNum">     124 </span>            :         }</a>
 <a name="125"><span class="lineNum">     125 </span>            :       } else {</a>
@@ -208,8 +208,8 @@
 <a name="146"><span class="lineNum">     146 </span>            :     bool Function(T, U)? validator,</a>
 <a name="147"><span class="lineNum">     147 </span>            :   }) async* {</a>
 <a name="148"><span class="lineNum">     148 </span><span class="lineCov">          4 :     await for (final item in items) {</span></a>
-<a name="149"><span class="lineNum">     149 </span><span class="lineCov">          2 :       final wrappedValidator = validator == null ? null : (U res) =&gt; validator(item, res);</span></a>
-<a name="150"><span class="lineNum">     150 </span><span class="lineCov">          1 :       final wrappedHandler = handler == null ? null : (U res) =&gt; handler(item, res);</span></a>
+<a name="149"><span class="lineNum">     149 </span><span class="lineCov">          4 :       final wrappedValidator = validator == null ? null : (U res) =&gt; validator(item, res);</span></a>
+<a name="150"><span class="lineNum">     150 </span><span class="lineCov">          2 :       final wrappedHandler = handler == null ? null : (U res) =&gt; handler(item, res);</span></a>
 <a name="151"><span class="lineNum">     151 </span>            : </a>
 <a name="152"><span class="lineNum">     152 </span><span class="lineCov">          4 :       await request(item);</span></a>
 <a name="153"><span class="lineNum">     153 </span>            : </a>
