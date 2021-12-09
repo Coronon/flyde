@@ -26,6 +26,15 @@ void main() {
     );
   });
 
+  test('Uses expected default values', () {
+    final label = Label(State('text'));
+
+    expect(
+      label.render(),
+      equals('\x1B[37mtext\x1B[0m'),
+    );
+  });
+
   test('Reacts to state changes', () {
     final color = State(TerminalColor.white);
     final bold = State(true);
