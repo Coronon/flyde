@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-11-06 21:56:19</td>
+            <td class="headerValue">2021-12-09 10:04:57</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -139,8 +139,8 @@
 <a name="77"><span class="lineNum">      77 </span>            :   /// Returns the file's path relative to [origin].</a>
 <a name="78"><span class="lineNum">      78 </span>            :   ///</a>
 <a name="79"><span class="lineNum">      79 </span>            :   /// If [filename] is false, only the directory will be returned.</a>
-<a name="80"><span class="lineNum">      80 </span><span class="lineCov">          4 :   String relativePath({String origin = '', bool filename = true}) =&gt;</span></a>
-<a name="81"><span class="lineNum">      81 </span><span class="lineCov">         16 :       p.joinAll([origin, ...path, filename ? '$name.$extension' : '']);</span></a>
+<a name="80"><span class="lineNum">      80 </span><span class="lineCov">          5 :   String relativePath({String origin = '', bool filename = true}) =&gt;</span></a>
+<a name="81"><span class="lineNum">      81 </span><span class="lineCov">         20 :       p.joinAll([origin, ...path, filename ? '$name.$extension' : '']);</span></a>
 <a name="82"><span class="lineNum">      82 </span>            : </a>
 <a name="83"><span class="lineNum">      83 </span>            :   /// Creates a copy of this file enuring that the data is stored in memory.</a>
 <a name="84"><span class="lineNum">      84 </span><span class="lineCov">          2 :   Future&lt;SourceFile&gt; asMemoryData() async {</span></a>
