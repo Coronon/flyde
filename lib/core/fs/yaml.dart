@@ -93,7 +93,7 @@ String _encodeString(
     // No breaking up needed
     // Check if quotes are required
     if (!skipQuote && _shouldQuoteString(yaml)) {
-      encodedString += '"${yaml.replaceAll("\"", "\\\"")}"';
+      encodedString += '"${yaml.escapeSymbols()}"';
     } else {
       encodedString += yaml;
     }
@@ -165,4 +165,3 @@ const int maxLineLength = 70;
 /// Length of an extension on [maxLineLength] if
 /// `depth * indentWidth > maxLineLength`
 const int maxLineLengthExtension = 5;
-
