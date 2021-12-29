@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-11-19 15:38:47</td>
+            <td class="headerValue">2021-12-29 23:36:02</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -137,7 +137,7 @@
 <a name="75"><span class="lineNum">      75 </span><span class="lineCov">          6 :     wsOnDoneTeardown = (ServerSession sess) {</span></a>
 <a name="76"><span class="lineNum">      76 </span><span class="lineCov">          6 :       _wsSessions.remove(sess);</span></a>
 <a name="77"><span class="lineNum">      77 </span>            : </a>
-<a name="78"><span class="lineNum">      78 </span><span class="lineCov">          5 :       if (wsOnDone != null) wsOnDone!(sess);</span></a>
+<a name="78"><span class="lineNum">      78 </span><span class="lineCov">          7 :       if (wsOnDone != null) wsOnDone!(sess);</span></a>
 <a name="79"><span class="lineNum">      79 </span>            :     };</a>
 <a name="80"><span class="lineNum">      80 </span>            : </a>
 <a name="81"><span class="lineNum">      81 </span><span class="lineCov">          6 :     ready = _init(bindAddress, bindPort, securityContext);</span></a>
@@ -214,7 +214,7 @@
 <a name="152"><span class="lineNum">     152 </span><span class="lineCov">          6 :       _wsSessions.add(newSess);</span></a>
 <a name="153"><span class="lineNum">     153 </span><span class="lineCov">          2 :     } else if (httpOnRequest != null &amp;&amp; (!isWebsocketRequest || redirectWebsocket)) {</span></a>
 <a name="154"><span class="lineNum">     154 </span>            :       // Handle normal requests (or redirected WebSocket connections)</a>
-<a name="155"><span class="lineNum">     155 </span><span class="lineCov">          1 :       httpOnRequest!(req);</span></a>
+<a name="155"><span class="lineNum">     155 </span><span class="lineCov">          2 :       httpOnRequest!(req);</span></a>
 <a name="156"><span class="lineNum">     156 </span>            :     } else {</a>
 <a name="157"><span class="lineNum">     157 </span>            :       // No Handler found, return 404</a>
 <a name="158"><span class="lineNum">     158 </span><span class="lineCov">          2 :       req.response.statusCode = 404;</span></a>
