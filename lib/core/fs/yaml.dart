@@ -12,7 +12,7 @@ String _encodeAsYaml(dynamic yaml, {int depth = 0, int extraIndent = 0}) {
   if (yaml is String) {
     return _encodeString(yaml, depth, extraIndent: extraIndent);
   } else if (yaml is List) {
-    throw UnimplementedError();
+    return _encodeList(yaml, depth);
   } else if (yaml is Map) {
     return _encodeMap(yaml, depth);
   } else {
@@ -103,7 +103,7 @@ String _encodeString(
 }
 
 /// Encode [yaml] to YAML formatted key-value pairs
-/// 
+///
 /// [depth] is the current depth in the YAML stream.
 ///
 /// All keys have to be strings that match the RegExp [mapKey]
@@ -115,12 +115,12 @@ String _encodeMap(Map yaml, int depth) {
     // Key must be a string
     if (!_validateYAMLKey(key)) throw ArgumentError("Invalid YAML key '$key'");
 
-    // We need to indent maps to form a hierarchy
-    final int valueDepth = value is Map ? depth + 1 : depth;
-    // For a valid hierarchy nested maps need to be properly indented on a new line
-    final String keyValueSeperator = value is Map ? ':\n' + _indent(valueDepth) : ': ';
+    // We need to indent collections to form a hierarchy
+    final int valueDepth = _isCollection(value) ? depth + 1 : depth;
+    // For a valid hierarchy nested collections need to be properly indented on a new line
+    final String keyValueSeperator = _isCollection(value) ? ':\n' + _indent(valueDepth) : ': ';
     // {indent}{key}: {value} -> key + 2(': ') is extra indent
-    final int extraIndent = value is Map ? 0 : (key as String).length + 2;
+    final int extraIndent = _isCollection(value) ? 0 : (key as String).length + 2;
 
     // key: value
     // otherKey:
@@ -138,6 +138,37 @@ String _encodeMap(Map yaml, int depth) {
 
   // Remove possible trailing '\n'
   return encodedMap.trim();
+}
+
+/// Encode [yaml] to a YAML formatted list
+///
+/// [depth] is the current depth in the YAML stream.
+String _encodeList(List yaml, int depth) {
+  String encodedList = '';
+
+  // Build the list items
+  for (final dynamic element in yaml) {
+    // We need to indent collections to form a hierarchy
+    final int valueDepth = _isCollection(element) ? depth + 1 : depth;
+    // {indent}- {element} -> 2('- ') is extra indent
+    final int extraIndent = _isCollection(element) ? 0 : 2;
+
+    // - value1
+    // - value2
+    // - mapKey1: mapValue1
+    //   mapKey2: mapKey2
+    encodedList += _indent(depth) +
+        '- ' +
+        _encodeAsYaml(
+          element,
+          depth: valueDepth,
+          extraIndent: extraIndent,
+        ) +
+        '\n';
+  }
+
+  // Remove possible trailing '\n'
+  return encodedList.trim();
 }
 
 /// Determine if the string [yaml] should be placed
@@ -167,6 +198,12 @@ bool _validateYAMLKey(dynamic key) {
   }
 
   return true;
+}
+
+/// Whether this is of a collection type and
+/// should receive special indentation
+bool _isCollection(dynamic value) {
+  return value is Map || value is List;
 }
 
 /// Create a left padded string that matches the required
