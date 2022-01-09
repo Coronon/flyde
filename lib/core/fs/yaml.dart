@@ -8,13 +8,13 @@ String encodeAsYaml(dynamic yaml) => _encodeAsYaml(yaml);
 /// This internal function allows not exposing [depth],
 /// which controlls the indentation level in this recursive
 /// function, to the end user.
-String _encodeAsYaml(dynamic yaml, {int depth = 0}) {
+String _encodeAsYaml(dynamic yaml, {int depth = 0, int extraIndent = 0}) {
   if (yaml is String) {
-    return _encodeString(yaml, depth);
+    return _encodeString(yaml, depth, extraIndent: extraIndent);
   } else if (yaml is List) {
     throw UnimplementedError();
   } else if (yaml is Map) {
-    throw UnimplementedError();
+    return _encodeMap(yaml, depth);
   } else {
     return yaml.toString();
   }
@@ -102,6 +102,44 @@ String _encodeString(
   return encodedString;
 }
 
+/// Encode [yaml] to YAML formatted key-value pairs
+/// 
+/// [depth] is the current depth in the YAML stream.
+///
+/// All keys have to be strings that match the RegExp [mapKey]
+String _encodeMap(Map yaml, int depth) {
+  String encodedMap = '';
+
+  // Build key -> value pairs
+  yaml.forEach((key, value) {
+    // Key must be a string
+    if (!_validateYAMLKey(key)) throw ArgumentError("Invalid YAML key '$key'");
+
+    // We need to indent maps to form a hierarchy
+    final int valueDepth = value is Map ? depth + 1 : depth;
+    // For a valid hierarchy nested maps need to be properly indented on a new line
+    final String keyValueSeperator = value is Map ? ':\n' + _indent(valueDepth) : ': ';
+    // {indent}{key}: {value} -> key + 2(': ') is extra indent
+    final int extraIndent = value is Map ? 0 : (key as String).length + 2;
+
+    // key: value
+    // otherKey:
+    //   nestedKey: nestedValue
+    encodedMap += _indent(depth) +
+        key +
+        keyValueSeperator +
+        _encodeAsYaml(
+          value,
+          depth: valueDepth,
+          extraIndent: extraIndent,
+        ) +
+        '\n';
+  });
+
+  // Remove possible trailing '\n'
+  return encodedMap.trim();
+}
+
 /// Determine if the string [yaml] should be placed
 /// in double quotes e.g. `"$yaml"`
 bool _shouldQuoteString(String yaml) {
@@ -113,6 +151,22 @@ bool _shouldQuoteString(String yaml) {
   if (!asciiCharString.hasMatch(yaml)) return true;
 
   return false;
+}
+
+/// Check whether the provided [key] is
+/// a valid YAML key (not strict to spec)
+/// and can be used
+bool _validateYAMLKey(dynamic key) {
+  // Key type not supported
+  if (key is! String) {
+    return false;
+  }
+  // Invalid format
+  if (!mapKey.hasMatch(key)) {
+    return false;
+  }
+
+  return true;
 }
 
 /// Create a left padded string that matches the required
@@ -131,6 +185,8 @@ extension _EscapedSymbols on String {
 
 /// Matches all ASCII only strings that dont contain control symbols
 final RegExp asciiCharString = RegExp(r'^[\x20-\x7E]+$');
+
+final RegExp mapKey = RegExp(r'^[a-zA-Z_$!.#+*~][[a-zA-Z0-9_$!.#+*~]*$');
 
 /// List of symbols that are not allowed to start a YAML string without quotes
 const List<String> yamlIndicators = [
