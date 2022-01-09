@@ -38,7 +38,7 @@ String _encodeString(
   bool skipBreakup = false,
   int extraIndent = 0,
 }) {
-  String encodedString = "";
+  String encodedString = '';
 
   // Break up string if to long
   if (!skipBreakup && depth * indentWidth + extraIndent + yaml.length > maxLineLength) {
