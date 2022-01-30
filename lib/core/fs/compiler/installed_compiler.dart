@@ -61,4 +61,10 @@ extension InstalledCompilerImpl on InstalledCompiler {
         return 'g++';
     }
   }
+
+  /// The name of the compiler.
+  ///
+  /// Equal to the identifier which is used to invoce the compiler.
+  /// E.g `g++` for `InstalledCompiler.gpp`.
+  String get name => _command();
 }
