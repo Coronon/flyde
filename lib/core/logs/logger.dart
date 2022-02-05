@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'dart:typed_data';
 import 'package:collection/collection.dart';
+import 'dart:convert';
 
+import '../list/int_reducer.dart';
 import '../list/insert_between.dart';
 import '../console/bold.dart';
 import 'log_level.dart';
@@ -38,50 +40,20 @@ class Logger {
 
   /// Creates a [Logger] with the messages encoded in the given [bytes].
   static Logger fromBytes(Uint8List bytes) {
-    final Uint8List magicByte = Uint8List(4);
-    final List<Uint8List> logBuffer = [];
+    final magicByte = bytes.sublist(0, 4);
     final List<_LogMessage> messages = [];
-    int sectionEnd = 4;
-    int lenBuffer = 0;
-    int sectionStart = 0;
+    int sectionStart = 4;
 
-    for (int i = 0; i < bytes.length; ++i) {
-      final int byte = bytes[i];
+    if (!magicByte.equals(_magicByte)) {
+      throw ArgumentError('Invalid binary format');
+    }
 
-      if (i < 4) {
-        // The first 4 bytes are the magic number
+    while (sectionStart < bytes.length) {
+      final len = bytes.getRange(sectionStart, sectionStart + 4).toList().reduceIndexed(intReducer);
+      final data = bytes.getRange(sectionStart + 4, sectionStart + 4 + len).toList();
 
-        magicByte[i] = byte;
-      } else if (i >= sectionEnd && i < sectionEnd + 4) {
-        // The first 4 bytes after a section or the magic byte encode
-        // the length of the next section
-
-        // The position of the byte in the length number (32 bits)
-        final int offset = (i - sectionEnd);
-
-        lenBuffer |= byte << offset * 8;
-
-        if (i == sectionEnd + 3) {
-          // When the last bit is reached update sectionStart, sectionEnd
-          // and create a buffer for the next message
-
-          sectionStart = sectionEnd + 4;
-          sectionEnd = lenBuffer + sectionStart;
-          logBuffer.add(Uint8List(lenBuffer));
-        }
-      } else {
-        // The rest of the bytes are the message
-
-        // Copy the bytes to the last buffer
-        logBuffer.last[i - sectionStart] = byte;
-
-        if (i == sectionEnd - 1) {
-          // When the section has reached it's end, convert
-          // the last buffer to a message and add it to the list
-
-          messages.add(_LogMessage.fromRawData(logBuffer.last));
-        }
-      }
+      messages.add(_LogMessage.fromRawData(Uint8List.fromList(data)));
+      sectionStart += 4 + len;
     }
 
     return Logger._(messages);
@@ -136,7 +108,7 @@ class Logger {
     for (final message in _messages) {
       final data = message.toRawData();
       final len = data.length;
-      final lenBuffer = Uint8List(4)..buffer.asInt32List(0, 1)[0] = len;
+      final lenBuffer = Uint8List(4)..buffer.asUint32List(0, 1)[0] = len;
 
       builder.add(lenBuffer);
       builder.add(data);
@@ -209,9 +181,6 @@ class _LogMessage {
 
   /// Creates a [_LogMessage] from raw data produced by [toRawData].
   static _LogMessage fromRawData(Uint8List data) {
-    // Function to create a single n byte integer from a list of bytes.
-    int intReducer(int idx, int prev, int byte) => prev | byte << (8 * idx);
-
     // The single data entries are stored as described in [toRawData].
     final int timestamp = data.getRange(0, 8).reduceIndexed(intReducer);
     final int levelIdx = data.getRange(8, 9).single;
@@ -221,11 +190,11 @@ class _LogMessage {
     final List<int> descriptionData = data.getRange(16 + messageLength, data.length).toList();
 
     return _LogMessage(
-      String.fromCharCodes(messageData),
+      utf8.decode(messageData),
       LogLevel.values[levelIdx],
       DateTime.fromMillisecondsSinceEpoch(timestamp),
       LogScope.values[scopeIdx],
-      descriptionData.isNotEmpty ? String.fromCharCodes(descriptionData) : null,
+      descriptionData.isNotEmpty ? utf8.decode(descriptionData) : null,
     );
   }
 
@@ -237,16 +206,21 @@ class _LogMessage {
     // 2 bytes to support int32 data alignment
     // 4 byte for the message length
     // n bytes for the message + description
-    final dataSize = 16 + message.length + (_description?.length ?? 0);
+
+    final messageData = utf8.encode(message);
+    final descrData = _description == null ? null : utf8.encode(_description!);
+    final messageBytes = messageData.length;
+    final descriptionBytes = descrData?.length ?? 0;
+    final dataSize = 16 + messageBytes + descriptionBytes;
     final buffer = Uint8List(dataSize);
 
     buffer.buffer.asInt64List(0, 1)[0] = time.millisecondsSinceEpoch;
     buffer.setAll(8, [level.index, scope.index]);
-    buffer.buffer.asInt32List(12, 1)[0] = message.codeUnits.length;
-    buffer.setAll(16, message.codeUnits);
+    buffer.buffer.asInt32List(12, 1)[0] = messageBytes;
+    buffer.setAll(16, messageData);
 
     if (_description != null) {
-      buffer.setAll(16 + message.length, _description!.codeUnits);
+      buffer.setAll(16 + messageBytes, descrData!);
     }
 
     return buffer;
