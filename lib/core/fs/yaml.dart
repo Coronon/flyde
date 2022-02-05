@@ -1,7 +1,25 @@
 import 'dart:math';
 
+import 'package:yaml/yaml.dart';
+
 /// Encode the given value to a YAML formatted string
 String encodeAsYaml(dynamic yaml) => _encodeAsYaml(yaml);
+
+/// Converts the given value [src] to a [Map] object.
+///
+/// The function assumes that the top level object of the YAML document is a map
+/// and that this map is compatible with dart [Map].
+///
+/// If the top-level object is not a map, the function throws an [ArgumentError].
+Map<String, dynamic> loadYamlAsMap(String src) {
+  final dynamic yaml = loadYaml(src);
+
+  if (yaml is YamlMap) {
+    return yaml.cast<String, dynamic>();
+  } else {
+    throw ArgumentError('The top level object of the passed yaml is not a map.');
+  }
+}
 
 /// Encode the given value to a YAML formatted string
 ///
