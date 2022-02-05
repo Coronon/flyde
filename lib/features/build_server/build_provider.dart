@@ -152,6 +152,11 @@ class BuildProvider {
     if (message == getBinaryRequest) {
       await _handleBinaryRequest(session, message, id);
     }
+
+    //? Download the logs for the last build
+    if (message == getBuildLogsRequest) {
+      await _handleLogsRequest(session, message, id);
+    }
   }
 
   /// Checks if the [session] is the first in the queue for
@@ -273,6 +278,16 @@ class BuildProvider {
     String id,
   ) async {
     final Uint8List? data = await _getInterface(id).binary;
+    session.send(BinaryResponse(binary: data));
+  }
+
+  /// Handles a logs request.
+  Future<void> _handleLogsRequest(
+    ServerSession session,
+    dynamic message,
+    String id,
+  ) async {
+    final Uint8List data = await _getInterface(id).logData;
     session.send(BinaryResponse(binary: data));
   }
 }

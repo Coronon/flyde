@@ -21,6 +21,7 @@ class _MessageIdentifiers {
   static const stateUpdate = 'stateUpdate';
   static const hasCapacity = 'hasCapacity';
   static const getBinary = 'getBinary';
+  static const getLogs = 'getLogs';
 }
 
 /// Interface for the compiler running in a seperate [Isolate].
@@ -93,6 +94,7 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
       final files = args[0] as Map<String, String>;
       final config = args[1] as CompilerConfig;
 
+      _compiler.logger.reset();
       _compiler.update(config, files);
       message.respond(isolate.sendPort, await _compiler.outdatedFiles);
     }
@@ -105,7 +107,7 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
       message.respond(isolate.sendPort, null);
     }
 
-    //* Handle file build requests.
+    //* Handle build requests.
     if (message.name == _MessageIdentifiers.build) {
       await _build();
     }
@@ -114,6 +116,13 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
     if (message.name == _MessageIdentifiers.getBinary) {
       final File? bin = await _compiler.lastExecutable;
       final Uint8List? data = await bin?.readAsBytes();
+
+      message.respond(isolate.sendPort, data);
+    }
+
+    //* Handle logs requests.
+    if (message.name == _MessageIdentifiers.getLogs) {
+      final Uint8List data = _compiler.logger.toBytes();
 
       message.respond(isolate.sendPort, data);
     }
@@ -262,6 +271,17 @@ class ProjectInterface extends Interface {
     return await expectResponse(
       InterfaceMessage(
         _MessageIdentifiers.getBinary,
+        null,
+      ),
+      timeout: Duration(seconds: 10),
+    );
+  }
+
+  /// The latest available logs for the project.
+  Future<Uint8List> get logData async {
+    return await expectResponse(
+      InterfaceMessage(
+        _MessageIdentifiers.getLogs,
         null,
       ),
       timeout: Duration(seconds: 10),

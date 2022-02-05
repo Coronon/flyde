@@ -11,6 +11,9 @@ const projectBuildRequest = 'build_project';
 /// Request to download the latest project binary.
 const getBinaryRequest = 'get_binary';
 
+/// Request to download the logs for the last build.
+const getBuildLogsRequest = 'get_build_logs';
+
 /// Server response which sends the latest binary or null
 /// if not available.
 @JsonSerializable()
