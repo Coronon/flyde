@@ -69,7 +69,7 @@ class CreateConfigCommand extends Command with CommandArgGetter {
     final String preset = useArg('preset');
     final String name = useArg('name');
     final List<String> src = useArg('src');
-    final int threads = useArg('threads');
+    final int threads = useArg('threads', parser: (arg) => int.parse(arg));
     final String compilerId = useArg('compiler');
 
     final compiler = InstalledCompiler.values.firstWhere(
