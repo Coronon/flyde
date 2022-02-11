@@ -91,8 +91,8 @@ class BuildingViewController extends ViewController {
     addTask('Could not establish build session', _waitForAuth);
     addTask('Could not synchronize files', _syncFiles);
     addTask('Could not build source files', _build);
-    addTask('Could not download binary', _downloadBinary);
     addTask('Could not download logs', _downloadLogs);
+    addTask('Could not download binary', _downloadBinary);
     addTask('Could not stop tools', _stopStopwatch);
     addTask('Could not tear down', _tearDown);
 
