@@ -10,7 +10,6 @@ void main() async {
     InternetAddress.anyIPv4,
     3030,
     wsMiddleware: [
-      encryptionMiddleware,
       protocolMiddleware,
     ],
   );
