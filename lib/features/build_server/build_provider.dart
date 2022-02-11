@@ -184,8 +184,15 @@ class BuildProvider {
 
   /// Activates the [session] for the project with the id [id].
   Future<void> _activateSession(ServerSession session, String id) async {
+    const isActiveKey = 'is_active';
+
+    if (session.storage[isActiveKey] == true) {
+      return;
+    }
+
     _interfaces[id]?.onStateUpdate = session.send;
     session.send(isActiveSessionResponse);
+    session.storage[isActiveKey] = true;
   }
 
   /// Returns the interface with the given [id] or throws an exception.
