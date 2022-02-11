@@ -1,10 +1,18 @@
+import 'dart:io';
+
 import 'package:args/command_runner.dart';
 
+import 'command_arg_getter.dart';
+import '../../../core/fs/configs/project_config.dart';
+import '../../../core/fs/yaml.dart';
+
+///```sh
 ///flyde init
-///    --name              -n      \<str\>
-///    --server            -s      \<str\>
-///    --port              -p      \<num\>
-class InitCommand extends Command {
+///    --name              -n      <str>
+///    --server            -s      <str>
+///    --port              -p      <num>
+/// ```
+class InitCommand extends Command with CommandArgGetter {
   /// Command name 'flyde {name} ...'
   @override
   final name = 'init';
@@ -38,5 +46,21 @@ class InitCommand extends Command {
   }
 
   @override
-  void run() {}
+  Future<void> run() async {
+    final int port = useArg('port');
+    final String name = useArg('name');
+    final String server = useArg('server');
+
+    final ProjectConfig projectConfig = ProjectConfig(
+      name: name,
+      server: server,
+      port: port,
+    );
+
+    final path = Directory('${Directory.current.path}/project.yaml').path;
+    final yaml = encodeAsYaml(projectConfig.toJson());
+    final file = File(path);
+
+    await file.writeAsString(yaml);
+  }
 }
