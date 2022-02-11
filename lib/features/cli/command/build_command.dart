@@ -1,12 +1,18 @@
+import 'dart:async';
+
 import 'package:args/command_runner.dart';
 
+import '../controller/building_view_controller.dart';
+import 'command_arg_getter.dart';
+
+///```sh
 ///flyde build
-///    --config            -c      \<name:str\>
-///    --detached          -d      \<flag\>
-///    --output            -o      \<path:str\>
-///    --logs              -l      \<path:str\>
-///    --verbose           -v      \<flag\>
-class BuildCommand extends Command {
+///    --config            -c      <name:str>
+///    --output            -o      <path:str>
+///    --logs              -l      <path:str>
+///    --verbose           -v      <flag>
+/// ```
+class BuildCommand extends Command with CommandArgGetter {
   /// Command name 'flyde {name} ...'
   @override
   final name = 'build';
@@ -20,16 +26,8 @@ class BuildCommand extends Command {
     argParser.addOption(
       'config',
       abbr: 'c',
-      defaultsTo: 'build.conf',
+      defaultsTo: 'default.config.yaml',
       help: 'Path to build config file',
-    );
-
-    argParser.addFlag(
-      'detached',
-      abbr: 'd',
-      defaultsTo: false,
-      negatable: false,
-      help: 'Run build in detached mode',
     );
 
     argParser.addOption(
@@ -56,5 +54,14 @@ class BuildCommand extends Command {
   }
 
   @override
-  void run() {}
+  Future<void> run() async {
+    //? Collect command line arguments
+    final String configPath = useArg('config');
+    final String outputPath = useArg('output');
+    final String logsPath = useArg('logs');
+
+    final controller = BuildingViewController(configPath, outputPath, logsPath);
+
+    await controller.executeTasks();
+  }
 }
