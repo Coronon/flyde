@@ -116,4 +116,11 @@ void main() {
       }
     }
   });
+
+  test('Fails to convert a bad string to log level', () {
+    expect(
+      () => ConvertLevelToString.fromDisplayString('bad'),
+      throwsA(isA<ArgumentError>()),
+    );
+  });
 }

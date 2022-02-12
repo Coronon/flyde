@@ -76,4 +76,11 @@ void main() {
       }
     }
   });
+
+  test('Fails to convert a bad string to log scope', () {
+    expect(
+      () => ConvertScopeToString.fromDisplayString('bad'),
+      throwsA(isA<ArgumentError>()),
+    );
+  });
 }
