@@ -14,15 +14,15 @@ void main() {
 
     expect(
       both.render(),
-      equals('\x1B[1m\x1B[37mboth\x1B[0m\x1B[0m'),
+      equals('\x1B[1m\x1B[37mboth\x1B[39m\x1B[22m'),
     );
     expect(
       color.render(),
-      equals('\x1B[37mcolor\x1B[0m'),
+      equals('\x1B[37mcolor\x1B[39m'),
     );
     expect(
       bold.render(),
-      equals('\x1B[1mbold\x1B[0m'),
+      equals('\x1B[1mbold\x1B[22m'),
     );
   });
 
@@ -31,7 +31,7 @@ void main() {
 
     expect(
       label.render(),
-      equals('\x1B[37mtext\x1B[0m'),
+      equals('\x1B[37mtext\x1B[39m'),
     );
   });
 
@@ -49,14 +49,14 @@ void main() {
       ..updateRequestReceiver = StreamController<WidgetUpdateRequest>().sink
       ..line = 0;
 
-    expect(defaultLabel.render(), equals('\x1B[1m\x1B[37mtest\x1B[0m\x1B[0m'));
+    expect(defaultLabel.render(), equals('\x1B[1m\x1B[37mtest\x1B[39m\x1B[22m'));
     expect(styledLabel.render(), equals('test'));
 
     color.value = TerminalColor.black;
     bold.value = false;
     content.value = 'changed';
 
-    expect(defaultLabel.render(), equals('\x1B[30mchanged\x1B[0m'));
+    expect(defaultLabel.render(), equals('\x1B[30mchanged\x1B[39m'));
     expect(styledLabel.render(), equals('changed'));
   });
 }
