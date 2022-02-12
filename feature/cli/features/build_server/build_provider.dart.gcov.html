@@ -31,13 +31,13 @@
             <td class="headerValue">lcov.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">86</td>
-            <td class="headerCovTableEntry">88</td>
-            <td class="headerCovTableEntryHi">97.7 %</td>
+            <td class="headerCovTableEntry">89</td>
+            <td class="headerCovTableEntry">95</td>
+            <td class="headerCovTableEntryHi">93.7 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2022-01-23 12:17:58</td>
+            <td class="headerValue">2022-02-12 17:56:59</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -214,130 +214,152 @@
 <a name="152"><span class="lineNum">     152 </span><span class="lineCov">          1 :     if (message == getBinaryRequest) {</span></a>
 <a name="153"><span class="lineNum">     153 </span><span class="lineCov">          2 :       await _handleBinaryRequest(session, message, id);</span></a>
 <a name="154"><span class="lineNum">     154 </span>            :     }</a>
-<a name="155"><span class="lineNum">     155 </span>            :   }</a>
-<a name="156"><span class="lineNum">     156 </span>            : </a>
-<a name="157"><span class="lineNum">     157 </span>            :   /// Checks if the [session] is the first in the queue for</a>
-<a name="158"><span class="lineNum">     158 </span>            :   /// the project with the id [id].</a>
-<a name="159"><span class="lineNum">     159 </span><span class="lineCov">          1 :   bool _isFirstInQueue(ServerSession session, String id) {</span></a>
-<a name="160"><span class="lineNum">     160 </span><span class="lineCov">          4 :     if (_projectCapacityQueues[id]?.isNotEmpty == true) {</span></a>
-<a name="161"><span class="lineNum">     161 </span><span class="lineCov">          3 :       return identical(_projectCapacityQueues[id]?.first, session);</span></a>
-<a name="162"><span class="lineNum">     162 </span>            :     }</a>
-<a name="163"><span class="lineNum">     163 </span>            : </a>
-<a name="164"><span class="lineNum">     164 </span>            :     return false;</a>
-<a name="165"><span class="lineNum">     165 </span>            :   }</a>
-<a name="166"><span class="lineNum">     166 </span>            : </a>
-<a name="167"><span class="lineNum">     167 </span>            :   /// Activates the first session in the queue for the project with the id [id].</a>
-<a name="168"><span class="lineNum">     168 </span>            :   ///</a>
-<a name="169"><span class="lineNum">     169 </span>            :   /// If [removing] is not null, the session is removed from the queue.</a>
-<a name="170"><span class="lineNum">     170 </span><span class="lineCov">          1 :   Future&lt;void&gt; _activateNextSession(String id, {ServerSession? removing}) async {</span></a>
-<a name="171"><span class="lineNum">     171 </span>            :     if (removing != null) {</a>
-<a name="172"><span class="lineNum">     172 </span><span class="lineCov">          3 :       _projectCapacityQueues[id]?.remove(removing);</span></a>
-<a name="173"><span class="lineNum">     173 </span>            :     }</a>
-<a name="174"><span class="lineNum">     174 </span>            : </a>
-<a name="175"><span class="lineNum">     175 </span><span class="lineCov">          4 :     if (_projectCapacityQueues[id]?.isNotEmpty == true) {</span></a>
-<a name="176"><span class="lineNum">     176 </span><span class="lineCov">          4 :       _activateSession(_projectCapacityQueues[id]!.first, id);</span></a>
-<a name="177"><span class="lineNum">     177 </span>            :     }</a>
-<a name="178"><span class="lineNum">     178 </span>            :   }</a>
+<a name="155"><span class="lineNum">     155 </span>            : </a>
+<a name="156"><span class="lineNum">     156 </span>            :     //? Download the logs for the last build</a>
+<a name="157"><span class="lineNum">     157 </span><span class="lineCov">          1 :     if (message == getBuildLogsRequest) {</span></a>
+<a name="158"><span class="lineNum">     158 </span><span class="lineNoCov">          0 :       await _handleLogsRequest(session, message, id);</span></a>
+<a name="159"><span class="lineNum">     159 </span>            :     }</a>
+<a name="160"><span class="lineNum">     160 </span>            :   }</a>
+<a name="161"><span class="lineNum">     161 </span>            : </a>
+<a name="162"><span class="lineNum">     162 </span>            :   /// Checks if the [session] is the first in the queue for</a>
+<a name="163"><span class="lineNum">     163 </span>            :   /// the project with the id [id].</a>
+<a name="164"><span class="lineNum">     164 </span><span class="lineCov">          1 :   bool _isFirstInQueue(ServerSession session, String id) {</span></a>
+<a name="165"><span class="lineNum">     165 </span><span class="lineCov">          4 :     if (_projectCapacityQueues[id]?.isNotEmpty == true) {</span></a>
+<a name="166"><span class="lineNum">     166 </span><span class="lineCov">          3 :       return identical(_projectCapacityQueues[id]?.first, session);</span></a>
+<a name="167"><span class="lineNum">     167 </span>            :     }</a>
+<a name="168"><span class="lineNum">     168 </span>            : </a>
+<a name="169"><span class="lineNum">     169 </span>            :     return false;</a>
+<a name="170"><span class="lineNum">     170 </span>            :   }</a>
+<a name="171"><span class="lineNum">     171 </span>            : </a>
+<a name="172"><span class="lineNum">     172 </span>            :   /// Activates the first session in the queue for the project with the id [id].</a>
+<a name="173"><span class="lineNum">     173 </span>            :   ///</a>
+<a name="174"><span class="lineNum">     174 </span>            :   /// If [removing] is not null, the session is removed from the queue.</a>
+<a name="175"><span class="lineNum">     175 </span><span class="lineCov">          1 :   Future&lt;void&gt; _activateNextSession(String id, {ServerSession? removing}) async {</span></a>
+<a name="176"><span class="lineNum">     176 </span>            :     if (removing != null) {</a>
+<a name="177"><span class="lineNum">     177 </span><span class="lineCov">          3 :       _projectCapacityQueues[id]?.remove(removing);</span></a>
+<a name="178"><span class="lineNum">     178 </span>            :     }</a>
 <a name="179"><span class="lineNum">     179 </span>            : </a>
-<a name="180"><span class="lineNum">     180 </span>            :   /// Activates the [session] for the project with the id [id].</a>
-<a name="181"><span class="lineNum">     181 </span><span class="lineCov">          1 :   Future&lt;void&gt; _activateSession(ServerSession session, String id) async {</span></a>
-<a name="182"><span class="lineNum">     182 </span><span class="lineCov">          4 :     _interfaces[id]?.onStateUpdate = session.send;</span></a>
-<a name="183"><span class="lineNum">     183 </span><span class="lineCov">          1 :     session.send(isActiveSessionResponse);</span></a>
-<a name="184"><span class="lineNum">     184 </span>            :   }</a>
-<a name="185"><span class="lineNum">     185 </span>            : </a>
-<a name="186"><span class="lineNum">     186 </span>            :   /// Returns the interface with the given [id] or throws an exception.</a>
-<a name="187"><span class="lineNum">     187 </span><span class="lineCov">          1 :   ProjectInterface _getInterface(String id) {</span></a>
-<a name="188"><span class="lineNum">     188 </span><span class="lineCov">          2 :     if (_interfaces.containsKey(id)) {</span></a>
-<a name="189"><span class="lineNum">     189 </span><span class="lineCov">          2 :       return _interfaces[id]!;</span></a>
-<a name="190"><span class="lineNum">     190 </span>            :     }</a>
-<a name="191"><span class="lineNum">     191 </span>            : </a>
-<a name="192"><span class="lineNum">     192 </span><span class="lineNoCov">          0 :     throw StateError('Interface with id $id has not been created yet.');</span></a>
-<a name="193"><span class="lineNum">     193 </span>            :   }</a>
-<a name="194"><span class="lineNum">     194 </span>            : </a>
-<a name="195"><span class="lineNum">     195 </span>            :   /// Throws an error if the [session] has no id or returns it.</a>
-<a name="196"><span class="lineNum">     196 </span><span class="lineCov">          1 :   String _ensureId(ServerSession session) {</span></a>
-<a name="197"><span class="lineNum">     197 </span><span class="lineCov">          2 :     final dynamic id = session.storage['id'];</span></a>
-<a name="198"><span class="lineNum">     198 </span>            : </a>
-<a name="199"><span class="lineNum">     199 </span><span class="lineCov">          1 :     if (id is String) {</span></a>
-<a name="200"><span class="lineNum">     200 </span>            :       return id;</a>
-<a name="201"><span class="lineNum">     201 </span>            :     }</a>
-<a name="202"><span class="lineNum">     202 </span>            : </a>
-<a name="203"><span class="lineNum">     203 </span><span class="lineNoCov">          0 :     throw StateError('Session has no project id.');</span></a>
-<a name="204"><span class="lineNum">     204 </span>            :   }</a>
-<a name="205"><span class="lineNum">     205 </span>            : </a>
-<a name="206"><span class="lineNum">     206 </span>            :   /// Handles a new project initialization request.</a>
-<a name="207"><span class="lineNum">     207 </span><span class="lineCov">          1 :   Future&lt;void&gt; _handleProjectInit(ServerSession session, ProjectInitRequest message) async {</span></a>
-<a name="208"><span class="lineNum">     208 </span><span class="lineCov">          3 :     session.storage['id'] = message.id;</span></a>
-<a name="209"><span class="lineNum">     209 </span>            : </a>
-<a name="210"><span class="lineNum">     210 </span><span class="lineCov">          3 :     if (!_interfaces.containsKey(message.id)) {</span></a>
-<a name="211"><span class="lineNum">     211 </span><span class="lineCov">          5 :       _interfaces[message.id] = await ProjectInterface.launch();</span></a>
-<a name="212"><span class="lineNum">     212 </span><span class="lineCov">          4 :       _availableProjects[message.id] = message.name;</span></a>
-<a name="213"><span class="lineNum">     213 </span><span class="lineCov">          5 :       _interfaces[message.id]?.onStateUpdate = session.send;</span></a>
-<a name="214"><span class="lineNum">     214 </span><span class="lineCov">          4 :       _projectCapacityQueues[message.id] = Queue&lt;ServerSession&gt;();</span></a>
-<a name="215"><span class="lineNum">     215 </span>            :     }</a>
-<a name="216"><span class="lineNum">     216 </span>            : </a>
-<a name="217"><span class="lineNum">     217 </span><span class="lineCov">          1 :     session.send(</span></a>
-<a name="218"><span class="lineNum">     218 </span><span class="lineCov">          1 :       ProcessCompletionMessage(</span></a>
-<a name="219"><span class="lineNum">     219 </span>            :         process: CompletableProcess.projectInit,</a>
-<a name="220"><span class="lineNum">     220 </span>            :         description: '',</a>
-<a name="221"><span class="lineNum">     221 </span>            :       ),</a>
-<a name="222"><span class="lineNum">     222 </span>            :     );</a>
-<a name="223"><span class="lineNum">     223 </span>            :   }</a>
-<a name="224"><span class="lineNum">     224 </span>            : </a>
-<a name="225"><span class="lineNum">     225 </span>            :   /// Handles a new project update request.</a>
-<a name="226"><span class="lineNum">     226 </span><span class="lineCov">          1 :   Future&lt;void&gt; _handleProjectUpdate(</span></a>
-<a name="227"><span class="lineNum">     227 </span>            :     ServerSession session,</a>
-<a name="228"><span class="lineNum">     228 </span>            :     ProjectUpdateRequest message,</a>
-<a name="229"><span class="lineNum">     229 </span>            :     String id,</a>
-<a name="230"><span class="lineNum">     230 </span>            :   ) async {</a>
-<a name="231"><span class="lineNum">     231 </span>            :     final ProjectCache cache;</a>
-<a name="232"><span class="lineNum">     232 </span>            : </a>
-<a name="233"><span class="lineNum">     233 </span><span class="lineCov">          2 :     if (!_cache.has(id)) {</span></a>
-<a name="234"><span class="lineNum">     234 </span><span class="lineCov">          3 :       cache = await _cache.create(id);</span></a>
-<a name="235"><span class="lineNum">     235 </span>            :     } else {</a>
-<a name="236"><span class="lineNum">     236 </span><span class="lineCov">          3 :       cache = await _cache.get(id);</span></a>
-<a name="237"><span class="lineNum">     237 </span>            :     }</a>
-<a name="238"><span class="lineNum">     238 </span>            : </a>
-<a name="239"><span class="lineNum">     239 </span><span class="lineCov">          4 :     _getInterface(id).init(message.files, message.config, cache);</span></a>
-<a name="240"><span class="lineNum">     240 </span>            : </a>
-<a name="241"><span class="lineNum">     241 </span><span class="lineCov">          1 :     session.send(</span></a>
-<a name="242"><span class="lineNum">     242 </span><span class="lineCov">          1 :       ProjectUpdateResponse(</span></a>
-<a name="243"><span class="lineNum">     243 </span><span class="lineCov">          3 :         files: await _getInterface(id).sync(</span></a>
-<a name="244"><span class="lineNum">     244 </span><span class="lineCov">          1 :           message.files,</span></a>
-<a name="245"><span class="lineNum">     245 </span><span class="lineCov">          1 :           message.config,</span></a>
-<a name="246"><span class="lineNum">     246 </span>            :         ),</a>
-<a name="247"><span class="lineNum">     247 </span>            :       ),</a>
-<a name="248"><span class="lineNum">     248 </span>            :     );</a>
-<a name="249"><span class="lineNum">     249 </span>            :   }</a>
+<a name="180"><span class="lineNum">     180 </span><span class="lineCov">          4 :     if (_projectCapacityQueues[id]?.isNotEmpty == true) {</span></a>
+<a name="181"><span class="lineNum">     181 </span><span class="lineCov">          4 :       _activateSession(_projectCapacityQueues[id]!.first, id);</span></a>
+<a name="182"><span class="lineNum">     182 </span>            :     }</a>
+<a name="183"><span class="lineNum">     183 </span>            :   }</a>
+<a name="184"><span class="lineNum">     184 </span>            : </a>
+<a name="185"><span class="lineNum">     185 </span>            :   /// Activates the [session] for the project with the id [id].</a>
+<a name="186"><span class="lineNum">     186 </span><span class="lineCov">          1 :   Future&lt;void&gt; _activateSession(ServerSession session, String id) async {</span></a>
+<a name="187"><span class="lineNum">     187 </span>            :     const isActiveKey = 'is_active';</a>
+<a name="188"><span class="lineNum">     188 </span>            : </a>
+<a name="189"><span class="lineNum">     189 </span><span class="lineCov">          3 :     if (session.storage[isActiveKey] == true) {</span></a>
+<a name="190"><span class="lineNum">     190 </span>            :       return;</a>
+<a name="191"><span class="lineNum">     191 </span>            :     }</a>
+<a name="192"><span class="lineNum">     192 </span>            : </a>
+<a name="193"><span class="lineNum">     193 </span><span class="lineCov">          4 :     _interfaces[id]?.onStateUpdate = session.send;</span></a>
+<a name="194"><span class="lineNum">     194 </span><span class="lineCov">          1 :     session.send(isActiveSessionResponse);</span></a>
+<a name="195"><span class="lineNum">     195 </span><span class="lineCov">          2 :     session.storage[isActiveKey] = true;</span></a>
+<a name="196"><span class="lineNum">     196 </span>            :   }</a>
+<a name="197"><span class="lineNum">     197 </span>            : </a>
+<a name="198"><span class="lineNum">     198 </span>            :   /// Returns the interface with the given [id] or throws an exception.</a>
+<a name="199"><span class="lineNum">     199 </span><span class="lineCov">          1 :   ProjectInterface _getInterface(String id) {</span></a>
+<a name="200"><span class="lineNum">     200 </span><span class="lineCov">          2 :     if (_interfaces.containsKey(id)) {</span></a>
+<a name="201"><span class="lineNum">     201 </span><span class="lineCov">          2 :       return _interfaces[id]!;</span></a>
+<a name="202"><span class="lineNum">     202 </span>            :     }</a>
+<a name="203"><span class="lineNum">     203 </span>            : </a>
+<a name="204"><span class="lineNum">     204 </span><span class="lineNoCov">          0 :     throw StateError('Interface with id $id has not been created yet.');</span></a>
+<a name="205"><span class="lineNum">     205 </span>            :   }</a>
+<a name="206"><span class="lineNum">     206 </span>            : </a>
+<a name="207"><span class="lineNum">     207 </span>            :   /// Throws an error if the [session] has no id or returns it.</a>
+<a name="208"><span class="lineNum">     208 </span><span class="lineCov">          1 :   String _ensureId(ServerSession session) {</span></a>
+<a name="209"><span class="lineNum">     209 </span><span class="lineCov">          2 :     final dynamic id = session.storage['id'];</span></a>
+<a name="210"><span class="lineNum">     210 </span>            : </a>
+<a name="211"><span class="lineNum">     211 </span><span class="lineCov">          1 :     if (id is String) {</span></a>
+<a name="212"><span class="lineNum">     212 </span>            :       return id;</a>
+<a name="213"><span class="lineNum">     213 </span>            :     }</a>
+<a name="214"><span class="lineNum">     214 </span>            : </a>
+<a name="215"><span class="lineNum">     215 </span><span class="lineNoCov">          0 :     throw StateError('Session has no project id.');</span></a>
+<a name="216"><span class="lineNum">     216 </span>            :   }</a>
+<a name="217"><span class="lineNum">     217 </span>            : </a>
+<a name="218"><span class="lineNum">     218 </span>            :   /// Handles a new project initialization request.</a>
+<a name="219"><span class="lineNum">     219 </span><span class="lineCov">          1 :   Future&lt;void&gt; _handleProjectInit(ServerSession session, ProjectInitRequest message) async {</span></a>
+<a name="220"><span class="lineNum">     220 </span><span class="lineCov">          3 :     session.storage['id'] = message.id;</span></a>
+<a name="221"><span class="lineNum">     221 </span>            : </a>
+<a name="222"><span class="lineNum">     222 </span><span class="lineCov">          3 :     if (!_interfaces.containsKey(message.id)) {</span></a>
+<a name="223"><span class="lineNum">     223 </span><span class="lineCov">          5 :       _interfaces[message.id] = await ProjectInterface.launch();</span></a>
+<a name="224"><span class="lineNum">     224 </span><span class="lineCov">          4 :       _availableProjects[message.id] = message.name;</span></a>
+<a name="225"><span class="lineNum">     225 </span><span class="lineCov">          5 :       _interfaces[message.id]?.onStateUpdate = session.send;</span></a>
+<a name="226"><span class="lineNum">     226 </span><span class="lineCov">          4 :       _projectCapacityQueues[message.id] = Queue&lt;ServerSession&gt;();</span></a>
+<a name="227"><span class="lineNum">     227 </span>            :     }</a>
+<a name="228"><span class="lineNum">     228 </span>            : </a>
+<a name="229"><span class="lineNum">     229 </span><span class="lineCov">          1 :     session.send(</span></a>
+<a name="230"><span class="lineNum">     230 </span><span class="lineCov">          1 :       ProcessCompletionMessage(</span></a>
+<a name="231"><span class="lineNum">     231 </span>            :         process: CompletableProcess.projectInit,</a>
+<a name="232"><span class="lineNum">     232 </span>            :         description: '',</a>
+<a name="233"><span class="lineNum">     233 </span>            :       ),</a>
+<a name="234"><span class="lineNum">     234 </span>            :     );</a>
+<a name="235"><span class="lineNum">     235 </span>            :   }</a>
+<a name="236"><span class="lineNum">     236 </span>            : </a>
+<a name="237"><span class="lineNum">     237 </span>            :   /// Handles a new project update request.</a>
+<a name="238"><span class="lineNum">     238 </span><span class="lineCov">          1 :   Future&lt;void&gt; _handleProjectUpdate(</span></a>
+<a name="239"><span class="lineNum">     239 </span>            :     ServerSession session,</a>
+<a name="240"><span class="lineNum">     240 </span>            :     ProjectUpdateRequest message,</a>
+<a name="241"><span class="lineNum">     241 </span>            :     String id,</a>
+<a name="242"><span class="lineNum">     242 </span>            :   ) async {</a>
+<a name="243"><span class="lineNum">     243 </span>            :     final ProjectCache cache;</a>
+<a name="244"><span class="lineNum">     244 </span>            : </a>
+<a name="245"><span class="lineNum">     245 </span><span class="lineCov">          2 :     if (!_cache.has(id)) {</span></a>
+<a name="246"><span class="lineNum">     246 </span><span class="lineCov">          3 :       cache = await _cache.create(id);</span></a>
+<a name="247"><span class="lineNum">     247 </span>            :     } else {</a>
+<a name="248"><span class="lineNum">     248 </span><span class="lineCov">          3 :       cache = await _cache.get(id);</span></a>
+<a name="249"><span class="lineNum">     249 </span>            :     }</a>
 <a name="250"><span class="lineNum">     250 </span>            : </a>
-<a name="251"><span class="lineNum">     251 </span>            :   /// Handles a new file update request.</a>
-<a name="252"><span class="lineNum">     252 </span><span class="lineCov">          1 :   Future&lt;void&gt; _handleFileUpdate(</span></a>
-<a name="253"><span class="lineNum">     253 </span>            :     ServerSession session,</a>
-<a name="254"><span class="lineNum">     254 </span>            :     FileUpdate message,</a>
-<a name="255"><span class="lineNum">     255 </span>            :     String id,</a>
-<a name="256"><span class="lineNum">     256 </span>            :   ) async {</a>
-<a name="257"><span class="lineNum">     257 </span><span class="lineCov">          2 :     final SourceFile file = await message.toSourceFile();</span></a>
-<a name="258"><span class="lineNum">     258 </span>            : </a>
-<a name="259"><span class="lineNum">     259 </span><span class="lineCov">          3 :     await _getInterface(id).update(file);</span></a>
-<a name="260"><span class="lineNum">     260 </span>            : </a>
-<a name="261"><span class="lineNum">     261 </span><span class="lineCov">          1 :     session.send(</span></a>
-<a name="262"><span class="lineNum">     262 </span><span class="lineCov">          1 :       ProcessCompletionMessage(</span></a>
-<a name="263"><span class="lineNum">     263 </span>            :         process: CompletableProcess.fileUpdate,</a>
-<a name="264"><span class="lineNum">     264 </span><span class="lineCov">          1 :         description: file.id,</span></a>
-<a name="265"><span class="lineNum">     265 </span>            :       ),</a>
-<a name="266"><span class="lineNum">     266 </span>            :     );</a>
-<a name="267"><span class="lineNum">     267 </span>            :   }</a>
-<a name="268"><span class="lineNum">     268 </span>            : </a>
-<a name="269"><span class="lineNum">     269 </span>            :   /// Handles a binary request.</a>
-<a name="270"><span class="lineNum">     270 </span><span class="lineCov">          1 :   Future&lt;void&gt; _handleBinaryRequest(</span></a>
-<a name="271"><span class="lineNum">     271 </span>            :     ServerSession session,</a>
-<a name="272"><span class="lineNum">     272 </span>            :     dynamic message,</a>
-<a name="273"><span class="lineNum">     273 </span>            :     String id,</a>
-<a name="274"><span class="lineNum">     274 </span>            :   ) async {</a>
-<a name="275"><span class="lineNum">     275 </span><span class="lineCov">          3 :     final Uint8List? data = await _getInterface(id).binary;</span></a>
-<a name="276"><span class="lineNum">     276 </span><span class="lineCov">          2 :     session.send(BinaryResponse(binary: data));</span></a>
-<a name="277"><span class="lineNum">     277 </span>            :   }</a>
-<a name="278"><span class="lineNum">     278 </span>            : }</a>
+<a name="251"><span class="lineNum">     251 </span><span class="lineCov">          4 :     _getInterface(id).init(message.files, message.config, cache);</span></a>
+<a name="252"><span class="lineNum">     252 </span>            : </a>
+<a name="253"><span class="lineNum">     253 </span><span class="lineCov">          1 :     session.send(</span></a>
+<a name="254"><span class="lineNum">     254 </span><span class="lineCov">          1 :       ProjectUpdateResponse(</span></a>
+<a name="255"><span class="lineNum">     255 </span><span class="lineCov">          3 :         files: await _getInterface(id).sync(</span></a>
+<a name="256"><span class="lineNum">     256 </span><span class="lineCov">          1 :           message.files,</span></a>
+<a name="257"><span class="lineNum">     257 </span><span class="lineCov">          1 :           message.config,</span></a>
+<a name="258"><span class="lineNum">     258 </span>            :         ),</a>
+<a name="259"><span class="lineNum">     259 </span>            :       ),</a>
+<a name="260"><span class="lineNum">     260 </span>            :     );</a>
+<a name="261"><span class="lineNum">     261 </span>            :   }</a>
+<a name="262"><span class="lineNum">     262 </span>            : </a>
+<a name="263"><span class="lineNum">     263 </span>            :   /// Handles a new file update request.</a>
+<a name="264"><span class="lineNum">     264 </span><span class="lineCov">          1 :   Future&lt;void&gt; _handleFileUpdate(</span></a>
+<a name="265"><span class="lineNum">     265 </span>            :     ServerSession session,</a>
+<a name="266"><span class="lineNum">     266 </span>            :     FileUpdate message,</a>
+<a name="267"><span class="lineNum">     267 </span>            :     String id,</a>
+<a name="268"><span class="lineNum">     268 </span>            :   ) async {</a>
+<a name="269"><span class="lineNum">     269 </span><span class="lineCov">          2 :     final SourceFile file = await message.toSourceFile();</span></a>
+<a name="270"><span class="lineNum">     270 </span>            : </a>
+<a name="271"><span class="lineNum">     271 </span><span class="lineCov">          3 :     await _getInterface(id).update(file);</span></a>
+<a name="272"><span class="lineNum">     272 </span>            : </a>
+<a name="273"><span class="lineNum">     273 </span><span class="lineCov">          1 :     session.send(</span></a>
+<a name="274"><span class="lineNum">     274 </span><span class="lineCov">          1 :       ProcessCompletionMessage(</span></a>
+<a name="275"><span class="lineNum">     275 </span>            :         process: CompletableProcess.fileUpdate,</a>
+<a name="276"><span class="lineNum">     276 </span><span class="lineCov">          1 :         description: file.id,</span></a>
+<a name="277"><span class="lineNum">     277 </span>            :       ),</a>
+<a name="278"><span class="lineNum">     278 </span>            :     );</a>
+<a name="279"><span class="lineNum">     279 </span>            :   }</a>
+<a name="280"><span class="lineNum">     280 </span>            : </a>
+<a name="281"><span class="lineNum">     281 </span>            :   /// Handles a binary request.</a>
+<a name="282"><span class="lineNum">     282 </span><span class="lineCov">          1 :   Future&lt;void&gt; _handleBinaryRequest(</span></a>
+<a name="283"><span class="lineNum">     283 </span>            :     ServerSession session,</a>
+<a name="284"><span class="lineNum">     284 </span>            :     dynamic message,</a>
+<a name="285"><span class="lineNum">     285 </span>            :     String id,</a>
+<a name="286"><span class="lineNum">     286 </span>            :   ) async {</a>
+<a name="287"><span class="lineNum">     287 </span><span class="lineCov">          3 :     final Uint8List? data = await _getInterface(id).binary;</span></a>
+<a name="288"><span class="lineNum">     288 </span><span class="lineCov">          2 :     session.send(BinaryResponse(binary: data));</span></a>
+<a name="289"><span class="lineNum">     289 </span>            :   }</a>
+<a name="290"><span class="lineNum">     290 </span>            : </a>
+<a name="291"><span class="lineNum">     291 </span>            :   /// Handles a logs request.</a>
+<a name="292"><span class="lineNum">     292 </span><span class="lineNoCov">          0 :   Future&lt;void&gt; _handleLogsRequest(</span></a>
+<a name="293"><span class="lineNum">     293 </span>            :     ServerSession session,</a>
+<a name="294"><span class="lineNum">     294 </span>            :     dynamic message,</a>
+<a name="295"><span class="lineNum">     295 </span>            :     String id,</a>
+<a name="296"><span class="lineNum">     296 </span>            :   ) async {</a>
+<a name="297"><span class="lineNum">     297 </span><span class="lineNoCov">          0 :     final Uint8List data = await _getInterface(id).logData;</span></a>
+<a name="298"><span class="lineNum">     298 </span><span class="lineNoCov">          0 :     session.send(BinaryResponse(binary: data));</span></a>
+<a name="299"><span class="lineNum">     299 </span>            :   }</a>
+<a name="300"><span class="lineNum">     300 </span>            : }</a>
 </pre>
       </td>
     </tr>

@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2022-01-23 12:17:58</td>
+            <td class="headerValue">2022-02-12 17:56:59</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -73,24 +73,27 @@
 <a name="11"><span class="lineNum">      11 </span>            : /// Request to download the latest project binary.</a>
 <a name="12"><span class="lineNum">      12 </span>            : const getBinaryRequest = 'get_binary';</a>
 <a name="13"><span class="lineNum">      13 </span>            : </a>
-<a name="14"><span class="lineNum">      14 </span>            : /// Server response which sends the latest binary or null</a>
-<a name="15"><span class="lineNum">      15 </span>            : /// if not available.</a>
-<a name="16"><span class="lineNum">      16 </span>            : @JsonSerializable()</a>
-<a name="17"><span class="lineNum">      17 </span>            : class BinaryResponse {</a>
-<a name="18"><span class="lineNum">      18 </span>            :   /// The binary data.</a>
-<a name="19"><span class="lineNum">      19 </span>            :   @JsonKey(toJson: _binaryToJson, fromJson: _jsonToBinary)</a>
-<a name="20"><span class="lineNum">      20 </span>            :   final Uint8List? binary;</a>
-<a name="21"><span class="lineNum">      21 </span>            : </a>
-<a name="22"><span class="lineNum">      22 </span><span class="lineCov">          1 :   BinaryResponse({required this.binary});</span></a>
-<a name="23"><span class="lineNum">      23 </span>            : </a>
-<a name="24"><span class="lineNum">      24 </span><span class="lineCov">          2 :   factory BinaryResponse.fromJson(Map&lt;String, dynamic&gt; json) =&gt; _$BinaryResponseFromJson(json);</span></a>
-<a name="25"><span class="lineNum">      25 </span>            : </a>
-<a name="26"><span class="lineNum">      26 </span><span class="lineCov">          2 :   Map&lt;String, dynamic&gt; toJson() =&gt; _$BinaryResponseToJson(this);</span></a>
-<a name="27"><span class="lineNum">      27 </span>            : </a>
-<a name="28"><span class="lineNum">      28 </span><span class="lineCov">          2 :   static String? _binaryToJson(Uint8List? binary) =&gt; binary == null ? null : base64Encode(binary);</span></a>
-<a name="29"><span class="lineNum">      29 </span>            : </a>
-<a name="30"><span class="lineNum">      30 </span><span class="lineCov">          2 :   static Uint8List? _jsonToBinary(String? json) =&gt; json == null ? null : base64Decode(json);</span></a>
-<a name="31"><span class="lineNum">      31 </span>            : }</a>
+<a name="14"><span class="lineNum">      14 </span>            : /// Request to download the logs for the last build.</a>
+<a name="15"><span class="lineNum">      15 </span>            : const getBuildLogsRequest = 'get_build_logs';</a>
+<a name="16"><span class="lineNum">      16 </span>            : </a>
+<a name="17"><span class="lineNum">      17 </span>            : /// Server response which sends the latest binary or null</a>
+<a name="18"><span class="lineNum">      18 </span>            : /// if not available.</a>
+<a name="19"><span class="lineNum">      19 </span>            : @JsonSerializable()</a>
+<a name="20"><span class="lineNum">      20 </span>            : class BinaryResponse {</a>
+<a name="21"><span class="lineNum">      21 </span>            :   /// The binary data.</a>
+<a name="22"><span class="lineNum">      22 </span>            :   @JsonKey(toJson: _binaryToJson, fromJson: _jsonToBinary)</a>
+<a name="23"><span class="lineNum">      23 </span>            :   final Uint8List? binary;</a>
+<a name="24"><span class="lineNum">      24 </span>            : </a>
+<a name="25"><span class="lineNum">      25 </span><span class="lineCov">          1 :   BinaryResponse({required this.binary});</span></a>
+<a name="26"><span class="lineNum">      26 </span>            : </a>
+<a name="27"><span class="lineNum">      27 </span><span class="lineCov">          2 :   factory BinaryResponse.fromJson(Map&lt;String, dynamic&gt; json) =&gt; _$BinaryResponseFromJson(json);</span></a>
+<a name="28"><span class="lineNum">      28 </span>            : </a>
+<a name="29"><span class="lineNum">      29 </span><span class="lineCov">          2 :   Map&lt;String, dynamic&gt; toJson() =&gt; _$BinaryResponseToJson(this);</span></a>
+<a name="30"><span class="lineNum">      30 </span>            : </a>
+<a name="31"><span class="lineNum">      31 </span><span class="lineCov">          2 :   static String? _binaryToJson(Uint8List? binary) =&gt; binary == null ? null : base64Encode(binary);</span></a>
+<a name="32"><span class="lineNum">      32 </span>            : </a>
+<a name="33"><span class="lineNum">      33 </span><span class="lineCov">          2 :   static Uint8List? _jsonToBinary(String? json) =&gt; json == null ? null : base64Decode(json);</span></a>
+<a name="34"><span class="lineNum">      34 </span>            : }</a>
 </pre>
       </td>
     </tr>
