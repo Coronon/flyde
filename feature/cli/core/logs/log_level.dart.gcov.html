@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2022-02-12 18:35:19</td>
+            <td class="headerValue">2022-04-27 18:00:56</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -63,7 +63,7 @@
 <a name="1"><span class="lineNum">       1 </span>            : import '../console/terminal_color.dart';</a>
 <a name="2"><span class="lineNum">       2 </span>            : </a>
 <a name="3"><span class="lineNum">       3 </span>            : /// A [logScope] is a way to group log messages by importance.</a>
-<a name="4"><span class="lineNum">       4 </span><span class="lineCov">         10 : enum LogLevel {</span></a>
+<a name="4"><span class="lineNum">       4 </span><span class="lineCov">         17 : enum LogLevel {</span></a>
 <a name="5"><span class="lineNum">       5 </span>            :   /// The message is a debug message and should not</a>
 <a name="6"><span class="lineNum">       6 </span>            :   /// cover information that is important for the user.</a>
 <a name="7"><span class="lineNum">       7 </span>            :   debug,</a>
@@ -95,17 +95,17 @@
 <a name="33"><span class="lineNum">      33 </span>            :   ///</a>
 <a name="34"><span class="lineNum">      34 </span>            :   /// If [displayString] is not a valid [LogLevel]</a>
 <a name="35"><span class="lineNum">      35 </span>            :   /// an [ArgumentError] is thrown.</a>
-<a name="36"><span class="lineNum">      36 </span><span class="lineCov">          1 :   static LogLevel fromDisplayString(String displayString) {</span></a>
+<a name="36"><span class="lineNum">      36 </span><span class="lineCov">          2 :   static LogLevel fromDisplayString(String displayString) {</span></a>
 <a name="37"><span class="lineNum">      37 </span>            :     switch (displayString) {</a>
-<a name="38"><span class="lineNum">      38 </span><span class="lineCov">          1 :       case 'debug':</span></a>
+<a name="38"><span class="lineNum">      38 </span><span class="lineCov">          2 :       case 'debug':</span></a>
 <a name="39"><span class="lineNum">      39 </span>            :         return LogLevel.debug;</a>
-<a name="40"><span class="lineNum">      40 </span><span class="lineCov">          1 :       case 'info':</span></a>
+<a name="40"><span class="lineNum">      40 </span><span class="lineCov">          2 :       case 'info':</span></a>
 <a name="41"><span class="lineNum">      41 </span>            :         return LogLevel.info;</a>
-<a name="42"><span class="lineNum">      42 </span><span class="lineCov">          1 :       case 'warning':</span></a>
+<a name="42"><span class="lineNum">      42 </span><span class="lineCov">          2 :       case 'warning':</span></a>
 <a name="43"><span class="lineNum">      43 </span>            :         return LogLevel.warning;</a>
-<a name="44"><span class="lineNum">      44 </span><span class="lineCov">          1 :       case 'error':</span></a>
+<a name="44"><span class="lineNum">      44 </span><span class="lineCov">          2 :       case 'error':</span></a>
 <a name="45"><span class="lineNum">      45 </span>            :         return LogLevel.error;</a>
-<a name="46"><span class="lineNum">      46 </span><span class="lineCov">          1 :       case 'critical':</span></a>
+<a name="46"><span class="lineNum">      46 </span><span class="lineCov">          2 :       case 'critical':</span></a>
 <a name="47"><span class="lineNum">      47 </span>            :         return LogLevel.critical;</a>
 <a name="48"><span class="lineNum">      48 </span>            :       default:</a>
 <a name="49"><span class="lineNum">      49 </span><span class="lineCov">          2 :         throw ArgumentError('Invalid log level: $displayString');</span></a>
@@ -117,18 +117,18 @@
 <a name="55"><span class="lineNum">      55 </span>            :   ///</a>
 <a name="56"><span class="lineNum">      56 </span>            :   /// If [colored] is true, the string will be formatted</a>
 <a name="57"><span class="lineNum">      57 </span>            :   /// to be displayed in a terminal.</a>
-<a name="58"><span class="lineNum">      58 </span><span class="lineCov">          1 :   String toDisplayString({bool colored = false}) {</span></a>
+<a name="58"><span class="lineNum">      58 </span><span class="lineCov">          2 :   String toDisplayString({bool colored = false}) {</span></a>
 <a name="59"><span class="lineNum">      59 </span>            :     switch (this) {</a>
-<a name="60"><span class="lineNum">      60 </span><span class="lineCov">          1 :       case LogLevel.debug:</span></a>
-<a name="61"><span class="lineNum">      61 </span><span class="lineCov">          1 :         return colored ? 'debug'.colored(TerminalColor.cyan) : 'debug';</span></a>
-<a name="62"><span class="lineNum">      62 </span><span class="lineCov">          1 :       case LogLevel.info:</span></a>
-<a name="63"><span class="lineNum">      63 </span><span class="lineCov">          1 :         return colored ? 'info'.colored(TerminalColor.blue) : 'info';</span></a>
-<a name="64"><span class="lineNum">      64 </span><span class="lineCov">          1 :       case LogLevel.warning:</span></a>
-<a name="65"><span class="lineNum">      65 </span><span class="lineCov">          1 :         return colored ? 'warning'.colored(TerminalColor.yellow) : 'warning';</span></a>
-<a name="66"><span class="lineNum">      66 </span><span class="lineCov">          1 :       case LogLevel.error:</span></a>
-<a name="67"><span class="lineNum">      67 </span><span class="lineCov">          1 :         return colored ? 'error'.colored(TerminalColor.magenta) : 'error';</span></a>
-<a name="68"><span class="lineNum">      68 </span><span class="lineCov">          1 :       case LogLevel.critical:</span></a>
-<a name="69"><span class="lineNum">      69 </span><span class="lineCov">          1 :         return colored ? 'critical'.colored(TerminalColor.red) : 'critical';</span></a>
+<a name="60"><span class="lineNum">      60 </span><span class="lineCov">          2 :       case LogLevel.debug:</span></a>
+<a name="61"><span class="lineNum">      61 </span><span class="lineCov">          2 :         return colored ? 'debug'.colored(TerminalColor.cyan) : 'debug';</span></a>
+<a name="62"><span class="lineNum">      62 </span><span class="lineCov">          2 :       case LogLevel.info:</span></a>
+<a name="63"><span class="lineNum">      63 </span><span class="lineCov">          2 :         return colored ? 'info'.colored(TerminalColor.blue) : 'info';</span></a>
+<a name="64"><span class="lineNum">      64 </span><span class="lineCov">          2 :       case LogLevel.warning:</span></a>
+<a name="65"><span class="lineNum">      65 </span><span class="lineCov">          2 :         return colored ? 'warning'.colored(TerminalColor.yellow) : 'warning';</span></a>
+<a name="66"><span class="lineNum">      66 </span><span class="lineCov">          2 :       case LogLevel.error:</span></a>
+<a name="67"><span class="lineNum">      67 </span><span class="lineCov">          2 :         return colored ? 'error'.colored(TerminalColor.magenta) : 'error';</span></a>
+<a name="68"><span class="lineNum">      68 </span><span class="lineCov">          2 :       case LogLevel.critical:</span></a>
+<a name="69"><span class="lineNum">      69 </span><span class="lineCov">          2 :         return colored ? 'critical'.colored(TerminalColor.red) : 'critical';</span></a>
 <a name="70"><span class="lineNum">      70 </span>            :     }</a>
 <a name="71"><span class="lineNum">      71 </span>            :   }</a>
 <a name="72"><span class="lineNum">      72 </span>            : }</a>
