@@ -105,7 +105,7 @@ class Logger {
 
     builder.add(_magicByte);
 
-    for (final message in _messages) {
+    for (final message in _filter(scope, level, from, to)) {
       final data = message.toRawData();
       final len = data.length;
       final lenBuffer = Uint8List(4)..buffer.asUint32List(0, 1)[0] = len;
@@ -235,7 +235,7 @@ class _LogMessage {
     final formattedTime = '[${time.toString()}]';
     final formattedScope = '[scope: ${scope.toDisplayString(colored: formatForTerminal)}]';
     final formattedLevel = '[level: ${level.toDisplayString(colored: formatForTerminal)}]';
-    final composed = '$formattedLevel$formattedScope$formattedTime $_description'.trim();
+    final composed = '$formattedLevel$formattedScope$formattedTime ${_description ?? ''}'.trim();
 
     return formatForTerminal ? composed.bold : composed;
   }
