@@ -59,9 +59,7 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
   @override
   void onMessage(InterfaceMessage message) async {
     //* Respond to init requests.
-    if (message.name == _MessageIdentifiers.init &&
-        _requiresInit &&
-        message.args is List<dynamic>) {
+    if (message.name == _MessageIdentifiers.init && message.args is List<dynamic>) {
       final args = message.args as List<dynamic>;
       final files = args[0] as Map<String, String>;
       final config = args[1] as CompilerConfig;
