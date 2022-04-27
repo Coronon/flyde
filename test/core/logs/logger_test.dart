@@ -355,4 +355,32 @@ void main() {
 
     expect(restoredLogger.toString(), matches(RegExp(unformattedTextLogs)));
   });
+
+  test('Fails on invalid byte data', () {
+    final Uint8List bytes = Uint8List(0);
+    expect(() => Logger.fromBytes(bytes), throwsArgumentError);
+  });
+
+  test('Fails on invalid JSON data', () {
+    final int badType = 3;
+    final List<Map<String, dynamic>> invalid1 = [
+      {
+        'level': badType,
+        'scope': 'application',
+        'message': 'This is a misformatted message',
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      }
+    ];
+    final List<Map<String, dynamic>> invalid2 = [
+      {
+        'level': 'info',
+        'scope': 'application',
+        'message': 'This is a misformatted message',
+      }
+    ];
+
+    expect(() => Logger.fromJson(badType), throwsArgumentError);
+    expect(() => Logger.fromJson(invalid1), throwsA(isA<TypeError>()));
+    expect(() => Logger.fromJson(invalid2), throwsA(isA<TypeError>()));
+  });
 }
