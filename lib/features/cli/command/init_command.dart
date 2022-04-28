@@ -57,9 +57,8 @@ class InitCommand extends Command with CommandArgGetter {
       port: port,
     );
 
-    final path = Directory('${Directory.current.path}/project.yaml').path;
     final yaml = encodeAsYaml(projectConfig.toJson());
-    final file = File(path);
+    final file = File('${Directory.current.path}/project.yaml');
 
     await file.writeAsString(yaml);
   }
