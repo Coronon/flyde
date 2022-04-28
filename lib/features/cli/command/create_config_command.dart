@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 
+import '../../../core/console/terminal_color.dart';
 import 'command_arg_getter.dart';
 import '../../../core/fs/compiler/installed_compiler.dart';
 import '../../../core/fs/configs/compiler_config.dart';
@@ -71,6 +72,14 @@ class CreateConfigCommand extends Command with CommandArgGetter {
     final List<String> src = useArg('src');
     final int threads = useArg('threads', parser: (arg) => int.parse(arg));
     final String compilerId = useArg('compiler');
+    final file = File('${Directory.current.path}/$name.config.yaml');
+
+    if (await file.exists()) {
+      const message =
+          'Configuration with the same name already exists. Consider using a different name or modify the existing configuration.';
+      stderr.writeln(TerminalColor.red.prepare(message));
+      return;
+    }
 
     final compiler = InstalledCompiler.values.firstWhere(
       (val) => val.name == compilerId,
@@ -84,9 +93,7 @@ class CreateConfigCommand extends Command with CommandArgGetter {
       threads: threads,
     );
 
-    final path = Directory('${Directory.current.path}/$name.config.yaml').path;
     final yaml = encodeAsYaml(config.toJson());
-    final file = File(path);
 
     await file.writeAsString(yaml);
   }
