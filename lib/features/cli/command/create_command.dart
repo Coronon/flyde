@@ -1,7 +1,6 @@
 import 'package:args/command_runner.dart';
 
 import 'create_config_command.dart';
-import 'create_workflow_command.dart';
 
 ///flyde create {command}
 class CreateCommand extends Command {
@@ -16,9 +15,5 @@ class CreateCommand extends Command {
   CreateCommand() {
     //* Add sub-commands for this command
     addSubcommand(CreateConfigCommand());
-    addSubcommand(CreateWorkflowCommand());
   }
-
-  @override
-  void run() {}
 }
