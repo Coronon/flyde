@@ -103,6 +103,7 @@ void main() {
     final json1 = {
       'compiler': 'g++',
       'threads': 4,
+      'binaryPath': '.any',
       'sourceDirectories': ['./example'],
       'compilerFlags': ['-O2'],
       'linkerFlags': null,
@@ -111,6 +112,7 @@ void main() {
     final json2 = {
       'compiler': 'g++',
       'threads': 4,
+      'binaryPath': '.any',
       'sourceDirectories': ['./example'],
       'compilerFlags': null,
       'linkerFlags': null,
@@ -119,6 +121,7 @@ void main() {
     final json3 = {
       'compiler': 'g++',
       'threads': 4,
+      'binaryPath': '.any',
       'sourceDirectories': ['./example'],
       'compilerFlags': ['-O2'],
     };
@@ -126,6 +129,7 @@ void main() {
     final json4 = {
       'compiler': 'g++',
       'threads': 4,
+      'binaryPath': '.any',
       'sourceDirectories': ['./example'],
     };
 
