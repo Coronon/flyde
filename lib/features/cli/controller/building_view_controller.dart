@@ -59,9 +59,6 @@ class BuildingViewController extends ViewController {
   /// The path of the build config
   final String _buildConfigPath;
 
-  /// The path where the binary should be written to
-  final String _binaryPath;
-
   /// The path where the compiler logs should be written to
   final String _logPath;
 
@@ -82,7 +79,7 @@ class BuildingViewController extends ViewController {
   /// The text displayed to show the elpased time of the build.
   final State<String> _elapsedTime = State('-');
 
-  BuildingViewController(this._buildConfigPath, this._binaryPath, this._logPath) {
+  BuildingViewController(this._buildConfigPath, this._logPath) {
     addTask('Could not set-up tools', _startStopwatch);
     addTask('Could not load project configuration', _loadProject);
     addTask('Could not load compiler configuration', _loadBuildConfig);
@@ -277,7 +274,7 @@ class BuildingViewController extends ViewController {
 
   /// Downalods the binary and writes it to [_binaryPath].
   Future<void> _downloadBinary() async {
-    await downloadBinary(_session, File(_binaryPath));
+    await downloadBinary(_session, File(_buildConfig.binaryPath));
   }
 
   /// Downalods the logs and writes them to [_logPath].

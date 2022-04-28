@@ -8,9 +8,7 @@ import 'command_arg_getter.dart';
 ///```sh
 ///flyde build
 ///    --config            -c      <name:str>
-///    --output            -o      <path:str>
 ///    --logs              -l      <path:str>
-///    --verbose           -v      <flag>
 /// ```
 class BuildCommand extends Command with CommandArgGetter {
   /// Command name 'flyde {name} ...'
@@ -31,25 +29,10 @@ class BuildCommand extends Command with CommandArgGetter {
     );
 
     argParser.addOption(
-      'output',
-      abbr: 'o',
-      defaultsTo: 'build.out',
-      help: 'Path the build output should be written to',
-    );
-
-    argParser.addOption(
       'logs',
       abbr: 'l',
       defaultsTo: 'logs.txt',
       help: 'Path the build logs should be written to',
-    );
-
-    argParser.addFlag(
-      'verbose',
-      abbr: 'v',
-      defaultsTo: false,
-      negatable: false,
-      help: 'Enable verbose output',
     );
   }
 
@@ -57,10 +40,9 @@ class BuildCommand extends Command with CommandArgGetter {
   Future<void> run() async {
     //? Collect command line arguments
     final String configPath = useArg('config');
-    final String outputPath = useArg('output');
     final String logsPath = useArg('logs');
 
-    final controller = BuildingViewController(configPath, outputPath, logsPath);
+    final controller = BuildingViewController(configPath, logsPath);
 
     await controller.executeTasks();
   }

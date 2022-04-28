@@ -20,6 +20,9 @@ class CompilerConfig {
   /// A list of all directory pathes where source files are located.
   final List<String> sourceDirectories;
 
+  /// The local path on the user's machine where the binary should be saved.
+  final String binaryPath;
+
   /// The flags to pass to the compiler.
   List<String> compilerFlags;
 
@@ -29,6 +32,7 @@ class CompilerConfig {
   CompilerConfig({
     required this.compiler,
     required this.threads,
+    this.binaryPath = './bin.out',
     required this.sourceDirectories,
     required this.compilerFlags,
     required this.linkerFlags,
@@ -105,11 +109,18 @@ class CompilerConfig {
   }
 
   /// Returns a [CompilerConfig] with the recommended default compiler settings
-  /// and given [src] file directories, [compiler] and [threads].
-  static defaultConfig(List<String> src, InstalledCompiler compiler, {required int threads}) {
+  /// and given [src] file directories, [compiler] and [threads]. The binary path will
+  /// be created from the given [name].
+  static defaultConfig(
+    String name,
+    List<String> src,
+    InstalledCompiler compiler, {
+    required int threads,
+  }) {
     return CompilerConfig(
       compiler: compiler,
       threads: threads,
+      binaryPath: './$name.bin.out',
       sourceDirectories: src,
       compilerFlags: [
         '-std=c++17',

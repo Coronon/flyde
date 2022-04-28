@@ -10,6 +10,7 @@ CompilerConfig _$CompilerConfigFromJson(Map<String, dynamic> json) =>
     CompilerConfig(
       compiler: _$enumDecode(_$InstalledCompilerEnumMap, json['compiler']),
       threads: json['threads'] as int,
+      binaryPath: json['binaryPath'] as String,
       sourceDirectories: (json['sourceDirectories'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
@@ -26,6 +27,7 @@ Map<String, dynamic> _$CompilerConfigToJson(CompilerConfig instance) =>
       'compiler': _$InstalledCompilerEnumMap[instance.compiler],
       'threads': instance.threads,
       'sourceDirectories': instance.sourceDirectories,
+      'binaryPath': instance.binaryPath,
       'compilerFlags': instance.compilerFlags,
       'linkerFlags': instance.linkerFlags,
     };

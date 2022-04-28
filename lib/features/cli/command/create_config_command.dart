@@ -78,6 +78,7 @@ class CreateConfigCommand extends Command with CommandArgGetter {
 
     // TODO: When supporting more default configs assign them here
     final CompilerConfig config = CompilerConfig.defaultConfig(
+      name,
       src,
       compiler,
       threads: threads,
