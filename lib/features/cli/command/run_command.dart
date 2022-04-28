@@ -51,14 +51,14 @@ class RunCommand extends Command with CommandArgGetter {
 
       config = CompilerConfig.fromJson(yaml);
     } catch (e) {
-      print(TerminalColor.red.prepare('Could not load config file: $configPath'));
+      stderr.writeln(TerminalColor.red.prepare('Could not load config file: $configPath'));
       return;
     }
 
     final String binaryPath = config.binaryPath;
 
     if (!await File(binaryPath).exists()) {
-      print(TerminalColor.red.prepare('Could not find binary: $binaryPath'));
+      stderr.writeln(TerminalColor.red.prepare('Could not find binary: $binaryPath'));
       return;
     }
 
@@ -82,7 +82,7 @@ class RunCommand extends Command with CommandArgGetter {
     if (exitCode == 0) {
       print(TerminalColor.green.prepare('Process completed successfully'));
     } else {
-      print(TerminalColor.red.prepare('Process failed with exit code: $exitCode'));
+      stderr.writeln(TerminalColor.red.prepare('Process failed with exit code: $exitCode'));
     }
   }
 }
