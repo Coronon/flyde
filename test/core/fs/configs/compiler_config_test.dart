@@ -98,4 +98,47 @@ void main() {
       orderedEquals(['-O2', '-std', '"c++17"']),
     );
   });
+
+  test('Adds default values for missing / empty flag sets', () {
+    final json1 = {
+      'compiler': 'g++',
+      'threads': 4,
+      'sourceDirectories': ['./example'],
+      'compilerFlags': ['-O2'],
+      'linkerFlags': null,
+    };
+
+    final json2 = {
+      'compiler': 'g++',
+      'threads': 4,
+      'sourceDirectories': ['./example'],
+      'compilerFlags': null,
+      'linkerFlags': null,
+    };
+
+    final json3 = {
+      'compiler': 'g++',
+      'threads': 4,
+      'sourceDirectories': ['./example'],
+      'compilerFlags': ['-O2'],
+    };
+
+    final json4 = {
+      'compiler': 'g++',
+      'threads': 4,
+      'sourceDirectories': ['./example'],
+    };
+
+    expect(CompilerConfig.fromJson(json1).compilerFlags, unorderedEquals(['-O2']));
+    expect(CompilerConfig.fromJson(json1).linkerFlags, isEmpty);
+
+    expect(CompilerConfig.fromJson(json2).compilerFlags, isEmpty);
+    expect(CompilerConfig.fromJson(json2).linkerFlags, isEmpty);
+
+    expect(CompilerConfig.fromJson(json3).compilerFlags, unorderedEquals(['-O2']));
+    expect(CompilerConfig.fromJson(json3).linkerFlags, isEmpty);
+
+    expect(CompilerConfig.fromJson(json4).compilerFlags, isEmpty);
+    expect(CompilerConfig.fromJson(json4).linkerFlags, isEmpty);
+  });
 }
