@@ -248,7 +248,9 @@ class BuildProvider {
       cache = await _cache.get(id);
     }
 
-    _getInterface(id).init(message.files, message.config, cache);
+    if (!_getInterface(id).isInitialized) {
+      await _getInterface(id).init(message.files, message.config, cache);
+    }
 
     session.send(
       ProjectUpdateResponse(

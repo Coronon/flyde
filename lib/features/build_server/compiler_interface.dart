@@ -59,7 +59,9 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
   @override
   void onMessage(InterfaceMessage message) async {
     //* Respond to init requests.
-    if (message.name == _MessageIdentifiers.init && message.args is List<dynamic>) {
+    if (message.name == _MessageIdentifiers.init &&
+        _requiresInit &&
+        message.args is List<dynamic>) {
       final args = message.args as List<dynamic>;
       final files = args[0] as Map<String, String>;
       final config = args[1] as CompilerConfig;
@@ -204,6 +206,11 @@ class ProjectInterface extends Interface {
   /// Callback to be used when the compilation state updates.
   void Function(CompileStatusMessage)? onStateUpdate;
 
+  /// A flag whether the compiler needs to be initialized.
+  /// When `false` a timeout exception will be thrown when trying to re initialize
+  /// the compiler.
+  bool _requiresInitialization = true;
+
   /// Constrcutor which should not be called unless for testing.
   /// Use [launch] to start the main interface.
   /// Otherwise the corresponding worker interface will not be invoked
@@ -217,6 +224,10 @@ class ProjectInterface extends Interface {
       await connect(ReceivePort(), WorkerInterface.start),
     );
   }
+
+  /// A flag whether the compiler needs to be initialized.
+  /// Do not re-initialize the compiler, otherwise an error will be thrown.
+  bool get isInitialized => !_requiresInitialization;
 
   @override
   void onMessage(InterfaceMessage message) async {
@@ -236,12 +247,24 @@ class ProjectInterface extends Interface {
   Future<void> init(
     Map<String, String> files,
     CompilerConfig config,
-    ProjectCache? cache,
-  ) async =>
+    ProjectCache cache,
+  ) async {
+    if (!_requiresInitialization) {
+      throw StateError('The compiler worker is already initialized.');
+    }
+
+    _requiresInitialization = false;
+
+    try {
       await expectResponse(
         InterfaceMessage(_MessageIdentifiers.init, [files, config, cache]),
         timeout: Duration(seconds: 10),
       );
+    } catch (_) {
+      _requiresInitialization = true;
+      rethrow;
+    }
+  }
 
   /// Updates the project with the given [config] and [files].
   Future<List<String>> sync(

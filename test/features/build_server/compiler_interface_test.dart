@@ -70,15 +70,16 @@ Future<void> main() async {
 
   final files = await loadExampleFiles();
   final fileMap = await mapExampleFiles(files);
+  const cacheId = 'compiler_interface_test';
 
   setUp(() async {
-    await clearTestCacheDirectory(id: 'compiler_interface_test');
+    await clearTestCacheDirectory(id: cacheId);
 
     interface = await ProjectInterface.launch();
-    cache = await createDummyProjectCache(id: 'compiler_interface_test');
+    cache = await createDummyProjectCache(id: cacheId);
   });
 
-  tearDown(() async => await clearTestCacheDirectory(id: 'compiler_interface_test'));
+  tearDown(() async => await clearTestCacheDirectory(id: cacheId));
 
   test('Requires "init" call before answering other requests', () async {
     await expectLater(
@@ -92,6 +93,19 @@ Future<void> main() async {
       interface.hasCapacity(),
       completion(equals(true)),
     );
+  });
+
+  test('Does not initialize twice', () async {
+    expect(interface.isInitialized, isFalse);
+    await interface.init(fileMap, config1, cache);
+    expect(interface.isInitialized, isTrue);
+
+    await expectLater(
+      interface.init(fileMap, config1, cache),
+      throwsStateError,
+    );
+
+    expect(interface.isInitialized, isTrue);
   });
 
   test('Can sychronize and update a project', () async {
