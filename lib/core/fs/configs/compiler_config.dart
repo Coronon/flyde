@@ -23,6 +23,9 @@ class CompilerConfig {
   /// The local path on the user's machine where the binary should be saved.
   final String binaryPath;
 
+  /// The local path on the user's machine where the logs should be saved.
+  final String logDirectory;
+
   /// The flags to pass to the compiler.
   List<String> compilerFlags;
 
@@ -33,6 +36,7 @@ class CompilerConfig {
     required this.compiler,
     required this.threads,
     this.binaryPath = './bin.out',
+    this.logDirectory = './logs',
     required this.sourceDirectories,
     required this.compilerFlags,
     required this.linkerFlags,
