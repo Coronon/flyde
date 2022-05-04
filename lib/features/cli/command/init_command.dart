@@ -47,7 +47,7 @@ class InitCommand extends Command with CommandArgGetter {
 
   @override
   Future<void> run() async {
-    final int port = useArg('port');
+    final int port = useArg('port', parser: (arg) => int.parse(arg));
     final String name = useArg('name');
     final String server = useArg('server');
 
