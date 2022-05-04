@@ -1,0 +1,3 @@
+name: example
+port: 3030
+server: localhost

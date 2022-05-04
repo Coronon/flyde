@@ -1,0 +1,19 @@
+compiler: g++
+threads: 4
+sourceDirectories:
+  - ./
+binaryPath: dist/app
+logDirectory: logs/
+compilerFlags:
+  - '-std=c++17'
+  - '-D_FORTIFY_SOURCE=2'
+  - '-D_GLIBCXX_ASSERTIONS'
+  - '-fasynchronous-unwind-tables'
+  - '-fexceptions'
+  - '-g'
+  - '-grecord-gcc-switches'
+  - '-O2'
+  - '-Wall'
+  - '-Werror=format-security'
+linkerFlags:
+  - '-flto'

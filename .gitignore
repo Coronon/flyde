@@ -25,3 +25,7 @@ coverage/
 
 # Generated binaries
 dist/
+
+# Generated files by flyde for the example
+example/dist
+example/logs
