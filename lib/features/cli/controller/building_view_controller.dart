@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:path/path.dart';
+
 import '../../../core/async/event_synchronizer.dart';
 import '../../../core/console/terminal_color.dart';
 import '../../../core/fs/configs/compiler_config.dart';
@@ -59,9 +61,6 @@ class BuildingViewController extends ViewController {
   /// The path of the build config
   final String _buildConfigPath;
 
-  /// The path where the compiler logs should be written to
-  final String _logPath;
-
   //* View State
 
   /// The text displayed as the build status.
@@ -79,7 +78,7 @@ class BuildingViewController extends ViewController {
   /// The text displayed to show the elpased time of the build.
   final State<String> _elapsedTime = State('-');
 
-  BuildingViewController(this._buildConfigPath, this._logPath) {
+  BuildingViewController(this._buildConfigPath) {
     addTask('Could not set-up tools', _startStopwatch);
     addTask('Could not load project configuration', _loadProject);
     addTask('Could not load compiler configuration', _loadBuildConfig);
@@ -277,9 +276,20 @@ class BuildingViewController extends ViewController {
     await downloadBinary(_session, File(_buildConfig.binaryPath));
   }
 
-  /// Downalods the logs and writes them to [_logPath].
+  /// Downalods the logs and writes them to the path provided by [_buildConfig].
   Future<void> _downloadLogs() async {
-    await downloadLogs(_session, File(_logPath));
+    final int dotIndex = _buildConfigPath.indexOf('.');
+    final String time = DateTime.now().toIso8601String();
+    final String configName = _buildConfigPath.substring(
+      0,
+      dotIndex > 0 ? dotIndex : _buildConfigPath.length,
+    );
+
+    final String name = '$configName-$time';
+    final Directory dirPath = Directory(_buildConfig.logDirectory);
+    final String fileName = join(dirPath.path, name);
+
+    await downloadLogs(_session, File(fileName));
   }
 
   /// Closes the [_session] and [_clientSession].
