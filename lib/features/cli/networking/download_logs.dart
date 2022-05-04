@@ -21,5 +21,6 @@ Future<void> downloadLogs(EventSynchronizer session, File outFile) async {
   // Load the binary data into a logger object for parsing
   final logger = Logger.fromBytes(bin);
 
+  await outFile.create(recursive: true);
   await outFile.writeAsString(logger.toString());
 }

@@ -17,5 +17,6 @@ Future<void> downloadBinary(EventSynchronizer session, File outFile) async {
     throw StateError('No binary received from the build server');
   }
 
+  await outFile.create(recursive: true);
   await outFile.writeAsBytes(bin.toList());
 }
