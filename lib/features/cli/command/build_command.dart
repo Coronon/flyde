@@ -8,7 +8,6 @@ import 'command_arg_getter.dart';
 ///```sh
 ///flyde build
 ///    --config            -c      <name:str>
-///    --logs              -l      <path:str>
 /// ```
 class BuildCommand extends Command with CommandArgGetter {
   /// Command name 'flyde {name} ...'
@@ -27,22 +26,14 @@ class BuildCommand extends Command with CommandArgGetter {
       defaultsTo: 'default.config.yaml',
       help: 'Path to build config file',
     );
-
-    argParser.addOption(
-      'logs',
-      abbr: 'l',
-      defaultsTo: 'logs.txt',
-      help: 'Path the build logs should be written to',
-    );
   }
 
   @override
   Future<void> run() async {
     //? Collect command line arguments
     final String configPath = useArg('config');
-    final String logsPath = useArg('logs');
 
-    final controller = BuildingViewController(configPath, logsPath);
+    final controller = BuildingViewController(configPath);
 
     await controller.executeTasks();
   }
