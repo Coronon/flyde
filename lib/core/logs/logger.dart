@@ -95,6 +95,8 @@ class Logger {
         .insertBetween('\n\n')
         .forEach(buffer.write);
 
+    buffer.writeln();
+
     return buffer.toString();
   }
 
@@ -136,6 +138,21 @@ class Logger {
         .where((m) => m.time.isBefore(to ?? DateTime.now()))
         .toList();
   }
+}
+
+/// Formats in which the logger can convert it's data.
+enum LogFormat {
+  /// Can be retrieved by calling [Logger.toJson]
+  json,
+
+  /// Can be retrieved by calling [Logger.toString]
+  text,
+
+  /// Can be retrieved by calling [Logger.toBytes]
+  bytes,
+
+  /// Can be retrieved by calling [Logger.toString] with `formatForTerminal: true`
+  ansi,
 }
 
 /// A log message which combines

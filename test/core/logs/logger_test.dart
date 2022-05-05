@@ -122,7 +122,7 @@ void main() {
       '\\[level: debug\\]\\[scope: compiler\\]\\[$dateRegex\\]\n'
       'This is a debug message from the compiler\n\n'
       '\\[level: info\\]\\[scope: application\\]\\[$dateRegex\\] This is a description\n'
-      'This is an info message from the application with description'
+      'This is an info message from the application with description\n'
       r'$';
 
   setUp(() => logger = Logger());
@@ -171,7 +171,7 @@ void main() {
         '\\x1B\\[1m\\[level: \\x1B\\[36mdebug\\x1B\\[39m\\]\\[scope: \\x1B\\[32mcompiler\\x1B\\[39m\\]\\[$dateRegex\\]\\x1B\\[22m\n'
         'This is a debug message from the compiler\n\n'
         '\\x1B\\[1m\\[level: \\x1B\\[34minfo\\x1B\\[39m\\]\\[scope: \\x1B\\[34mapplication\\x1B\\[39m\\]\\[$dateRegex\\] This is a description\\x1B\\[22m\n'
-        'This is an info message from the application with description'
+        'This is an info message from the application with description\n'
         r'$';
 
     expect(text, matches(RegExp(expected)));
@@ -195,7 +195,7 @@ void main() {
         '\\[level: debug\\]\\[scope: application\\]\\[$dateRegex\\]\n'
         'This is a debug message from the application\n\n'
         '\\[level: info\\]\\[scope: application\\]\\[$dateRegex\\] This is a description\n'
-        'This is an info message from the application with description'
+        'This is an info message from the application with description\n'
         r'$';
     final String expectedCompiler = '^'
         '\\[level: info\\]\\[scope: compiler\\]\\[$dateRegex\\]\n'
@@ -207,7 +207,7 @@ void main() {
         '\\[level: critical\\]\\[scope: compiler\\]\\[$dateRegex\\]\n'
         'This is a critical error from the compiler\n\n'
         '\\[level: debug\\]\\[scope: compiler\\]\\[$dateRegex\\]\n'
-        'This is a debug message from the compiler'
+        'This is a debug message from the compiler\n'
         r'$';
     final String expectedLinker = '^'
         '\\[level: info\\]\\[scope: linker\\]\\[$dateRegex\\]\n'
@@ -219,7 +219,7 @@ void main() {
         '\\[level: critical\\]\\[scope: linker\\]\\[$dateRegex\\]\n'
         'This is a critical error from the linker\n\n'
         '\\[level: debug\\]\\[scope: linker\\]\\[$dateRegex\\]\n'
-        'This is a debug message from the linker'
+        'This is a debug message from the linker\n'
         r'$';
 
     expect(applicationText, matches(RegExp(expectedApplication)));
@@ -244,7 +244,7 @@ void main() {
         '\\[level: info\\]\\[scope: compiler\\]\\[$dateRegex\\]\n'
         'This is an info message from the compiler\n\n'
         '\\[level: info\\]\\[scope: application\\]\\[$dateRegex\\] This is a description\n'
-        'This is an info message from the application with description'
+        'This is an info message from the application with description\n'
         r'$';
     final String expectedWarning = '^'
         '\\[level: warning\\]\\[scope: application\\]\\[$dateRegex\\]\n'
@@ -252,7 +252,7 @@ void main() {
         '\\[level: warning\\]\\[scope: linker\\]\\[$dateRegex\\]\n'
         'This is a warning from the linker\n\n'
         '\\[level: warning\\]\\[scope: compiler\\]\\[$dateRegex\\]\n'
-        'This is a warning from the compiler'
+        'This is a warning from the compiler\n'
         r'$';
     final String expectedError = '^'
         '\\[level: error\\]\\[scope: application\\]\\[$dateRegex\\]\n'
@@ -260,7 +260,7 @@ void main() {
         '\\[level: error\\]\\[scope: linker\\]\\[$dateRegex\\]\n'
         'This is an error from the linker\n\n'
         '\\[level: error\\]\\[scope: compiler\\]\\[$dateRegex\\]\n'
-        'This is an error from the compiler'
+        'This is an error from the compiler\n'
         r'$';
     final String expectedCritical = '^'
         '\\[level: critical\\]\\[scope: application\\]\\[$dateRegex\\]\n'
@@ -268,7 +268,7 @@ void main() {
         '\\[level: critical\\]\\[scope: linker\\]\\[$dateRegex\\]\n'
         'This is a critical error from the linker\n\n'
         '\\[level: critical\\]\\[scope: compiler\\]\\[$dateRegex\\]\n'
-        'This is a critical error from the compiler'
+        'This is a critical error from the compiler\n'
         r'$';
     final String expectedDebug = '^'
         '\\[level: debug\\]\\[scope: application\\]\\[$dateRegex\\]\n'
@@ -276,7 +276,7 @@ void main() {
         '\\[level: debug\\]\\[scope: linker\\]\\[$dateRegex\\]\n'
         'This is a debug message from the linker\n\n'
         '\\[level: debug\\]\\[scope: compiler\\]\\[$dateRegex\\]\n'
-        'This is a debug message from the compiler'
+        'This is a debug message from the compiler\n'
         r'$';
 
     expect(infoText, matches(RegExp(expectedInfo)));
@@ -302,7 +302,7 @@ void main() {
         '\\[level: info\\]\\[scope: linker\\]\\[$dateRegex\\]\n'
         'This is an info message from the linker\n\n'
         '\\[level: info\\]\\[scope: compiler\\]\\[$dateRegex\\]\n'
-        'This is an info message from the compiler'
+        'This is an info message from the compiler\n'
         r'$';
 
     final String newExpected = '^'
@@ -331,7 +331,7 @@ void main() {
         '\\[level: debug\\]\\[scope: compiler\\]\\[$dateRegex\\]\n'
         'This is a debug message from the compiler\n\n'
         '\\[level: info\\]\\[scope: application\\]\\[$dateRegex\\] This is a description\n'
-        'This is an info message from the application with description'
+        'This is an info message from the application with description\n'
         r'$';
 
     expect(oldText, matches(RegExp(oldExpected)));
