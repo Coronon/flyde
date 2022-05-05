@@ -199,6 +199,22 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
       payload: null,
     ));
   }
+
+  @override
+  void didFailCompilation() {
+    _updateState(CompileStatusMessage(
+      status: CompileStatus.failed,
+      payload: null,
+    ));
+  }
+
+  @override
+  void didFailLinking() {
+    _updateState(CompileStatusMessage(
+      status: CompileStatus.failed,
+      payload: null,
+    ));
+  }
 }
 
 /// The interface to an isolate which manages a single project.

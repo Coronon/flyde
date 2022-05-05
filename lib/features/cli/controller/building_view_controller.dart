@@ -110,6 +110,10 @@ class BuildingViewController extends ViewController {
     _color.value = TerminalColor.red;
 
     try {
+      await _downloadLogs();
+    } catch (_) {}
+
+    try {
       await _tearDown();
     } catch (_) {}
 
@@ -259,16 +263,35 @@ class BuildingViewController extends ViewController {
   }
 
   /// Waits for the build server to complete the compilation.
+  /// Throws a [StateError] when the compiler could not build
+  /// the project.
   Future<void> _build() async {
+    bool didFail = false;
+
     // Request to build the newly synced project.
     await _session.request(projectBuildRequest);
 
     // Expect state updates and wait until compilation is done.
     await _session.expect(
       CompileStatusMessage,
-      validator: (CompileStatusMessage msg) => msg.status == CompileStatus.done,
+      validator: (CompileStatusMessage msg) {
+        if (msg.status == CompileStatus.done) {
+          return true;
+        }
+
+        if (msg.status == CompileStatus.failed) {
+          didFail = true;
+          return true;
+        }
+
+        return false;
+      },
       keepAlive: true,
     );
+
+    if (didFail) {
+      throw StateError('Source files could not be compiled.');
+    }
   }
 
   /// Downalods the binary and writes it to [_binaryPath].

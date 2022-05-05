@@ -135,20 +135,32 @@ class Compiler {
       compileCommands.add(await _buildCompileCommand(file));
     }
 
-    await _runCommands(
-      compileCommands,
-      threads: _config.threads,
-      logger: logger,
-      scope: LogScope.compiler,
-    );
+    try {
+      await _runCommands(
+        compileCommands,
+        threads: _config.threads,
+        logger: logger,
+        scope: LogScope.compiler,
+      );
+    } catch (e) {
+      logger.add(e.toString(), scope: LogScope.application, level: LogLevel.error);
+      delegate?.didFailCompilation();
+      return;
+    }
 
     delegate?.didFinishCompilation();
 
-    await _runCommands(
-      [await _buildLinkCommand()],
-      logger: logger,
-      scope: LogScope.linker,
-    );
+    try {
+      await _runCommands(
+        [await _buildLinkCommand()],
+        logger: logger,
+        scope: LogScope.linker,
+      );
+    } catch (e) {
+      logger.add(e.toString(), scope: LogScope.application, level: LogLevel.error);
+      delegate?.didFailLinking();
+      return;
+    }
 
     await _cache.finish();
 
@@ -172,7 +184,7 @@ class Compiler {
       throw ArgumentError('Requested compiler is not available on build machine');
     }
 
-    // TODO: Change include command construction algorythm when supporting more compilers
+    // TODO: Change include command construction algorithm when supporting more compilers
     final includes = _cache.headerFiles.map((file) => '-I${dirname(file.path)}').toSet();
     final compilerPath = await _config.compiler.path();
     final sourcePath = ref.source.path;
@@ -260,6 +272,8 @@ class Compiler {
             scope: scope,
             level: LogLevel.error,
           );
+
+          throw StateError('${invoc.executable} exited with error code ${result.exitCode}');
         }
       }
     }
@@ -310,6 +324,12 @@ mixin CompilerStatusDelegate {
 
   /// Called when the compiler has finished linking.
   void didFinishLinking();
+
+  /// Called when the compilation has failed.
+  void didFailCompilation();
+
+  /// Called when the linking has failed.
+  void didFailLinking();
 
   /// Called when the compiler has finished.
   void done();
