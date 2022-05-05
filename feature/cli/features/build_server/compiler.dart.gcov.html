@@ -32,12 +32,12 @@
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">79</td>
-            <td class="headerCovTableEntry">92</td>
-            <td class="headerCovTableEntryMed">85.9 %</td>
+            <td class="headerCovTableEntry">97</td>
+            <td class="headerCovTableEntryMed">81.4 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2022-05-04 16:47:45</td>
+            <td class="headerValue">2022-05-05 17:22:22</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -197,185 +197,205 @@
 <a name="135"><span class="lineNum">     135 </span><span class="lineCov">          9 :       compileCommands.add(await _buildCompileCommand(file));</span></a>
 <a name="136"><span class="lineNum">     136 </span>            :     }</a>
 <a name="137"><span class="lineNum">     137 </span>            : </a>
-<a name="138"><span class="lineNum">     138 </span><span class="lineCov">          6 :     await _runCommands(</span></a>
-<a name="139"><span class="lineNum">     139 </span>            :       compileCommands,</a>
-<a name="140"><span class="lineNum">     140 </span><span class="lineCov">          6 :       threads: _config.threads,</span></a>
-<a name="141"><span class="lineNum">     141 </span><span class="lineCov">          3 :       logger: logger,</span></a>
-<a name="142"><span class="lineNum">     142 </span>            :       scope: LogScope.compiler,</a>
-<a name="143"><span class="lineNum">     143 </span>            :     );</a>
-<a name="144"><span class="lineNum">     144 </span>            : </a>
-<a name="145"><span class="lineNum">     145 </span><span class="lineCov">          5 :     delegate?.didFinishCompilation();</span></a>
-<a name="146"><span class="lineNum">     146 </span>            : </a>
-<a name="147"><span class="lineNum">     147 </span><span class="lineCov">          6 :     await _runCommands(</span></a>
-<a name="148"><span class="lineNum">     148 </span><span class="lineCov">          9 :       [await _buildLinkCommand()],</span></a>
-<a name="149"><span class="lineNum">     149 </span><span class="lineCov">          3 :       logger: logger,</span></a>
-<a name="150"><span class="lineNum">     150 </span>            :       scope: LogScope.linker,</a>
-<a name="151"><span class="lineNum">     151 </span>            :     );</a>
+<a name="138"><span class="lineNum">     138 </span>            :     try {</a>
+<a name="139"><span class="lineNum">     139 </span><span class="lineCov">          6 :       await _runCommands(</span></a>
+<a name="140"><span class="lineNum">     140 </span>            :         compileCommands,</a>
+<a name="141"><span class="lineNum">     141 </span><span class="lineCov">          6 :         threads: _config.threads,</span></a>
+<a name="142"><span class="lineNum">     142 </span><span class="lineCov">          3 :         logger: logger,</span></a>
+<a name="143"><span class="lineNum">     143 </span>            :         scope: LogScope.compiler,</a>
+<a name="144"><span class="lineNum">     144 </span>            :       );</a>
+<a name="145"><span class="lineNum">     145 </span>            :     } catch (e) {</a>
+<a name="146"><span class="lineNum">     146 </span><span class="lineNoCov">          0 :       logger.add(e.toString(), scope: LogScope.application, level: LogLevel.error);</span></a>
+<a name="147"><span class="lineNum">     147 </span><span class="lineNoCov">          0 :       delegate?.didFailCompilation();</span></a>
+<a name="148"><span class="lineNum">     148 </span>            :       return;</a>
+<a name="149"><span class="lineNum">     149 </span>            :     }</a>
+<a name="150"><span class="lineNum">     150 </span>            : </a>
+<a name="151"><span class="lineNum">     151 </span><span class="lineCov">          5 :     delegate?.didFinishCompilation();</span></a>
 <a name="152"><span class="lineNum">     152 </span>            : </a>
-<a name="153"><span class="lineNum">     153 </span><span class="lineCov">          9 :     await _cache.finish();</span></a>
-<a name="154"><span class="lineNum">     154 </span>            : </a>
-<a name="155"><span class="lineNum">     155 </span><span class="lineCov">          5 :     delegate?.done();</span></a>
-<a name="156"><span class="lineNum">     156 </span>            :   }</a>
-<a name="157"><span class="lineNum">     157 </span>            : </a>
-<a name="158"><span class="lineNum">     158 </span>            :   /// Synchronizes the cache with the given project files and config.</a>
-<a name="159"><span class="lineNum">     159 </span>            :   ///</a>
-<a name="160"><span class="lineNum">     160 </span>            :   /// A list of all files which require an update is returned and stored in `_outdatedFiles`.</a>
-<a name="161"><span class="lineNum">     161 </span><span class="lineCov">          3 :   Future&lt;List&lt;String&gt;&gt; _syncCache() async {</span></a>
-<a name="162"><span class="lineNum">     162 </span><span class="lineCov">         18 :     _outdatedFiles = await _cache.sync(_projectFiles, _config);</span></a>
-<a name="163"><span class="lineNum">     163 </span><span class="lineCov">          3 :     return _outdatedFiles!;</span></a>
-<a name="164"><span class="lineNum">     164 </span>            :   }</a>
-<a name="165"><span class="lineNum">     165 </span>            : </a>
-<a name="166"><span class="lineNum">     166 </span>            :   /// Builds the command that compiles the given source file.</a>
-<a name="167"><span class="lineNum">     167 </span>            :   ///</a>
-<a name="168"><span class="lineNum">     168 </span>            :   /// When compilation is done the `link` method of [ref] is called,</a>
-<a name="169"><span class="lineNum">     169 </span>            :   /// which signals that the source file has now an up to date object file.</a>
-<a name="170"><span class="lineNum">     170 </span><span class="lineCov">          3 :   Future&lt;_ProcessInvocation&gt; _buildCompileCommand(ImplementationObjectRef ref) async {</span></a>
-<a name="171"><span class="lineNum">     171 </span><span class="lineCov">         12 :     if (!await _config.compiler.isAvailable()) {</span></a>
-<a name="172"><span class="lineNum">     172 </span><span class="lineNoCov">          0 :       throw ArgumentError('Requested compiler is not available on build machine');</span></a>
-<a name="173"><span class="lineNum">     173 </span>            :     }</a>
-<a name="174"><span class="lineNum">     174 </span>            : </a>
-<a name="175"><span class="lineNum">     175 </span>            :     // TODO: Change include command construction algorythm when supporting more compilers</a>
-<a name="176"><span class="lineNum">     176 </span><span class="lineCov">         24 :     final includes = _cache.headerFiles.map((file) =&gt; '-I${dirname(file.path)}').toSet();</span></a>
-<a name="177"><span class="lineNum">     177 </span><span class="lineCov">         12 :     final compilerPath = await _config.compiler.path();</span></a>
-<a name="178"><span class="lineNum">     178 </span><span class="lineCov">          6 :     final sourcePath = ref.source.path;</span></a>
-<a name="179"><span class="lineNum">     179 </span><span class="lineCov">          6 :     final objectPath = ref.object.path;</span></a>
-<a name="180"><span class="lineNum">     180 </span>            : </a>
-<a name="181"><span class="lineNum">     181 </span><span class="lineCov">          3 :     return _ProcessInvocation(</span></a>
-<a name="182"><span class="lineNum">     182 </span>            :       compilerPath!,</a>
-<a name="183"><span class="lineNum">     183 </span><span class="lineCov">         21 :       [...includes, '-c', sourcePath, '-o', objectPath, ..._config.compilerFlags],</span></a>
-<a name="184"><span class="lineNum">     184 </span><span class="lineCov">          3 :       () async {</span></a>
-<a name="185"><span class="lineNum">     185 </span><span class="lineCov">          6 :         await ref.link();</span></a>
-<a name="186"><span class="lineNum">     186 </span><span class="lineCov">         12 :         progress += 1 / srcFileCount;</span></a>
-<a name="187"><span class="lineNum">     187 </span><span class="lineCov">          7 :         delegate?.isCompiling(progress);</span></a>
-<a name="188"><span class="lineNum">     188 </span>            :       },</a>
-<a name="189"><span class="lineNum">     189 </span>            :     );</a>
-<a name="190"><span class="lineNum">     190 </span>            :   }</a>
-<a name="191"><span class="lineNum">     191 </span>            : </a>
-<a name="192"><span class="lineNum">     192 </span>            :   /// Builds the command that links the given object files.</a>
-<a name="193"><span class="lineNum">     193 </span><span class="lineCov">          3 :   Future&lt;_ProcessInvocation&gt; _buildLinkCommand() async {</span></a>
-<a name="194"><span class="lineNum">     194 </span><span class="lineCov">         12 :     final path = await _config.compiler.path();</span></a>
-<a name="195"><span class="lineNum">     195 </span><span class="lineCov">          9 :     final objectFiles = await _cache.objectFiles;</span></a>
-<a name="196"><span class="lineNum">     196 </span>            : </a>
-<a name="197"><span class="lineNum">     197 </span><span class="lineCov">          5 :     delegate?.didStartLinking();</span></a>
-<a name="198"><span class="lineNum">     198 </span>            : </a>
-<a name="199"><span class="lineNum">     199 </span>            :     // TODO: Maybe call linker directly (eg ld)</a>
-<a name="200"><span class="lineNum">     200 </span><span class="lineCov">          3 :     return _ProcessInvocation(</span></a>
-<a name="201"><span class="lineNum">     201 </span>            :       path!,</a>
-<a name="202"><span class="lineNum">     202 </span><span class="lineCov">          3 :       [</span></a>
-<a name="203"><span class="lineNum">     203 </span><span class="lineCov">          9 :         ...objectFiles.map((file) =&gt; file.path),</span></a>
-<a name="204"><span class="lineNum">     204 </span><span class="lineCov">          3 :         '-o',</span></a>
-<a name="205"><span class="lineNum">     205 </span><span class="lineCov">         12 :         (await _cache.executable).path,</span></a>
-<a name="206"><span class="lineNum">     206 </span><span class="lineCov">          6 :         ..._config.linkerFlags</span></a>
-<a name="207"><span class="lineNum">     207 </span>            :       ],</a>
-<a name="208"><span class="lineNum">     208 </span><span class="lineCov">          8 :       () async =&gt; delegate?.didFinishLinking(),</span></a>
-<a name="209"><span class="lineNum">     209 </span>            :     );</a>
-<a name="210"><span class="lineNum">     210 </span>            :   }</a>
-<a name="211"><span class="lineNum">     211 </span>            : </a>
-<a name="212"><span class="lineNum">     212 </span>            :   /// Runs the given commands on multiple [threads].</a>
-<a name="213"><span class="lineNum">     213 </span>            :   ///</a>
-<a name="214"><span class="lineNum">     214 </span>            :   /// The [scope] indicates how the output of the processes should</a>
-<a name="215"><span class="lineNum">     215 </span>            :   /// be logged using the provided [logger].</a>
-<a name="216"><span class="lineNum">     216 </span><span class="lineCov">          3 :   static Future&lt;void&gt; _runCommands(</span></a>
-<a name="217"><span class="lineNum">     217 </span>            :     List&lt;_ProcessInvocation&gt; invocations, {</a>
-<a name="218"><span class="lineNum">     218 </span>            :     int threads = 1,</a>
-<a name="219"><span class="lineNum">     219 </span>            :     required Logger logger,</a>
-<a name="220"><span class="lineNum">     220 </span>            :     required LogScope scope,</a>
-<a name="221"><span class="lineNum">     221 </span>            :   }) async {</a>
-<a name="222"><span class="lineNum">     222 </span><span class="lineCov">          3 :     threads = threads &lt; 1 ? 1 : threads;</span></a>
+<a name="153"><span class="lineNum">     153 </span>            :     try {</a>
+<a name="154"><span class="lineNum">     154 </span><span class="lineCov">          6 :       await _runCommands(</span></a>
+<a name="155"><span class="lineNum">     155 </span><span class="lineCov">          9 :         [await _buildLinkCommand()],</span></a>
+<a name="156"><span class="lineNum">     156 </span><span class="lineCov">          3 :         logger: logger,</span></a>
+<a name="157"><span class="lineNum">     157 </span>            :         scope: LogScope.linker,</a>
+<a name="158"><span class="lineNum">     158 </span>            :       );</a>
+<a name="159"><span class="lineNum">     159 </span>            :     } catch (e) {</a>
+<a name="160"><span class="lineNum">     160 </span><span class="lineNoCov">          0 :       logger.add(e.toString(), scope: LogScope.application, level: LogLevel.error);</span></a>
+<a name="161"><span class="lineNum">     161 </span><span class="lineNoCov">          0 :       delegate?.didFailLinking();</span></a>
+<a name="162"><span class="lineNum">     162 </span>            :       return;</a>
+<a name="163"><span class="lineNum">     163 </span>            :     }</a>
+<a name="164"><span class="lineNum">     164 </span>            : </a>
+<a name="165"><span class="lineNum">     165 </span><span class="lineCov">          9 :     await _cache.finish();</span></a>
+<a name="166"><span class="lineNum">     166 </span>            : </a>
+<a name="167"><span class="lineNum">     167 </span><span class="lineCov">          5 :     delegate?.done();</span></a>
+<a name="168"><span class="lineNum">     168 </span>            :   }</a>
+<a name="169"><span class="lineNum">     169 </span>            : </a>
+<a name="170"><span class="lineNum">     170 </span>            :   /// Synchronizes the cache with the given project files and config.</a>
+<a name="171"><span class="lineNum">     171 </span>            :   ///</a>
+<a name="172"><span class="lineNum">     172 </span>            :   /// A list of all files which require an update is returned and stored in `_outdatedFiles`.</a>
+<a name="173"><span class="lineNum">     173 </span><span class="lineCov">          3 :   Future&lt;List&lt;String&gt;&gt; _syncCache() async {</span></a>
+<a name="174"><span class="lineNum">     174 </span><span class="lineCov">         18 :     _outdatedFiles = await _cache.sync(_projectFiles, _config);</span></a>
+<a name="175"><span class="lineNum">     175 </span><span class="lineCov">          3 :     return _outdatedFiles!;</span></a>
+<a name="176"><span class="lineNum">     176 </span>            :   }</a>
+<a name="177"><span class="lineNum">     177 </span>            : </a>
+<a name="178"><span class="lineNum">     178 </span>            :   /// Builds the command that compiles the given source file.</a>
+<a name="179"><span class="lineNum">     179 </span>            :   ///</a>
+<a name="180"><span class="lineNum">     180 </span>            :   /// When compilation is done the `link` method of [ref] is called,</a>
+<a name="181"><span class="lineNum">     181 </span>            :   /// which signals that the source file has now an up to date object file.</a>
+<a name="182"><span class="lineNum">     182 </span><span class="lineCov">          3 :   Future&lt;_ProcessInvocation&gt; _buildCompileCommand(ImplementationObjectRef ref) async {</span></a>
+<a name="183"><span class="lineNum">     183 </span><span class="lineCov">         12 :     if (!await _config.compiler.isAvailable()) {</span></a>
+<a name="184"><span class="lineNum">     184 </span><span class="lineNoCov">          0 :       throw ArgumentError('Requested compiler is not available on build machine');</span></a>
+<a name="185"><span class="lineNum">     185 </span>            :     }</a>
+<a name="186"><span class="lineNum">     186 </span>            : </a>
+<a name="187"><span class="lineNum">     187 </span>            :     // TODO: Change include command construction algorithm when supporting more compilers</a>
+<a name="188"><span class="lineNum">     188 </span><span class="lineCov">         24 :     final includes = _cache.headerFiles.map((file) =&gt; '-I${dirname(file.path)}').toSet();</span></a>
+<a name="189"><span class="lineNum">     189 </span><span class="lineCov">         12 :     final compilerPath = await _config.compiler.path();</span></a>
+<a name="190"><span class="lineNum">     190 </span><span class="lineCov">          6 :     final sourcePath = ref.source.path;</span></a>
+<a name="191"><span class="lineNum">     191 </span><span class="lineCov">          6 :     final objectPath = ref.object.path;</span></a>
+<a name="192"><span class="lineNum">     192 </span>            : </a>
+<a name="193"><span class="lineNum">     193 </span><span class="lineCov">          3 :     return _ProcessInvocation(</span></a>
+<a name="194"><span class="lineNum">     194 </span>            :       compilerPath!,</a>
+<a name="195"><span class="lineNum">     195 </span><span class="lineCov">         21 :       [...includes, '-c', sourcePath, '-o', objectPath, ..._config.compilerFlags],</span></a>
+<a name="196"><span class="lineNum">     196 </span><span class="lineCov">          3 :       () async {</span></a>
+<a name="197"><span class="lineNum">     197 </span><span class="lineCov">          6 :         await ref.link();</span></a>
+<a name="198"><span class="lineNum">     198 </span><span class="lineCov">         12 :         progress += 1 / srcFileCount;</span></a>
+<a name="199"><span class="lineNum">     199 </span><span class="lineCov">          7 :         delegate?.isCompiling(progress);</span></a>
+<a name="200"><span class="lineNum">     200 </span>            :       },</a>
+<a name="201"><span class="lineNum">     201 </span>            :     );</a>
+<a name="202"><span class="lineNum">     202 </span>            :   }</a>
+<a name="203"><span class="lineNum">     203 </span>            : </a>
+<a name="204"><span class="lineNum">     204 </span>            :   /// Builds the command that links the given object files.</a>
+<a name="205"><span class="lineNum">     205 </span><span class="lineCov">          3 :   Future&lt;_ProcessInvocation&gt; _buildLinkCommand() async {</span></a>
+<a name="206"><span class="lineNum">     206 </span><span class="lineCov">         12 :     final path = await _config.compiler.path();</span></a>
+<a name="207"><span class="lineNum">     207 </span><span class="lineCov">          9 :     final objectFiles = await _cache.objectFiles;</span></a>
+<a name="208"><span class="lineNum">     208 </span>            : </a>
+<a name="209"><span class="lineNum">     209 </span><span class="lineCov">          5 :     delegate?.didStartLinking();</span></a>
+<a name="210"><span class="lineNum">     210 </span>            : </a>
+<a name="211"><span class="lineNum">     211 </span>            :     // TODO: Maybe call linker directly (eg ld)</a>
+<a name="212"><span class="lineNum">     212 </span><span class="lineCov">          3 :     return _ProcessInvocation(</span></a>
+<a name="213"><span class="lineNum">     213 </span>            :       path!,</a>
+<a name="214"><span class="lineNum">     214 </span><span class="lineCov">          3 :       [</span></a>
+<a name="215"><span class="lineNum">     215 </span><span class="lineCov">          9 :         ...objectFiles.map((file) =&gt; file.path),</span></a>
+<a name="216"><span class="lineNum">     216 </span><span class="lineCov">          3 :         '-o',</span></a>
+<a name="217"><span class="lineNum">     217 </span><span class="lineCov">         12 :         (await _cache.executable).path,</span></a>
+<a name="218"><span class="lineNum">     218 </span><span class="lineCov">          6 :         ..._config.linkerFlags</span></a>
+<a name="219"><span class="lineNum">     219 </span>            :       ],</a>
+<a name="220"><span class="lineNum">     220 </span><span class="lineCov">          8 :       () async =&gt; delegate?.didFinishLinking(),</span></a>
+<a name="221"><span class="lineNum">     221 </span>            :     );</a>
+<a name="222"><span class="lineNum">     222 </span>            :   }</a>
 <a name="223"><span class="lineNum">     223 </span>            : </a>
-<a name="224"><span class="lineNum">     224 </span><span class="lineCov">          9 :     final groups = List&lt;List&lt;_ProcessInvocation&gt;&gt;.generate(threads, (_) =&gt; &lt;_ProcessInvocation&gt;[]);</span></a>
-<a name="225"><span class="lineNum">     225 </span>            : </a>
-<a name="226"><span class="lineNum">     226 </span>            :     /// Runs the commands in the order they are present in [invocs]</a>
-<a name="227"><span class="lineNum">     227 </span>            :     /// and calls each completion handler after execution.</a>
-<a name="228"><span class="lineNum">     228 </span>            :     /// Each process will be started after the previous one has finished.</a>
-<a name="229"><span class="lineNum">     229 </span>            :     /// If all started processes are using only one thread,</a>
-<a name="230"><span class="lineNum">     230 </span>            :     /// `run` will also only use one thread at a time.</a>
-<a name="231"><span class="lineNum">     231 </span><span class="lineCov">          3 :     Future&lt;void&gt; run(List&lt;_ProcessInvocation&gt; invocs) async {</span></a>
-<a name="232"><span class="lineNum">     232 </span><span class="lineCov">          6 :       for (final invoc in invocs) {</span></a>
-<a name="233"><span class="lineNum">     233 </span><span class="lineCov">         12 :         final ProcessResult result = await Process.run(invoc.executable, invoc.args);</span></a>
-<a name="234"><span class="lineNum">     234 </span><span class="lineCov">          6 :         final didFail = result.exitCode != 0;</span></a>
+<a name="224"><span class="lineNum">     224 </span>            :   /// Runs the given commands on multiple [threads].</a>
+<a name="225"><span class="lineNum">     225 </span>            :   ///</a>
+<a name="226"><span class="lineNum">     226 </span>            :   /// The [scope] indicates how the output of the processes should</a>
+<a name="227"><span class="lineNum">     227 </span>            :   /// be logged using the provided [logger].</a>
+<a name="228"><span class="lineNum">     228 </span><span class="lineCov">          3 :   static Future&lt;void&gt; _runCommands(</span></a>
+<a name="229"><span class="lineNum">     229 </span>            :     List&lt;_ProcessInvocation&gt; invocations, {</a>
+<a name="230"><span class="lineNum">     230 </span>            :     int threads = 1,</a>
+<a name="231"><span class="lineNum">     231 </span>            :     required Logger logger,</a>
+<a name="232"><span class="lineNum">     232 </span>            :     required LogScope scope,</a>
+<a name="233"><span class="lineNum">     233 </span>            :   }) async {</a>
+<a name="234"><span class="lineNum">     234 </span><span class="lineCov">          3 :     threads = threads &lt; 1 ? 1 : threads;</span></a>
 <a name="235"><span class="lineNum">     235 </span>            : </a>
-<a name="236"><span class="lineNum">     236 </span><span class="lineCov">          9 :         await invoc.completionHandler?.call();</span></a>
+<a name="236"><span class="lineNum">     236 </span><span class="lineCov">          9 :     final groups = List&lt;List&lt;_ProcessInvocation&gt;&gt;.generate(threads, (_) =&gt; &lt;_ProcessInvocation&gt;[]);</span></a>
 <a name="237"><span class="lineNum">     237 </span>            : </a>
-<a name="238"><span class="lineNum">     238 </span><span class="lineCov">          6 :         if (result.stdout.isNotEmpty) {</span></a>
-<a name="239"><span class="lineNum">     239 </span><span class="lineNoCov">          0 :           logger.add(</span></a>
-<a name="240"><span class="lineNum">     240 </span><span class="lineNoCov">          0 :             result.stdout,</span></a>
-<a name="241"><span class="lineNum">     241 </span><span class="lineNoCov">          0 :             description: '${invoc.executable} on stdout',</span></a>
-<a name="242"><span class="lineNum">     242 </span>            :             scope: scope,</a>
-<a name="243"><span class="lineNum">     243 </span>            :             level: didFail ? LogLevel.warning : LogLevel.info,</a>
-<a name="244"><span class="lineNum">     244 </span>            :           );</a>
-<a name="245"><span class="lineNum">     245 </span>            :         }</a>
-<a name="246"><span class="lineNum">     246 </span>            : </a>
-<a name="247"><span class="lineNum">     247 </span><span class="lineCov">          6 :         if (result.stderr.isNotEmpty) {</span></a>
-<a name="248"><span class="lineNum">     248 </span><span class="lineNoCov">          0 :           logger.add(</span></a>
-<a name="249"><span class="lineNum">     249 </span><span class="lineNoCov">          0 :             result.stderr,</span></a>
-<a name="250"><span class="lineNum">     250 </span><span class="lineNoCov">          0 :             description: '${invoc.executable} on stderr',</span></a>
-<a name="251"><span class="lineNum">     251 </span>            :             scope: scope,</a>
-<a name="252"><span class="lineNum">     252 </span>            :             level: didFail ? LogLevel.error : LogLevel.warning,</a>
-<a name="253"><span class="lineNum">     253 </span>            :           );</a>
-<a name="254"><span class="lineNum">     254 </span>            :         }</a>
-<a name="255"><span class="lineNum">     255 </span>            : </a>
-<a name="256"><span class="lineNum">     256 </span>            :         if (didFail) {</a>
-<a name="257"><span class="lineNum">     257 </span><span class="lineNoCov">          0 :           logger.add(</span></a>
-<a name="258"><span class="lineNum">     258 </span><span class="lineNoCov">          0 :             'Exited with error code ${result.exitCode}',</span></a>
-<a name="259"><span class="lineNum">     259 </span><span class="lineNoCov">          0 :             description: invoc.executable,</span></a>
-<a name="260"><span class="lineNum">     260 </span>            :             scope: scope,</a>
-<a name="261"><span class="lineNum">     261 </span>            :             level: LogLevel.error,</a>
-<a name="262"><span class="lineNum">     262 </span>            :           );</a>
-<a name="263"><span class="lineNum">     263 </span>            :         }</a>
-<a name="264"><span class="lineNum">     264 </span>            :       }</a>
-<a name="265"><span class="lineNum">     265 </span>            :     }</a>
-<a name="266"><span class="lineNum">     266 </span>            : </a>
-<a name="267"><span class="lineNum">     267 </span>            :     // We group the commands in [threads] groups.</a>
-<a name="268"><span class="lineNum">     268 </span>            :     // So each group contains the same number of commands (+- 1).</a>
-<a name="269"><span class="lineNum">     269 </span><span class="lineCov">          9 :     for (int i = 0; i &lt; invocations.length; ++i) {</span></a>
-<a name="270"><span class="lineNum">     270 </span><span class="lineCov">         12 :       groups[i % threads].add(invocations[i]);</span></a>
-<a name="271"><span class="lineNum">     271 </span>            :     }</a>
-<a name="272"><span class="lineNum">     272 </span>            : </a>
-<a name="273"><span class="lineNum">     273 </span>            :     // We run all the groups in parallel.</a>
-<a name="274"><span class="lineNum">     274 </span><span class="lineCov">         15 :     await Future.wait(groups.map((group) =&gt; run(group)));</span></a>
-<a name="275"><span class="lineNum">     275 </span>            :   }</a>
-<a name="276"><span class="lineNum">     276 </span>            : }</a>
-<a name="277"><span class="lineNum">     277 </span>            : </a>
-<a name="278"><span class="lineNum">     278 </span>            : /// A class which stores the data to invoke a process and a completion handler.</a>
-<a name="279"><span class="lineNum">     279 </span>            : class _ProcessInvocation {</a>
-<a name="280"><span class="lineNum">     280 </span>            :   /// The path to the executable.</a>
-<a name="281"><span class="lineNum">     281 </span>            :   final String executable;</a>
-<a name="282"><span class="lineNum">     282 </span>            : </a>
-<a name="283"><span class="lineNum">     283 </span>            :   /// The arguments to invoke the executable with.</a>
-<a name="284"><span class="lineNum">     284 </span>            :   final List&lt;String&gt; args;</a>
-<a name="285"><span class="lineNum">     285 </span>            : </a>
-<a name="286"><span class="lineNum">     286 </span>            :   /// A completion handler which should be called when the process has finished.</a>
-<a name="287"><span class="lineNum">     287 </span>            :   final Future&lt;void&gt; Function()? completionHandler;</a>
-<a name="288"><span class="lineNum">     288 </span>            : </a>
-<a name="289"><span class="lineNum">     289 </span><span class="lineCov">          3 :   _ProcessInvocation(this.executable, this.args, this.completionHandler);</span></a>
-<a name="290"><span class="lineNum">     290 </span>            : </a>
-<a name="291"><span class="lineNum">     291 </span><span class="lineNoCov">          0 :   @override</span></a>
-<a name="292"><span class="lineNum">     292 </span>            :   String toString() {</a>
-<a name="293"><span class="lineNum">     293 </span><span class="lineNoCov">          0 :     return '$executable ${args.join(' ')}';</span></a>
-<a name="294"><span class="lineNum">     294 </span>            :   }</a>
-<a name="295"><span class="lineNum">     295 </span>            : }</a>
+<a name="238"><span class="lineNum">     238 </span>            :     /// Runs the commands in the order they are present in [invocs]</a>
+<a name="239"><span class="lineNum">     239 </span>            :     /// and calls each completion handler after execution.</a>
+<a name="240"><span class="lineNum">     240 </span>            :     /// Each process will be started after the previous one has finished.</a>
+<a name="241"><span class="lineNum">     241 </span>            :     /// If all started processes are using only one thread,</a>
+<a name="242"><span class="lineNum">     242 </span>            :     /// `run` will also only use one thread at a time.</a>
+<a name="243"><span class="lineNum">     243 </span><span class="lineCov">          3 :     Future&lt;void&gt; run(List&lt;_ProcessInvocation&gt; invocs) async {</span></a>
+<a name="244"><span class="lineNum">     244 </span><span class="lineCov">          6 :       for (final invoc in invocs) {</span></a>
+<a name="245"><span class="lineNum">     245 </span><span class="lineCov">         12 :         final ProcessResult result = await Process.run(invoc.executable, invoc.args);</span></a>
+<a name="246"><span class="lineNum">     246 </span><span class="lineCov">          6 :         final didFail = result.exitCode != 0;</span></a>
+<a name="247"><span class="lineNum">     247 </span>            : </a>
+<a name="248"><span class="lineNum">     248 </span><span class="lineCov">          9 :         await invoc.completionHandler?.call();</span></a>
+<a name="249"><span class="lineNum">     249 </span>            : </a>
+<a name="250"><span class="lineNum">     250 </span><span class="lineCov">          6 :         if (result.stdout.isNotEmpty) {</span></a>
+<a name="251"><span class="lineNum">     251 </span><span class="lineNoCov">          0 :           logger.add(</span></a>
+<a name="252"><span class="lineNum">     252 </span><span class="lineNoCov">          0 :             result.stdout,</span></a>
+<a name="253"><span class="lineNum">     253 </span><span class="lineNoCov">          0 :             description: '${invoc.executable} on stdout',</span></a>
+<a name="254"><span class="lineNum">     254 </span>            :             scope: scope,</a>
+<a name="255"><span class="lineNum">     255 </span>            :             level: didFail ? LogLevel.warning : LogLevel.info,</a>
+<a name="256"><span class="lineNum">     256 </span>            :           );</a>
+<a name="257"><span class="lineNum">     257 </span>            :         }</a>
+<a name="258"><span class="lineNum">     258 </span>            : </a>
+<a name="259"><span class="lineNum">     259 </span><span class="lineCov">          6 :         if (result.stderr.isNotEmpty) {</span></a>
+<a name="260"><span class="lineNum">     260 </span><span class="lineNoCov">          0 :           logger.add(</span></a>
+<a name="261"><span class="lineNum">     261 </span><span class="lineNoCov">          0 :             result.stderr,</span></a>
+<a name="262"><span class="lineNum">     262 </span><span class="lineNoCov">          0 :             description: '${invoc.executable} on stderr',</span></a>
+<a name="263"><span class="lineNum">     263 </span>            :             scope: scope,</a>
+<a name="264"><span class="lineNum">     264 </span>            :             level: didFail ? LogLevel.error : LogLevel.warning,</a>
+<a name="265"><span class="lineNum">     265 </span>            :           );</a>
+<a name="266"><span class="lineNum">     266 </span>            :         }</a>
+<a name="267"><span class="lineNum">     267 </span>            : </a>
+<a name="268"><span class="lineNum">     268 </span>            :         if (didFail) {</a>
+<a name="269"><span class="lineNum">     269 </span><span class="lineNoCov">          0 :           logger.add(</span></a>
+<a name="270"><span class="lineNum">     270 </span><span class="lineNoCov">          0 :             'Exited with error code ${result.exitCode}',</span></a>
+<a name="271"><span class="lineNum">     271 </span><span class="lineNoCov">          0 :             description: invoc.executable,</span></a>
+<a name="272"><span class="lineNum">     272 </span>            :             scope: scope,</a>
+<a name="273"><span class="lineNum">     273 </span>            :             level: LogLevel.error,</a>
+<a name="274"><span class="lineNum">     274 </span>            :           );</a>
+<a name="275"><span class="lineNum">     275 </span>            : </a>
+<a name="276"><span class="lineNum">     276 </span><span class="lineNoCov">          0 :           throw StateError('${invoc.executable} exited with error code ${result.exitCode}');</span></a>
+<a name="277"><span class="lineNum">     277 </span>            :         }</a>
+<a name="278"><span class="lineNum">     278 </span>            :       }</a>
+<a name="279"><span class="lineNum">     279 </span>            :     }</a>
+<a name="280"><span class="lineNum">     280 </span>            : </a>
+<a name="281"><span class="lineNum">     281 </span>            :     // We group the commands in [threads] groups.</a>
+<a name="282"><span class="lineNum">     282 </span>            :     // So each group contains the same number of commands (+- 1).</a>
+<a name="283"><span class="lineNum">     283 </span><span class="lineCov">          9 :     for (int i = 0; i &lt; invocations.length; ++i) {</span></a>
+<a name="284"><span class="lineNum">     284 </span><span class="lineCov">         12 :       groups[i % threads].add(invocations[i]);</span></a>
+<a name="285"><span class="lineNum">     285 </span>            :     }</a>
+<a name="286"><span class="lineNum">     286 </span>            : </a>
+<a name="287"><span class="lineNum">     287 </span>            :     // We run all the groups in parallel.</a>
+<a name="288"><span class="lineNum">     288 </span><span class="lineCov">         15 :     await Future.wait(groups.map((group) =&gt; run(group)));</span></a>
+<a name="289"><span class="lineNum">     289 </span>            :   }</a>
+<a name="290"><span class="lineNum">     290 </span>            : }</a>
+<a name="291"><span class="lineNum">     291 </span>            : </a>
+<a name="292"><span class="lineNum">     292 </span>            : /// A class which stores the data to invoke a process and a completion handler.</a>
+<a name="293"><span class="lineNum">     293 </span>            : class _ProcessInvocation {</a>
+<a name="294"><span class="lineNum">     294 </span>            :   /// The path to the executable.</a>
+<a name="295"><span class="lineNum">     295 </span>            :   final String executable;</a>
 <a name="296"><span class="lineNum">     296 </span>            : </a>
-<a name="297"><span class="lineNum">     297 </span>            : /// The status delegate of the `Compiler`.</a>
-<a name="298"><span class="lineNum">     298 </span>            : mixin CompilerStatusDelegate {</a>
-<a name="299"><span class="lineNum">     299 </span>            :   /// Called when the compiler has started compiling.</a>
-<a name="300"><span class="lineNum">     300 </span>            :   void didStartCompilation();</a>
-<a name="301"><span class="lineNum">     301 </span>            : </a>
-<a name="302"><span class="lineNum">     302 </span>            :   /// Called when the compiler has finished a compiliation stage.</a>
-<a name="303"><span class="lineNum">     303 </span>            :   void isCompiling(double progress);</a>
+<a name="297"><span class="lineNum">     297 </span>            :   /// The arguments to invoke the executable with.</a>
+<a name="298"><span class="lineNum">     298 </span>            :   final List&lt;String&gt; args;</a>
+<a name="299"><span class="lineNum">     299 </span>            : </a>
+<a name="300"><span class="lineNum">     300 </span>            :   /// A completion handler which should be called when the process has finished.</a>
+<a name="301"><span class="lineNum">     301 </span>            :   final Future&lt;void&gt; Function()? completionHandler;</a>
+<a name="302"><span class="lineNum">     302 </span>            : </a>
+<a name="303"><span class="lineNum">     303 </span><span class="lineCov">          3 :   _ProcessInvocation(this.executable, this.args, this.completionHandler);</span></a>
 <a name="304"><span class="lineNum">     304 </span>            : </a>
-<a name="305"><span class="lineNum">     305 </span>            :   /// Called when the compiler has finished compiling.</a>
-<a name="306"><span class="lineNum">     306 </span>            :   void didFinishCompilation();</a>
-<a name="307"><span class="lineNum">     307 </span>            : </a>
-<a name="308"><span class="lineNum">     308 </span>            :   /// Called when the compiler has started linking.</a>
-<a name="309"><span class="lineNum">     309 </span>            :   void didStartLinking();</a>
+<a name="305"><span class="lineNum">     305 </span><span class="lineNoCov">          0 :   @override</span></a>
+<a name="306"><span class="lineNum">     306 </span>            :   String toString() {</a>
+<a name="307"><span class="lineNum">     307 </span><span class="lineNoCov">          0 :     return '$executable ${args.join(' ')}';</span></a>
+<a name="308"><span class="lineNum">     308 </span>            :   }</a>
+<a name="309"><span class="lineNum">     309 </span>            : }</a>
 <a name="310"><span class="lineNum">     310 </span>            : </a>
-<a name="311"><span class="lineNum">     311 </span>            :   /// Called when the compiler has finished linking.</a>
-<a name="312"><span class="lineNum">     312 </span>            :   void didFinishLinking();</a>
-<a name="313"><span class="lineNum">     313 </span>            : </a>
-<a name="314"><span class="lineNum">     314 </span>            :   /// Called when the compiler has finished.</a>
-<a name="315"><span class="lineNum">     315 </span>            :   void done();</a>
-<a name="316"><span class="lineNum">     316 </span>            : }</a>
+<a name="311"><span class="lineNum">     311 </span>            : /// The status delegate of the `Compiler`.</a>
+<a name="312"><span class="lineNum">     312 </span>            : mixin CompilerStatusDelegate {</a>
+<a name="313"><span class="lineNum">     313 </span>            :   /// Called when the compiler has started compiling.</a>
+<a name="314"><span class="lineNum">     314 </span>            :   void didStartCompilation();</a>
+<a name="315"><span class="lineNum">     315 </span>            : </a>
+<a name="316"><span class="lineNum">     316 </span>            :   /// Called when the compiler has finished a compiliation stage.</a>
+<a name="317"><span class="lineNum">     317 </span>            :   void isCompiling(double progress);</a>
+<a name="318"><span class="lineNum">     318 </span>            : </a>
+<a name="319"><span class="lineNum">     319 </span>            :   /// Called when the compiler has finished compiling.</a>
+<a name="320"><span class="lineNum">     320 </span>            :   void didFinishCompilation();</a>
+<a name="321"><span class="lineNum">     321 </span>            : </a>
+<a name="322"><span class="lineNum">     322 </span>            :   /// Called when the compiler has started linking.</a>
+<a name="323"><span class="lineNum">     323 </span>            :   void didStartLinking();</a>
+<a name="324"><span class="lineNum">     324 </span>            : </a>
+<a name="325"><span class="lineNum">     325 </span>            :   /// Called when the compiler has finished linking.</a>
+<a name="326"><span class="lineNum">     326 </span>            :   void didFinishLinking();</a>
+<a name="327"><span class="lineNum">     327 </span>            : </a>
+<a name="328"><span class="lineNum">     328 </span>            :   /// Called when the compilation has failed.</a>
+<a name="329"><span class="lineNum">     329 </span>            :   void didFailCompilation();</a>
+<a name="330"><span class="lineNum">     330 </span>            : </a>
+<a name="331"><span class="lineNum">     331 </span>            :   /// Called when the linking has failed.</a>
+<a name="332"><span class="lineNum">     332 </span>            :   void didFailLinking();</a>
+<a name="333"><span class="lineNum">     333 </span>            : </a>
+<a name="334"><span class="lineNum">     334 </span>            :   /// Called when the compiler has finished.</a>
+<a name="335"><span class="lineNum">     335 </span>            :   void done();</a>
+<a name="336"><span class="lineNum">     336 </span>            : }</a>
 </pre>
       </td>
     </tr>
