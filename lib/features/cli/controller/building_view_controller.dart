@@ -9,6 +9,7 @@ import '../../../core/fs/configs/compiler_config.dart';
 import '../../../core/fs/configs/project_config.dart';
 import '../../../core/fs/wrapper/source_file.dart';
 import '../../../core/fs/yaml.dart';
+import '../../../core/logs/logger.dart';
 import '../../../core/networking/protocol/compile_status.dart';
 import '../../../core/networking/protocol/process_completion.dart';
 import '../../../core/networking/protocol/project_build.dart';
@@ -61,6 +62,9 @@ class BuildingViewController extends ViewController {
   /// The path of the build config
   final String _buildConfigPath;
 
+  /// The format in which the logs should be stored
+  final LogFormat _logFormat;
+
   //* View State
 
   /// The text displayed as the build status.
@@ -78,7 +82,7 @@ class BuildingViewController extends ViewController {
   /// The text displayed to show the elpased time of the build.
   final State<String> _elapsedTime = State('-');
 
-  BuildingViewController(this._buildConfigPath) {
+  BuildingViewController(this._buildConfigPath, this._logFormat) {
     addTask('Could not set-up tools', _startStopwatch);
     addTask('Could not load project configuration', _loadProject);
     addTask('Could not load compiler configuration', _loadBuildConfig);
@@ -312,7 +316,7 @@ class BuildingViewController extends ViewController {
     final Directory dirPath = Directory(_buildConfig.logDirectory);
     final String fileName = join(dirPath.path, name);
 
-    await downloadLogs(_session, File(fileName));
+    await downloadLogs(_session, File(fileName), format: _logFormat);
   }
 
   /// Closes the [_session] and [_clientSession].
