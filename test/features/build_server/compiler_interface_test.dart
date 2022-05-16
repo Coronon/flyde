@@ -8,7 +8,7 @@ import 'package:flyde/core/fs/compiler/installed_compiler.dart';
 import 'package:flyde/core/fs/configs/compiler_config.dart';
 import 'package:flyde/core/fs/file_extension.dart';
 import 'package:flyde/core/fs/wrapper/source_file.dart';
-import 'package:flyde/core/networking/protocol/compile_status.dart';
+import 'package:flyde/core/networking/protocol/build_status.dart';
 import 'package:flyde/features/build_server/cache/project_cache.dart';
 import 'package:flyde/features/build_server/compiler_interface.dart';
 
@@ -19,7 +19,7 @@ import '../../helpers/map_example_files.dart';
 import '../../helpers/value_hook.dart';
 
 /// Attempts to build the project using the [interface].
-Future<List<CompileStatusMessage>> _buildProject(
+Future<List<BuildStatusMessage>> _buildProject(
   ProjectInterface interface,
   List<SourceFile> files,
   Map<String, String> fileMap,
@@ -27,15 +27,15 @@ Future<List<CompileStatusMessage>> _buildProject(
   ProjectCache cache, {
   bool skipUpdateFiles = false,
 }) async {
-  final VHook<List<CompileStatusMessage>> messageHook = VHook([]);
+  final VHook<List<BuildStatusMessage>> messageHook = VHook([]);
 
-  interface.onStateUpdate = (CompileStatusMessage m) {
+  interface.onStateUpdate = (BuildStatusMessage m) {
     messageHook.update((p) => [...p, m]);
 
-    if (m.status == CompileStatus.done) {
+    if (m.status == BuildStatus.done) {
       messageHook.complete();
     }
-    if (m.status == CompileStatus.failed) {
+    if (m.status == BuildStatus.failed) {
       messageHook.completeError(StateError(m.payload));
     }
   };
@@ -133,15 +133,15 @@ Future<void> main() async {
       (f) => FileExtension.sources.contains('.${f.extension}'),
     );
     final expectedMessageStates = [
-      CompileStatus.compiling,
+      BuildStatus.compiling,
       ...List.filled(
         compiledSourceFiles.length,
-        CompileStatus.compiling,
+        BuildStatus.compiling,
       ),
-      CompileStatus.compiling,
-      CompileStatus.linking,
-      CompileStatus.waiting,
-      CompileStatus.done
+      BuildStatus.compiling,
+      BuildStatus.linking,
+      BuildStatus.waiting,
+      BuildStatus.done
     ];
 
     expect(
@@ -192,21 +192,21 @@ Future<void> main() async {
 
       testReceive.listen((message) {
         if (message is InterfaceMessage && message.name == 'stateUpdate') {
-          final msg = message.args as CompileStatusMessage;
+          final msg = message.args as BuildStatusMessage;
           switch (msg.status) {
-            case CompileStatus.compiling:
+            case BuildStatus.compiling:
               compiling.update((val) => val + 1);
               break;
-            case CompileStatus.linking:
+            case BuildStatus.linking:
               linking.update((val) => val + 1);
               break;
-            case CompileStatus.waiting:
+            case BuildStatus.waiting:
               waiting.update((val) => val + 1);
               break;
-            case CompileStatus.done:
+            case BuildStatus.done:
               done.complete();
               break;
-            case CompileStatus.failed:
+            case BuildStatus.failed:
               break;
           }
         }
@@ -291,11 +291,11 @@ Future<void> main() async {
       sendPort.send(testSend);
 
       mainInterface.onStateUpdate = (msg) {
-        if (msg.status == CompileStatus.done) {
+        if (msg.status == BuildStatus.done) {
           buildCompleter.complete();
         }
 
-        if (msg.status == CompileStatus.failed) {
+        if (msg.status == BuildStatus.failed) {
           buildCompleter.completeError(StateError('Build failed with exception'));
         }
       };

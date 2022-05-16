@@ -1,24 +1,24 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'compile_status.g.dart';
+part 'build_status.g.dart';
 
 /// A message which informs about the current build state.
 @JsonSerializable(genericArgumentFactories: true)
-class CompileStatusMessage<T> {
+class BuildStatusMessage<T> {
   /// The current build state.
-  final CompileStatus status;
+  final BuildStatus status;
 
   /// The message payload.
   ///
-  /// See [CompileStatus] docs for type details.
+  /// See [BuildStatus] docs for type details.
   final T payload;
 
-  CompileStatusMessage({required this.status, required this.payload});
+  BuildStatusMessage({required this.status, required this.payload});
 
-  factory CompileStatusMessage.fromJson(Map<String, dynamic> json) =>
-      _$CompileStatusMessageFromJson(json, (obj) => obj as T);
+  factory BuildStatusMessage.fromJson(Map<String, dynamic> json) =>
+      _$BuildStatusMessageFromJson(json, (obj) => obj as T);
 
-  Map<String, dynamic> toJson() => _$CompileStatusMessageToJson(
+  Map<String, dynamic> toJson() => _$BuildStatusMessageToJson(
         this,
         (Object? obj) {
           if (obj is double || obj is int || obj is String || obj is bool) {
@@ -31,7 +31,7 @@ class CompileStatusMessage<T> {
 }
 
 /// The status of the compilation.
-enum CompileStatus {
+enum BuildStatus {
   /// Process has to wait. Payload is a [WaitReason].
   waiting,
 

@@ -8,7 +8,7 @@ import '../../core/async/connect.dart';
 import '../../core/async/interface.dart';
 import '../../core/fs/configs/compiler_config.dart';
 import '../../core/fs/wrapper/source_file.dart';
-import '../../core/networking/protocol/compile_status.dart';
+import '../../core/networking/protocol/build_status.dart';
 import 'cache/project_cache.dart';
 import 'compiler.dart';
 
@@ -137,8 +137,8 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
     try {
       await _compiler.compile();
     } catch (e) {
-      await _updateState(CompileStatusMessage(
-        status: CompileStatus.failed,
+      await _updateState(BuildStatusMessage(
+        status: BuildStatus.failed,
         payload: e.toString(),
       ));
     }
@@ -147,71 +147,71 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
   }
 
   /// Sends an state update [message] to the [ProjectInterface].
-  Future<void> _updateState(CompileStatusMessage message) async =>
+  Future<void> _updateState(BuildStatusMessage message) async =>
       await call(InterfaceMessage(_MessageIdentifiers.stateUpdate, message));
 
   //* Delegate Implementation
 
   @override
   void didStartCompilation() {
-    _updateState(CompileStatusMessage(
-      status: CompileStatus.compiling,
+    _updateState(BuildStatusMessage(
+      status: BuildStatus.compiling,
       payload: 0.0,
     ));
   }
 
   @override
   void isCompiling(double progress) {
-    _updateState(CompileStatusMessage(
-      status: CompileStatus.compiling,
+    _updateState(BuildStatusMessage(
+      status: BuildStatus.compiling,
       payload: progress,
     ));
   }
 
   @override
   void didFinishCompilation() {
-    _updateState(CompileStatusMessage(
-      status: CompileStatus.compiling,
+    _updateState(BuildStatusMessage(
+      status: BuildStatus.compiling,
       payload: 1.0,
     ));
   }
 
   @override
   void didStartLinking() {
-    _updateState(CompileStatusMessage(
-      status: CompileStatus.linking,
+    _updateState(BuildStatusMessage(
+      status: BuildStatus.linking,
       payload: null,
     ));
   }
 
   @override
   void didFinishLinking() {
-    _updateState(CompileStatusMessage(
-      status: CompileStatus.waiting,
+    _updateState(BuildStatusMessage(
+      status: BuildStatus.waiting,
       payload: WaitReason.finishing,
     ));
   }
 
   @override
   void done() {
-    _updateState(CompileStatusMessage(
-      status: CompileStatus.done,
+    _updateState(BuildStatusMessage(
+      status: BuildStatus.done,
       payload: null,
     ));
   }
 
   @override
   void didFailCompilation() {
-    _updateState(CompileStatusMessage(
-      status: CompileStatus.failed,
+    _updateState(BuildStatusMessage(
+      status: BuildStatus.failed,
       payload: null,
     ));
   }
 
   @override
   void didFailLinking() {
-    _updateState(CompileStatusMessage(
-      status: CompileStatus.failed,
+    _updateState(BuildStatusMessage(
+      status: BuildStatus.failed,
       payload: null,
     ));
   }
@@ -220,7 +220,7 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
 /// The interface to an isolate which manages a single project.
 class ProjectInterface extends Interface {
   /// Callback to be used when the compilation state updates.
-  void Function(CompileStatusMessage)? onStateUpdate;
+  void Function(BuildStatusMessage)? onStateUpdate;
 
   /// A flag whether the compiler needs to be initialized.
   /// When `false` a timeout exception will be thrown when trying to re initialize
@@ -247,8 +247,8 @@ class ProjectInterface extends Interface {
 
   @override
   void onMessage(InterfaceMessage message) async {
-    if (message.name == _MessageIdentifiers.stateUpdate && message.args is CompileStatusMessage) {
-      onStateUpdate?.call(message.args as CompileStatusMessage);
+    if (message.name == _MessageIdentifiers.stateUpdate && message.args is BuildStatusMessage) {
+      onStateUpdate?.call(message.args as BuildStatusMessage);
     }
   }
 

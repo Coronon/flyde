@@ -10,7 +10,7 @@ import '../../../core/fs/configs/project_config.dart';
 import '../../../core/fs/wrapper/source_file.dart';
 import '../../../core/fs/yaml.dart';
 import '../../../core/logs/logger.dart';
-import '../../../core/networking/protocol/compile_status.dart';
+import '../../../core/networking/protocol/build_status.dart';
 import '../../../core/networking/protocol/process_completion.dart';
 import '../../../core/networking/protocol/project_build.dart';
 import '../../../core/networking/protocol/project_init.dart';
@@ -173,26 +173,26 @@ class BuildingViewController extends ViewController {
     _session = syncSession(
       _clientSession,
       (dynamic msg) {
-        if (msg is! CompileStatusMessage) {
+        if (msg is! BuildStatusMessage) {
           return;
         }
 
-        if (msg.status == CompileStatus.compiling) {
+        if (msg.status == BuildStatus.compiling) {
           _label.value = 'Compiling...';
           _color.value = TerminalColor.yellow;
           _progress.value = 0.8 * msg.payload;
-        } else if (msg.status == CompileStatus.failed) {
+        } else if (msg.status == BuildStatus.failed) {
           _label.value = 'Compilation failed.';
           _color.value = TerminalColor.red;
           _progress.value = 1;
-        } else if (msg.status == CompileStatus.linking) {
+        } else if (msg.status == BuildStatus.linking) {
           _label.value = 'Linking...';
           _color.value = TerminalColor.blue;
           _progress.value = 0.8;
-        } else if (msg.status == CompileStatus.waiting) {
+        } else if (msg.status == BuildStatus.waiting) {
           _label.value = 'Waiting...';
           _color.value = TerminalColor.magenta;
-        } else if (msg.status == CompileStatus.done) {
+        } else if (msg.status == BuildStatus.done) {
           _label.value = 'Success';
           _color.value = TerminalColor.green;
           _progress.value = 1;
@@ -277,13 +277,13 @@ class BuildingViewController extends ViewController {
 
     // Expect state updates and wait until compilation is done.
     await _session.expect(
-      CompileStatusMessage,
-      validator: (CompileStatusMessage msg) {
-        if (msg.status == CompileStatus.done) {
+      BuildStatusMessage,
+      validator: (BuildStatusMessage msg) {
+        if (msg.status == BuildStatus.done) {
           return true;
         }
 
-        if (msg.status == CompileStatus.failed) {
+        if (msg.status == BuildStatus.failed) {
           didFail = true;
           return true;
         }
