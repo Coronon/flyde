@@ -124,7 +124,7 @@ class CompilerConfig {
     return CompilerConfig(
       compiler: compiler,
       threads: threads,
-      binaryPath: './$name.bin.out',
+      binaryPath: './$name',
       sourceDirectories: src,
       compilerFlags: [
         '-std=c++17',
