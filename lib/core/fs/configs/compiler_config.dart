@@ -45,7 +45,7 @@ class CompilerConfig {
   }
 
   factory CompilerConfig.fromJson(Map<String, dynamic> json) {
-    // json needs to be modifiale, so missing keys can be replaced with default values.
+    // Json needs to be modifiale, so missing keys can be replaced with default values.
     json = Map.from(json);
 
     if (!json.containsKey('linkerFlags') || json['linkerFlags'] == null) {
@@ -113,8 +113,8 @@ class CompilerConfig {
   }
 
   /// Returns a [CompilerConfig] with the recommended default compiler settings
-  /// and given [src] file directories, [compiler] and [threads]. The binary path will
-  /// be created from the given [name].
+  /// and given [src] file directories, [compiler] and [threads].
+  /// The binary path will be created from the given [name].
   static defaultConfig(
     String name,
     List<String> src,
