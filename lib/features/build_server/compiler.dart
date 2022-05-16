@@ -252,7 +252,7 @@ class Compiler {
             result.stdout,
             description: '${invoc.executable} on stdout',
             scope: scope,
-            level: didFail ? LogLevel.warning : LogLevel.info,
+            level: didFail ? LogLevel.warning : LogLevel.debug,
           );
         }
 
