@@ -223,7 +223,7 @@ class ProjectInterface extends Interface {
   void Function(BuildStatusMessage)? onStateUpdate;
 
   /// A flag whether the compiler needs to be initialized.
-  /// When `false` a timeout exception will be thrown when trying to re initialize
+  /// When `false` a [StateError] will be thrown when trying to re-initialize
   /// the compiler.
   bool _requiresInitialization = true;
 
