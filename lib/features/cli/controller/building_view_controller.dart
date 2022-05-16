@@ -16,7 +16,6 @@ import '../../../core/networking/protocol/project_build.dart';
 import '../../../core/networking/protocol/project_init.dart';
 import '../../../core/networking/protocol/project_update.dart';
 import '../../../core/networking/websockets/session.dart';
-import 'view_controller.dart';
 import '../files/create_file_map.dart';
 import '../files/load_project_config.dart';
 import '../files/load_project_files.dart';
@@ -26,6 +25,7 @@ import '../networking/download_logs.dart';
 import '../networking/sync_session.dart';
 import '../views/building_view.dart';
 import '../../ui/render/widget.dart';
+import 'view_controller.dart';
 
 /// The [ViewController] for the view shown when building a project.
 class BuildingViewController extends ViewController {
