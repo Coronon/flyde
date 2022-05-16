@@ -127,7 +127,7 @@ class BuildingViewController extends ViewController {
   //* Tasks
 
   /// Starts the [_stopwatch] and inits the a [_timer] to update
-  /// the GUI state every 100ms.
+  /// the TUI state every 100ms.
   Future<void> _startStopwatch() async {
     _stopwatch.stop();
     _stopwatch.reset();
