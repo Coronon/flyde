@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
 
@@ -14,7 +13,7 @@ import 'log_scope.dart';
 /// to display, store or load the logs.
 class Logger {
   /// A byte sequence which indicates that a binary buffer contains log data.
-  static final Uint8List _magicByte = Uint8List.fromList([0x4c, 0x4f, 0x47, 0x45]);
+  static final Uint8List _magicByte = Uint8List.fromList([0x4c, 0x4f, 0x47, 0x53]);
 
   /// The in-memory messages
   final List<_LogMessage> _messages;
