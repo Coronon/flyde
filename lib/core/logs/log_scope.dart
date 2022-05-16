@@ -1,6 +1,6 @@
 import '../console/terminal_color.dart';
 
-/// A [logScope] is a way to group log messages
+/// A [LogScope] is a way to group log messages
 /// by the scope of the message.
 enum LogScope {
   /// The message covers information about the main

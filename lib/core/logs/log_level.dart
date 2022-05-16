@@ -1,6 +1,6 @@
 import '../console/terminal_color.dart';
 
-/// A [logScope] is a way to group log messages by importance.
+/// A [LogLevel] is a way to group log messages by importance.
 enum LogLevel {
   /// The message is a debug message and should not
   /// cover information that is important for the user.
