@@ -10,15 +10,14 @@ import '../../../core/fs/wrapper/source_file.dart';
 /// Seaches for all source and header files in the directories given in the [config].
 Future<List<SourceFile>> loadProjectFiles(CompilerConfig config) async {
   final List<SourceFile> files = [];
-  final Map<int, Directory> entryDirectories = config.sourceDirectories
+  final List<Directory> entryDirectories = config.sourceDirectories
       .map(
         (path) => Directory(path),
       )
-      .toList()
-      .asMap();
+      .toList();
 
-  for (final entryDirectoryIdx in entryDirectories.keys) {
-    final Directory entryDirectory = entryDirectories[entryDirectoryIdx]!;
+  for (int index = 0; index < entryDirectories.length; ++index) {
+    final Directory entryDirectory = entryDirectories[index];
 
     files.addAll(
       await searchDirectory(
@@ -28,7 +27,7 @@ Future<List<SourceFile>> loadProjectFiles(CompilerConfig config) async {
           final isHeader = FileExtension.headers.contains(extension(e.path));
 
           if (e is File && (isSource || isHeader)) {
-            return SourceFile.fromFile(entryDirectoryIdx, e, entryDirectory: entryDirectory);
+            return SourceFile.fromFile(index, e, entryDirectory: entryDirectory);
           }
 
           return null;
