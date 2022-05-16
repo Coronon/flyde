@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 
-import 'command_arg_getter.dart';
+import 'helper/command_arg_getter.dart';
 import '../../../core/fs/configs/project_config.dart';
 import '../../../core/fs/yaml.dart';
 

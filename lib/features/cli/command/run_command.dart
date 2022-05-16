@@ -5,7 +5,7 @@ import 'package:args/command_runner.dart';
 import '../../../core/console/terminal_color.dart';
 import '../../../core/fs/configs/compiler_config.dart';
 import '../../../core/fs/yaml.dart';
-import 'command_arg_getter.dart';
+import 'helper/command_arg_getter.dart';
 
 ///flyde run
 ///    --config            -c      \<str\>

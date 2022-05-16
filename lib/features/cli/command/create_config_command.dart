@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 
 import '../../../core/console/terminal_color.dart';
-import 'command_arg_getter.dart';
+import 'helper/command_arg_getter.dart';
 import '../../../core/fs/compiler/installed_compiler.dart';
 import '../../../core/fs/configs/compiler_config.dart';
 import '../../../core/fs/yaml.dart';

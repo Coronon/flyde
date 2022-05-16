@@ -4,7 +4,7 @@ import 'package:args/command_runner.dart';
 
 import '../../../core/logs/logger.dart';
 import '../controller/building_view_controller.dart';
-import 'command_arg_getter.dart';
+import 'helper/command_arg_getter.dart';
 
 ///```sh
 ///flyde build
