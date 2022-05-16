@@ -35,11 +35,11 @@ class CompilerConfig {
   CompilerConfig({
     required this.compiler,
     required this.threads,
-    this.binaryPath = './bin.out',
-    this.logDirectory = './logs',
     required this.sourceDirectories,
     required this.compilerFlags,
     required this.linkerFlags,
+    this.binaryPath = './bin.out',
+    this.logDirectory = './logs',
   }) {
     _validate();
   }
