@@ -11,13 +11,13 @@ EventSynchronizer syncSession(
   ClientSession session, [
   FutureOr<void> Function(dynamic)? messageHandler,
 ]) {
-  final sync = EventSynchronizer(session.send, Duration(milliseconds: 100));
+  final synchronizer = EventSynchronizer(session.send, Duration(milliseconds: 100));
 
   // Pass all messages received by 'session' to the synchronizer
   session.onMessage = (session, message) async {
     await messageHandler?.call(message);
-    await sync.handleMessage(message);
+    await synchronizer.handleMessage(message);
   };
 
-  return sync;
+  return synchronizer;
 }
