@@ -241,8 +241,8 @@ class ProjectInterface extends Interface {
     );
   }
 
-  /// A flag whether the compiler needs to be initialized.
-  /// Do not re-initialize the compiler, otherwise an error will be thrown.
+  /// A flag whether the compiler has been initialized.
+  /// Do not re-initialize the compiler, otherwise a [StateError] will be thrown.
   bool get isInitialized => !_requiresInitialization;
 
   @override
@@ -315,13 +315,11 @@ class ProjectInterface extends Interface {
   }
 
   /// The latest available logs for the project.
-  Future<Uint8List> get logData async {
-    return await expectResponse(
-      InterfaceMessage(
-        _MessageIdentifiers.getLogs,
-        null,
-      ),
-      timeout: Duration(seconds: 10),
-    );
-  }
+  Future<Uint8List> get logData async => await expectResponse(
+        InterfaceMessage(
+          _MessageIdentifiers.getLogs,
+          null,
+        ),
+        timeout: Duration(seconds: 10),
+      );
 }
