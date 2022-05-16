@@ -18,7 +18,7 @@ class _ControllerTask {
 
 /// A controller used to manage the lifecycle of a TUI view.
 ///
-/// A CLI view has unlike to classical views a procedual lifecycle.
+/// A CLI view has, unlike to classical views, a procedural lifecycle.
 /// [ViewController] is used to manage tasks, which are responsible for
 /// updating view state and model.
 abstract class ViewController {

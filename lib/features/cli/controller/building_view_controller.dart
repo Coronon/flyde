@@ -234,7 +234,7 @@ class BuildingViewController extends ViewController {
   /// Syncs the [_files] with the [_session].
   ///
   /// This tasks send all [_files] to the server which are not already cached.
-  /// Can take some  time when the cache is empty.
+  /// Can take some time when the cache is empty.
   Future<void> _syncFiles() async {
     _label.value = 'Synchronizing source files...';
 
