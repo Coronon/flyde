@@ -7,7 +7,7 @@ import 'package:flyde/core/async/event_synchronizer.dart';
 import 'package:flyde/core/fs/compiler/installed_compiler.dart';
 import 'package:flyde/core/fs/configs/compiler_config.dart';
 import 'package:flyde/core/fs/wrapper/source_file.dart';
-import 'package:flyde/core/networking/protocol/compile_status.dart';
+import 'package:flyde/core/networking/protocol/build_status.dart';
 import 'package:flyde/core/networking/protocol/process_completion.dart';
 import 'package:flyde/core/networking/protocol/project_build.dart';
 import 'package:flyde/core/networking/protocol/project_update.dart';
@@ -92,8 +92,8 @@ Future<Uint8List> _requestAndDownloadProject(
 
   // Expect state updates and wait until compilation is done.
   await sync.expect(
-    CompileStatusMessage,
-    validator: (CompileStatusMessage msg) => msg.status == CompileStatus.done,
+    BuildStatusMessage,
+    validator: (BuildStatusMessage msg) => msg.status == BuildStatus.done,
     keepAlive: true,
   );
 

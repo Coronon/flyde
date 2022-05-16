@@ -7,7 +7,7 @@ import 'package:flyde/features/ui/widgets/table.dart';
 import '../../../helpers/mocks/mock_widget.dart';
 
 /// Creates an equivalent of a table divider width given [length]
-String _verticalDivider(int length) => '\x1B[1m\x1B[37m${''.padRight(length, '─')}\x1B[0m\x1B[0m';
+String _verticalDivider(int length) => '\x1B[1m\x1B[37m${''.padRight(length, '─')}\x1B[39m\x1B[22m';
 
 /// Creates a [Table] object for testing with stateless content
 Table _createTestTable({int cellWidth = 20, TextAlignment alignment = TextAlignment.left}) {
@@ -35,7 +35,7 @@ Table _createTestTable({int cellWidth = 20, TextAlignment alignment = TextAlignm
 }
 
 void main() {
-  final verticalSpacer = '\x1B[1m\x1B[37m │ \x1B[0m\x1B[0m';
+  final verticalSpacer = '\x1B[1m\x1B[37m │ \x1B[39m\x1B[22m';
 
   test('Does not accept faulty parameters for initialization', () {
     expect(

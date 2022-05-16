@@ -2,8 +2,9 @@ import 'dart:convert';
 
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
-import 'package:flyde/core/fs/compiler/installed_compiler.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import '../compiler/installed_compiler.dart';
 
 part 'compiler_config.g.dart';
 
@@ -19,6 +20,12 @@ class CompilerConfig {
   /// A list of all directory pathes where source files are located.
   final List<String> sourceDirectories;
 
+  /// The local path on the user's machine where the binary should be saved.
+  final String binaryPath;
+
+  /// The local path on the user's machine where the logs should be saved.
+  final String logDirectory;
+
   /// The flags to pass to the compiler.
   List<String> compilerFlags;
 
@@ -31,11 +38,26 @@ class CompilerConfig {
     required this.sourceDirectories,
     required this.compilerFlags,
     required this.linkerFlags,
+    this.binaryPath = './bin.out',
+    this.logDirectory = './logs',
   }) {
     _validate();
   }
 
-  factory CompilerConfig.fromJson(Map<String, dynamic> json) => _$CompilerConfigFromJson(json);
+  factory CompilerConfig.fromJson(Map<String, dynamic> json) {
+    // Json needs to be modifiale, so missing keys can be replaced with default values.
+    json = Map.from(json);
+
+    if (!json.containsKey('linkerFlags') || json['linkerFlags'] == null) {
+      json['linkerFlags'] = <String>[];
+    }
+
+    if (!json.containsKey('compilerFlags') || json['compilerFlags'] == null) {
+      json['compilerFlags'] = <String>[];
+    }
+
+    return _$CompilerConfigFromJson(json);
+  }
 
   Map<String, dynamic> toJson() => _$CompilerConfigToJson(this);
 
@@ -88,5 +110,35 @@ class CompilerConfig {
 
     compilerFlags = compilerFlags.map(cleanInput).toList();
     linkerFlags = linkerFlags.map(cleanInput).toList();
+  }
+
+  /// Returns a [CompilerConfig] with the recommended default compiler settings
+  /// and given [src] file directories, [compiler] and [threads].
+  /// The binary path will be created from the given [name].
+  static defaultConfig(
+    String name,
+    List<String> src,
+    InstalledCompiler compiler, {
+    required int threads,
+  }) {
+    return CompilerConfig(
+      compiler: compiler,
+      threads: threads,
+      binaryPath: './$name',
+      sourceDirectories: src,
+      compilerFlags: [
+        '-std=c++17',
+        '-D_FORTIFY_SOURCE=2',
+        '-D_GLIBCXX_ASSERTIONS',
+        '-fasynchronous-unwind-tables',
+        '-fexceptions',
+        '-g',
+        '-grecord-gcc-switches',
+        '-O2',
+        '-Wall',
+        '-Werror=format-security',
+      ],
+      linkerFlags: [],
+    );
   }
 }

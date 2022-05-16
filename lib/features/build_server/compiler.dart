@@ -1,11 +1,15 @@
 import 'dart:io';
 
-import 'package:flyde/core/fs/configs/compiler_config.dart';
-import 'package:flyde/core/fs/compiler/installed_compiler.dart';
-import 'package:flyde/core/fs/wrapper/source_file.dart';
-import 'package:flyde/features/build_server/cache/implementation_object_ref.dart';
-import 'package:flyde/features/build_server/cache/project_cache.dart';
 import 'package:path/path.dart';
+
+import '../../core/fs/configs/compiler_config.dart';
+import '../../core/fs/compiler/installed_compiler.dart';
+import '../../core/fs/wrapper/source_file.dart';
+import '../../core/logs/log_level.dart';
+import '../../core/logs/log_scope.dart';
+import '../../core/logs/logger.dart';
+import 'cache/implementation_object_ref.dart';
+import 'cache/project_cache.dart';
 
 /// A class that manages compilation and caching of user C++ projects.
 ///
@@ -55,6 +59,13 @@ class Compiler {
 
   /// The current progress of compilation in a range from 0 to 1.
   double progress = 0;
+
+  /// [Logger] for the compilation process.
+  ///
+  /// Reset using [logger.reset()] after compilation
+  /// has finished. Otherwise messages of two iterations
+  /// will be mixed up.
+  final Logger logger = Logger();
 
   Compiler(this._config, this._projectFiles, this._cache);
 
@@ -124,11 +135,33 @@ class Compiler {
       compileCommands.add(await _buildCompileCommand(file));
     }
 
-    await _runCommands(compileCommands, threads: _config.threads);
+    try {
+      await _runCommands(
+        compileCommands,
+        threads: _config.threads,
+        logger: logger,
+        scope: LogScope.compiler,
+      );
+    } catch (e) {
+      logger.add(e.toString(), scope: LogScope.application, level: LogLevel.error);
+      delegate?.didFailCompilation();
+      return;
+    }
 
     delegate?.didFinishCompilation();
 
-    await _runCommands([await _buildLinkCommand()]);
+    try {
+      await _runCommands(
+        [await _buildLinkCommand()],
+        logger: logger,
+        scope: LogScope.linker,
+      );
+    } catch (e) {
+      logger.add(e.toString(), scope: LogScope.application, level: LogLevel.error);
+      delegate?.didFailLinking();
+      return;
+    }
+
     await _cache.finish();
 
     delegate?.done();
@@ -151,7 +184,7 @@ class Compiler {
       throw ArgumentError('Requested compiler is not available on build machine');
     }
 
-    // TODO: Change include command construction algorythm when supporting more compilers
+    // TODO: Change include command construction algorithm when supporting more compilers
     final includes = _cache.headerFiles.map((file) => '-I${dirname(file.path)}').toSet();
     final compilerPath = await _config.compiler.path();
     final sourcePath = ref.source.path;
@@ -189,7 +222,15 @@ class Compiler {
   }
 
   /// Runs the given commands on multiple [threads].
-  static Future<void> _runCommands(List<_ProcessInvocation> invocations, {int threads = 1}) async {
+  ///
+  /// The [scope] indicates how the output of the processes should
+  /// be logged using the provided [logger].
+  static Future<void> _runCommands(
+    List<_ProcessInvocation> invocations, {
+    int threads = 1,
+    required Logger logger,
+    required LogScope scope,
+  }) async {
     threads = threads < 1 ? 1 : threads;
 
     final groups = List<List<_ProcessInvocation>>.generate(threads, (_) => <_ProcessInvocation>[]);
@@ -201,8 +242,39 @@ class Compiler {
     /// `run` will also only use one thread at a time.
     Future<void> run(List<_ProcessInvocation> invocs) async {
       for (final invoc in invocs) {
-        await Process.run(invoc.executable, invoc.args);
+        final ProcessResult result = await Process.run(invoc.executable, invoc.args);
+        final didFail = result.exitCode != 0;
+
         await invoc.completionHandler?.call();
+
+        if (result.stdout.isNotEmpty) {
+          logger.add(
+            result.stdout,
+            description: '${invoc.executable} on stdout',
+            scope: scope,
+            level: didFail ? LogLevel.warning : LogLevel.debug,
+          );
+        }
+
+        if (result.stderr.isNotEmpty) {
+          logger.add(
+            result.stderr,
+            description: '${invoc.executable} on stderr',
+            scope: scope,
+            level: didFail ? LogLevel.error : LogLevel.warning,
+          );
+        }
+
+        if (didFail) {
+          logger.add(
+            'Exited with error code ${result.exitCode}',
+            description: invoc.executable,
+            scope: scope,
+            level: LogLevel.error,
+          );
+
+          throw StateError('${invoc.executable} exited with error code ${result.exitCode}');
+        }
       }
     }
 
@@ -252,6 +324,12 @@ mixin CompilerStatusDelegate {
 
   /// Called when the compiler has finished linking.
   void didFinishLinking();
+
+  /// Called when the compilation has failed.
+  void didFailCompilation();
+
+  /// Called when the linking has failed.
+  void didFailLinking();
 
   /// Called when the compiler has finished.
   void done();

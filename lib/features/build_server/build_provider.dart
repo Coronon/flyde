@@ -152,6 +152,11 @@ class BuildProvider {
     if (message == getBinaryRequest) {
       await _handleBinaryRequest(session, message, id);
     }
+
+    //? Download the logs for the last build
+    if (message == getBuildLogsRequest) {
+      await _handleLogsRequest(session, message, id);
+    }
   }
 
   /// Checks if the [session] is the first in the queue for
@@ -179,8 +184,15 @@ class BuildProvider {
 
   /// Activates the [session] for the project with the id [id].
   Future<void> _activateSession(ServerSession session, String id) async {
+    const isActiveKey = 'is_active';
+
+    if (session.storage[isActiveKey] == true) {
+      return;
+    }
+
     _interfaces[id]?.onStateUpdate = session.send;
     session.send(isActiveSessionResponse);
+    session.storage[isActiveKey] = true;
   }
 
   /// Returns the interface with the given [id] or throws an exception.
@@ -236,7 +248,9 @@ class BuildProvider {
       cache = await _cache.get(id);
     }
 
-    _getInterface(id).init(message.files, message.config, cache);
+    if (!_getInterface(id).isInitialized) {
+      await _getInterface(id).init(message.files, message.config, cache);
+    }
 
     session.send(
       ProjectUpdateResponse(
@@ -273,6 +287,16 @@ class BuildProvider {
     String id,
   ) async {
     final Uint8List? data = await _getInterface(id).binary;
+    session.send(BinaryResponse(binary: data));
+  }
+
+  /// Handles a logs request.
+  Future<void> _handleLogsRequest(
+    ServerSession session,
+    dynamic message,
+    String id,
+  ) async {
+    final Uint8List data = await _getInterface(id).logData;
     session.send(BinaryResponse(binary: data));
   }
 }

@@ -8,7 +8,7 @@ import '../../core/async/connect.dart';
 import '../../core/async/interface.dart';
 import '../../core/fs/configs/compiler_config.dart';
 import '../../core/fs/wrapper/source_file.dart';
-import '../../core/networking/protocol/compile_status.dart';
+import '../../core/networking/protocol/build_status.dart';
 import 'cache/project_cache.dart';
 import 'compiler.dart';
 
@@ -21,6 +21,7 @@ class _MessageIdentifiers {
   static const stateUpdate = 'stateUpdate';
   static const hasCapacity = 'hasCapacity';
   static const getBinary = 'getBinary';
+  static const getLogs = 'getLogs';
 }
 
 /// Interface for the compiler running in a seperate [Isolate].
@@ -93,6 +94,7 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
       final files = args[0] as Map<String, String>;
       final config = args[1] as CompilerConfig;
 
+      _compiler.logger.reset();
       _compiler.update(config, files);
       message.respond(isolate.sendPort, await _compiler.outdatedFiles);
     }
@@ -105,7 +107,7 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
       message.respond(isolate.sendPort, null);
     }
 
-    //* Handle file build requests.
+    //* Handle build requests.
     if (message.name == _MessageIdentifiers.build) {
       await _build();
     }
@@ -114,6 +116,13 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
     if (message.name == _MessageIdentifiers.getBinary) {
       final File? bin = await _compiler.lastExecutable;
       final Uint8List? data = await bin?.readAsBytes();
+
+      message.respond(isolate.sendPort, data);
+    }
+
+    //* Handle logs requests.
+    if (message.name == _MessageIdentifiers.getLogs) {
+      final Uint8List data = _compiler.logger.toBytes();
 
       message.respond(isolate.sendPort, data);
     }
@@ -128,8 +137,8 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
     try {
       await _compiler.compile();
     } catch (e) {
-      await _updateState(CompileStatusMessage(
-        status: CompileStatus.failed,
+      await _updateState(BuildStatusMessage(
+        status: BuildStatus.failed,
         payload: e.toString(),
       ));
     }
@@ -138,55 +147,71 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
   }
 
   /// Sends an state update [message] to the [ProjectInterface].
-  Future<void> _updateState(CompileStatusMessage message) async =>
+  Future<void> _updateState(BuildStatusMessage message) async =>
       await call(InterfaceMessage(_MessageIdentifiers.stateUpdate, message));
 
   //* Delegate Implementation
 
   @override
   void didStartCompilation() {
-    _updateState(CompileStatusMessage(
-      status: CompileStatus.compiling,
+    _updateState(BuildStatusMessage(
+      status: BuildStatus.compiling,
       payload: 0.0,
     ));
   }
 
   @override
   void isCompiling(double progress) {
-    _updateState(CompileStatusMessage(
-      status: CompileStatus.compiling,
+    _updateState(BuildStatusMessage(
+      status: BuildStatus.compiling,
       payload: progress,
     ));
   }
 
   @override
   void didFinishCompilation() {
-    _updateState(CompileStatusMessage(
-      status: CompileStatus.compiling,
+    _updateState(BuildStatusMessage(
+      status: BuildStatus.compiling,
       payload: 1.0,
     ));
   }
 
   @override
   void didStartLinking() {
-    _updateState(CompileStatusMessage(
-      status: CompileStatus.linking,
+    _updateState(BuildStatusMessage(
+      status: BuildStatus.linking,
       payload: null,
     ));
   }
 
   @override
   void didFinishLinking() {
-    _updateState(CompileStatusMessage(
-      status: CompileStatus.waiting,
+    _updateState(BuildStatusMessage(
+      status: BuildStatus.waiting,
       payload: WaitReason.finishing,
     ));
   }
 
   @override
   void done() {
-    _updateState(CompileStatusMessage(
-      status: CompileStatus.done,
+    _updateState(BuildStatusMessage(
+      status: BuildStatus.done,
+      payload: null,
+    ));
+  }
+
+  @override
+  void didFailCompilation() {
+    _updateState(BuildStatusMessage(
+      status: BuildStatus.failed,
+      payload: null,
+    ));
+  }
+
+  @override
+  void didFailLinking() {
+    _updateState(BuildStatusMessage(
+      status: BuildStatus.failed,
       payload: null,
     ));
   }
@@ -195,7 +220,12 @@ class WorkerInterface extends Interface with CompilerStatusDelegate {
 /// The interface to an isolate which manages a single project.
 class ProjectInterface extends Interface {
   /// Callback to be used when the compilation state updates.
-  void Function(CompileStatusMessage)? onStateUpdate;
+  void Function(BuildStatusMessage)? onStateUpdate;
+
+  /// A flag whether the compiler needs to be initialized.
+  /// When `false` a [StateError] will be thrown when trying to re-initialize
+  /// the compiler.
+  bool _requiresInitialization = true;
 
   /// Constrcutor which should not be called unless for testing.
   /// Use [launch] to start the main interface.
@@ -211,10 +241,14 @@ class ProjectInterface extends Interface {
     );
   }
 
+  /// A flag whether the compiler has been initialized.
+  /// Do not re-initialize the compiler, otherwise a [StateError] will be thrown.
+  bool get isInitialized => !_requiresInitialization;
+
   @override
   void onMessage(InterfaceMessage message) async {
-    if (message.name == _MessageIdentifiers.stateUpdate && message.args is CompileStatusMessage) {
-      onStateUpdate?.call(message.args as CompileStatusMessage);
+    if (message.name == _MessageIdentifiers.stateUpdate && message.args is BuildStatusMessage) {
+      onStateUpdate?.call(message.args as BuildStatusMessage);
     }
   }
 
@@ -229,12 +263,24 @@ class ProjectInterface extends Interface {
   Future<void> init(
     Map<String, String> files,
     CompilerConfig config,
-    ProjectCache? cache,
-  ) async =>
+    ProjectCache cache,
+  ) async {
+    if (!_requiresInitialization) {
+      throw StateError('The compiler worker is already initialized.');
+    }
+
+    _requiresInitialization = false;
+
+    try {
       await expectResponse(
         InterfaceMessage(_MessageIdentifiers.init, [files, config, cache]),
         timeout: Duration(seconds: 10),
       );
+    } catch (_) {
+      _requiresInitialization = true;
+      rethrow;
+    }
+  }
 
   /// Updates the project with the given [config] and [files].
   Future<List<String>> sync(
@@ -267,4 +313,13 @@ class ProjectInterface extends Interface {
       timeout: Duration(seconds: 10),
     );
   }
+
+  /// The latest available logs for the project.
+  Future<Uint8List> get logData async => await expectResponse(
+        InterfaceMessage(
+          _MessageIdentifiers.getLogs,
+          null,
+        ),
+        timeout: Duration(seconds: 10),
+      );
 }

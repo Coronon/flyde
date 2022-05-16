@@ -1,26 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'compile_status.dart';
+part of 'build_status.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-CompileStatusMessage<T> _$CompileStatusMessageFromJson<T>(
+BuildStatusMessage<T> _$BuildStatusMessageFromJson<T>(
   Map<String, dynamic> json,
   T Function(Object? json) fromJsonT,
 ) =>
-    CompileStatusMessage<T>(
-      status: _$enumDecode(_$CompileStatusEnumMap, json['status']),
+    BuildStatusMessage<T>(
+      status: _$enumDecode(_$BuildStatusEnumMap, json['status']),
       payload: fromJsonT(json['payload']),
     );
 
-Map<String, dynamic> _$CompileStatusMessageToJson<T>(
-  CompileStatusMessage<T> instance,
+Map<String, dynamic> _$BuildStatusMessageToJson<T>(
+  BuildStatusMessage<T> instance,
   Object? Function(T value) toJsonT,
 ) =>
     <String, dynamic>{
-      'status': _$CompileStatusEnumMap[instance.status],
+      'status': _$BuildStatusEnumMap[instance.status],
       'payload': toJsonT(instance.payload),
     };
 
@@ -50,10 +50,10 @@ K _$enumDecode<K, V>(
   ).key;
 }
 
-const _$CompileStatusEnumMap = {
-  CompileStatus.waiting: 'waiting',
-  CompileStatus.compiling: 'compiling',
-  CompileStatus.linking: 'linking',
-  CompileStatus.done: 'done',
-  CompileStatus.failed: 'failed',
+const _$BuildStatusEnumMap = {
+  BuildStatus.waiting: 'waiting',
+  BuildStatus.compiling: 'compiling',
+  BuildStatus.linking: 'linking',
+  BuildStatus.done: 'done',
+  BuildStatus.failed: 'failed',
 };

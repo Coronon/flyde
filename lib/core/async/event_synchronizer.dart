@@ -119,8 +119,11 @@ class EventSynchronizer {
         if (!isValid) {
           completer.completeError(ArgumentError('Message is invalid'));
         } else {
-          final res = handler?.call(message) ?? message as R;
-          completer.complete(res);
+          if (handler != null) {
+            completer.complete(handler(message));
+          } else {
+            completer.complete(message);
+          }
         }
       } else {
         completer.completeError(ArgumentError(

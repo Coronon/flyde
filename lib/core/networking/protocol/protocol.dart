@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'process_completion.dart';
 import 'project_build.dart';
 import 'authentication.dart';
-import 'compile_status.dart';
+import 'build_status.dart';
 import 'project_update.dart';
 import 'project_init.dart';
 
@@ -31,8 +31,7 @@ class ProtocolDelegate {
     'ProjectInitRequest': (Map<String, dynamic> json) => ProjectInitRequest.fromJson(json),
     'FileUpdate': (Map<String, dynamic> json) => FileUpdate.fromJson(json),
     'BinaryResponse': (Map<String, dynamic> json) => BinaryResponse.fromJson(json),
-    'CompileStatusMessage<dynamic>': (Map<String, dynamic> json) =>
-        CompileStatusMessage.fromJson(json),
+    'BuildStatusMessage<dynamic>': (Map<String, dynamic> json) => BuildStatusMessage.fromJson(json),
   };
 
   /// Serialize a protocol message to a transmittable message

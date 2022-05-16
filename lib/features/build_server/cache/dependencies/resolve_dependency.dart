@@ -32,9 +32,13 @@ Future<String> resolve(
   final name = withoutExtension(dependency);
   final extension = context.extension(dependency).substring(1);
 
-  return all
-      .singleWhere(
-        (file) => file.name == name && file.extension == extension && file.entry == origin.entry,
-      )
-      .id;
+  try {
+    return all
+        .singleWhere(
+          (file) => file.name == name && file.extension == extension && file.entry == origin.entry,
+        )
+        .id;
+  } on StateError {
+    throw ArgumentError('Cannot resolve dependency "$dependency" to an existing file.');
+  }
 }

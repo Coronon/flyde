@@ -37,7 +37,7 @@ extension InstalledCompilerImpl on InstalledCompiler {
 
     // TODO: When supporting windows as a build platform, change compiler search
     String out = '';
-    final proc = await Process.start('which', [_command()]);
+    final proc = await Process.start('which', [name]);
 
     await proc.stdout.transform(utf8.decoder).forEach((el) => out += el);
 
@@ -54,8 +54,11 @@ extension InstalledCompilerImpl on InstalledCompiler {
     return null;
   }
 
-  /// The command used to invoke the compiler.
-  String _command() {
+  /// The name of the compiler.
+  ///
+  /// Equal to the identifier which is used to invoce the compiler.
+  /// E.g `g++` for `InstalledCompiler.gpp`.
+  String get name {
     switch (this) {
       case InstalledCompiler.gpp:
         return 'g++';

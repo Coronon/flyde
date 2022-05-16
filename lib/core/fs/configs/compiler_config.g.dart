@@ -19,6 +19,8 @@ CompilerConfig _$CompilerConfigFromJson(Map<String, dynamic> json) =>
       linkerFlags: (json['linkerFlags'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
+      binaryPath: json['binaryPath'] as String? ?? './bin.out',
+      logDirectory: json['logDirectory'] as String? ?? './logs',
     );
 
 Map<String, dynamic> _$CompilerConfigToJson(CompilerConfig instance) =>
@@ -26,6 +28,8 @@ Map<String, dynamic> _$CompilerConfigToJson(CompilerConfig instance) =>
       'compiler': _$InstalledCompilerEnumMap[instance.compiler],
       'threads': instance.threads,
       'sourceDirectories': instance.sourceDirectories,
+      'binaryPath': instance.binaryPath,
+      'logDirectory': instance.logDirectory,
       'compilerFlags': instance.compilerFlags,
       'linkerFlags': instance.linkerFlags,
     };
