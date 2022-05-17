@@ -48,7 +48,7 @@ jobs:
 
       - name: Format coverage data 🔣
         run: |
-          dart pub global run coverage:format_coverage -o coverage/lcov.info -i coverage -l --report-on lib --packages .packages
+          dart pub global run coverage:format_coverage -o coverage/lcov.info -i coverage -l --report-on lib --packages .dart_tool/package_config.json
           dart pub global run remove_from_coverage:remove_from_coverage -f coverage/lcov.info -r '\.g\.dart$'
 
       - name: Generate report ⚙️
