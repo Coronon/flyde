@@ -7,9 +7,10 @@ import '../../../core/fs/configs/compiler_config.dart';
 import '../../../core/fs/yaml.dart';
 import 'helper/command_arg_getter.dart';
 
-///flyde run
-///    --config            -c      \<str\>
-///    --args              -a      \<str\>
+/// Executes the binary specified in the passed
+/// compiler configuration file.
+///
+/// Additional arguments can be forwarded to the binary.
 class RunCommand extends Command with CommandArgGetter {
   /// Command name 'flyde {name} ...'
   @override

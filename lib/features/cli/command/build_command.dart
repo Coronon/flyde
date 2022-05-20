@@ -6,10 +6,14 @@ import '../../../core/logs/logger.dart';
 import '../controller/building_view_controller.dart';
 import 'helper/command_arg_getter.dart';
 
-///```sh
-///flyde build
-///    --config            -c      <name:str>
-/// ```
+/// A command that launches a build run using the given config.
+///
+/// A complete build includes multiple steps:
+/// 1. Load and parse the project and compiler configuration
+/// 2. Connect to the build server and exchange cache information
+/// 3. Send non-cached files to the build server
+/// 4. Wait for the build server to finish
+/// 5. Download the resulting binary and logs
 class BuildCommand extends Command with CommandArgGetter {
   /// Command name 'flyde {name} ...'
   @override

@@ -8,14 +8,21 @@ import '../../../core/fs/configs/compiler_config.dart';
 import '../../../core/fs/yaml.dart';
 import 'helper/command_arg_getter.dart';
 
-///```sh
-///flyde create config
-///    --preset            -p      <str>
-///    --name              -n      <str>
-///    --src               -s      <str[]>
-///    --threads           -t      <int>
-///    --compiler          -c      <str>
-///```
+/// Creates a new compiler configuration file.
+///
+/// The compiler config contains how the compiler should build
+/// the project, not where to reach it. That's defined in the
+/// [ProjectConfig] file.
+///
+/// The compiler config file is a YAML file that contains the
+/// following fields:
+/// 1. The compiler's name
+/// 2. The number of threads used for compilation
+/// 3. The path to the local source files
+/// 4. The path where the binary should be saved
+/// 5. The path where the logs should be saved
+/// 6. The flags to pass to the compiler
+/// 7. The flags to pass to the linker
 class CreateConfigCommand extends Command with CommandArgGetter {
   /// Command name 'flyde create {name} ...'
   @override

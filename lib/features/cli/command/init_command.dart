@@ -6,12 +6,10 @@ import '../../../core/fs/configs/project_config.dart';
 import '../../../core/fs/yaml.dart';
 import 'helper/command_arg_getter.dart';
 
-///```sh
-///flyde init
-///    --name              -n      <str>
-///    --server            -s      <str>
-///    --port              -p      <num>
-/// ```
+/// Initiates a project with a name, and the information
+/// how to reach the build server.
+///
+/// This includes the server's host name and port.
 class InitCommand extends Command with CommandArgGetter {
   /// Command name 'flyde {name} ...'
   @override
