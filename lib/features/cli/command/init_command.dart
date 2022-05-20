@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 
+import '../../../core/console/terminal_color.dart';
 import '../../../core/fs/configs/project_config.dart';
 import '../../../core/fs/yaml.dart';
 import 'helper/command_arg_getter.dart';
@@ -48,6 +49,14 @@ class InitCommand extends Command with CommandArgGetter {
     final int port = useArg('port', parser: (arg) => int.parse(arg));
     final String name = useArg('name');
     final String server = useArg('server');
+    final file = File('${Directory.current.path}/project.yaml');
+
+    if (await file.exists()) {
+      const message =
+          'This directory already contains a project.yaml file. Please edit the file directly if you need to make changes.';
+      stderr.writeln(TerminalColor.red.prepare(message));
+      return;
+    }
 
     final ProjectConfig projectConfig = ProjectConfig(
       name: name,
@@ -56,7 +65,6 @@ class InitCommand extends Command with CommandArgGetter {
     );
 
     final yaml = encodeAsYaml(projectConfig.toJson());
-    final file = File('${Directory.current.path}/project.yaml');
 
     await file.writeAsString(yaml);
   }
