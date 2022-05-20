@@ -166,7 +166,7 @@ class BuildingViewController extends ViewController {
     _label.value = 'Connecting to build server...';
 
     _clientSession = await createClientSession(
-      _projectConfig.server,
+      _projectConfig.host,
       _projectConfig.port,
     );
 

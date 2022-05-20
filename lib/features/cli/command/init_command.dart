@@ -53,7 +53,7 @@ class InitCommand extends Command with CommandArgGetter {
 
     final ProjectConfig projectConfig = ProjectConfig(
       name: name,
-      server: server,
+      host: server,
       port: port,
     );
 

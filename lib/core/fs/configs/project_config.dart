@@ -16,12 +16,12 @@ class ProjectConfig {
   /// The port on which the build server is listening.
   final int port;
 
-  /// The server address.
+  /// The build server's host name / IP address.
   ///
   /// Must be either a valid host name or an IP address.
-  final String server;
+  final String host;
 
-  ProjectConfig({required this.name, required this.port, required this.server}) {
+  ProjectConfig({required this.name, required this.port, required this.host}) {
     if (name.isEmpty) {
       throw ArgumentError('The name of the project cannot be empty');
     }
@@ -30,12 +30,26 @@ class ProjectConfig {
       throw ArgumentError('The port must be between 0 and 65535');
     }
 
-    if (!isValidHostName(server) && !isValidIPAddress(server)) {
+    if (!isValidHostName(host) && !isValidIPAddress(host)) {
       throw ArgumentError('The server must be a valid host name or IP address');
     }
   }
 
-  factory ProjectConfig.fromJson(Map<String, dynamic> json) => _$ProjectConfigFromJson(json);
+  factory ProjectConfig.fromJson(Map<String, dynamic> json) {
+    return _$ProjectConfigFromJson({
+      'name': json['name'],
+      'port': json['server']['port'],
+      'host': json['server']['host'],
+    });
+  }
 
-  Map<String, dynamic> toJson() => _$ProjectConfigToJson(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'server': {
+        'port': port,
+        'host': host,
+      },
+    };
+  }
 }
