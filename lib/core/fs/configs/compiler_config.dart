@@ -115,6 +115,9 @@ class CompilerConfig {
   /// Returns a [CompilerConfig] with the recommended default compiler settings
   /// and given [src] file directories, [compiler] and [threads].
   /// The binary path will be created from the given [name].
+  ///
+  /// The flags are slight variation of the recommendation by Red Hat
+  /// https://developers.redhat.com/blog/2018/03/21/compiler-and-linker-flags-gcc here.
   static defaultConfig(
     String name,
     List<String> src,
